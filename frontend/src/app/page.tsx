@@ -13,6 +13,12 @@ const IndexPage: React.FC = () => {
 	const fetchHtmlContent = async () => {
 		try {
 			pageId = pageId === 2 ? 1 : 2
+			/* TODO: There is a probleme when I use the front on my mobile. Probably a problem with localhost ?
+			   I wanted to use an environment variable, but it's a pain with node.js
+			   Try something like this and find how to make it work:
+			   const response = await fetch('http://' + process.env.BACK_ADDRESS + ":" + process.env.BACK_PORT + '/api/file/test' + pageId);
+			*/
+
 			const response = await fetch('http://localhost:8080/api/file/test' + pageId);
 			const data = await response.text(); // Receive response as text
 			setHtmlContent(data);
