@@ -1,0 +1,18 @@
+:data-uri:
+= Test 2
+
+== Question
+[#question]
+This is test 2's question
+
+== Answer
+
+.Click to reveal the answer
+[%collapsible]
+[#answer]
+====
+This is test 2's answer
+
+
+image::shellsonthemoon.jpg[]
+====

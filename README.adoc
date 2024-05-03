@@ -1,0 +1,8 @@
+= Flashcii Cards
+
+The goal of Flashcii Cards is to provide an open-source, self-hostable, containerized and asciidoc-based flashcard learning software.
+The front is made with the Next.js framework, and the back is in Go.
+
+// == Install
+// == Contribute
+// == Why asciidoc
