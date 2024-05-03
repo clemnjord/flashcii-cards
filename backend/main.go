@@ -25,7 +25,7 @@ func main() {
 
 	r.GET("/api/file/:filename", func(c *gin.Context) {
 		filename := c.Param("filename")
-		filePath := "./rendered_asciidoc/" + filename + "/" + filename + ".html"
+		filePath := os.Getenv("FLASHCII_CARDS_PATH") + "/" + filename + "/" + filename + ".html"
 
 		// Check if the file exists
 		_, err := os.Stat(filePath)
