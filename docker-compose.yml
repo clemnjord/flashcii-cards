@@ -1,0 +1,17 @@
+services:
+  back:
+    build: "./backend"
+    environment:
+      - FLASHCII_CARDS_PATH=/cards
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./example/rendered_asciidoc:/cards"
+  front:
+    build: "./frontend"
+    environment:
+        # Not used for now
+      - BACK_ADDRESS=192.168.1.27 
+      - BACK_PORT=8080
+    ports:
+      - "3000:3000"
