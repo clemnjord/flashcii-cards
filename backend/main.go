@@ -15,7 +15,6 @@ type QuestionContent struct {
 }
 
 type AnswerContent struct {
-	QuestionID int    `json:"pageId"`
 	Difficulty string `json:"difficulty"`
 }
 
@@ -37,7 +36,13 @@ func main() {
 	})
 
 	r.POST("/api/answer", func(c *gin.Context) {
-		page = updateAnswer(c)
+		updateAnswer(c)
+
+		if page == 2 {
+			page = 1
+		} else {
+			page = 2
+		}
 	})
 
 	port := ":8080" // Update with your desired port
@@ -58,25 +63,18 @@ func corsMiddleware() gin.HandlerFunc {
 	}
 }
 
-func updateAnswer(c *gin.Context) int {
+func updateAnswer(c *gin.Context) {
 	var answer AnswerContent
 
 	err := c.BindJSON(&answer)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return 0
+		return
 	}
 
-	slog.Debug("Received pageId:", answer.QuestionID)
 	slog.Debug("Received difficulty:", answer.Difficulty)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Answer received"})
-
-	if answer.QuestionID == 2 {
-		return 1
-	} else {
-		return 2
-	}
 }
 
 func getNewQuestion(c *gin.Context, page int) {
