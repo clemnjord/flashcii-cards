@@ -13,13 +13,14 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
     "incremental": true,
+    "sourceMap": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

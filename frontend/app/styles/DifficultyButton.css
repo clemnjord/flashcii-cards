@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .difficulty-button {
+        @apply hover:text-white border focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:hover:text-white;
+    }
+    
+    .difficulty-button-green {
+        @apply difficulty-button text-green-700 border-green-700 hover:bg-green-800 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600;
+    }    
+    
+    .difficulty-button-red {
+        @apply difficulty-button text-red-700 border-red-700 hover:bg-red-800 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600;
+    }
+
+    .difficulty-button-yellow {
+        @apply difficulty-button text-yellow-700 border-yellow-700 hover:bg-yellow-800 dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-600;
+    }
+}

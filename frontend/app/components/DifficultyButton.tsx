@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ButtonDifficulty.css';
+import '../styles/DifficultyButton.css';
 
 interface ButtonProps {
   onClick: () => void;
@@ -7,7 +7,7 @@ interface ButtonProps {
   color: string;
 }
 
-const ButtonDifficulty: React.FC<ButtonProps> = ({ onClick, children, color = 'button-difficulty' }) => {
+const DifficultyButton: React.FC<ButtonProps> = ({ onClick, children, color = 'difficulty-button' }) => {
 
     return (
         <button onClick={onClick} type="button" className={color}>
@@ -16,4 +16,4 @@ const ButtonDifficulty: React.FC<ButtonProps> = ({ onClick, children, color = 'b
     );
 };
 
-export default ButtonDifficulty;
+export default DifficultyButton;
