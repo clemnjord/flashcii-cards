@@ -1,6 +1,7 @@
 package api
 
 import (
+	"backend/internal/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log/slog"
@@ -32,7 +33,13 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 }
 
 func GetNewQuestion(appC *ApplicationContext, c *gin.Context, page int) {
-	filePath := fmt.Sprintf("%s/test%d/test%d.html", appC.Options.CardsPath(), page, page)
+	var nextCard model.Card
+	tx := appC.DB.First(&nextCard, "id = ?", page)
+	if tx.Error != nil {
+		slog.Error("Error getting card:", tx.Error)
+	}
+
+	filePath := fmt.Sprintf("%s/%s/card.html", appC.Options.CardsPath(), nextCard.DataPath)
 
 	// Check if the file exists
 	_, err := os.Stat(filePath)
