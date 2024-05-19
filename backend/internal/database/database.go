@@ -28,12 +28,20 @@ func DatabaseConnection() *gorm.DB {
 
 	// Migrate the schema
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Card{})
 
+	// Create default user
 	var user model.User
 	tx := db.First(&user, 1)
 	if tx.Error != nil {
 		db.Create(&model.User{Name: "admin", Password: "admin"})
 	}
+
+	//Create test cards
+	card := &model.Card{Title: "Card 1", DataPath: "test1"}
+	db.FirstOrCreate(card, card)
+	card = &model.Card{Title: "Card 2", DataPath: "test2"}
+	db.FirstOrCreate(card, card)
 
 	return db
 }
