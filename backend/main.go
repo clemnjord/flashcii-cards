@@ -1,12 +1,16 @@
 package main
 
 import (
+	"backend/internal/model"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type QuestionContent struct {
@@ -19,14 +23,39 @@ type AnswerContent struct {
 }
 
 func main() {
-	r := gin.Default()
-	page := 2
-
 	// Read environment variable
 	flashciiCardsPath := os.Getenv("FLASHCII_CARDS_PATH")
 	if flashciiCardsPath == "" {
 		slog.Error("FLASHCII_CARDS_PATH not set")
 	}
+
+	flashciiConfigPath := os.Getenv("FLASHCII_CONFIG_PATH")
+	if flashciiConfigPath == "" {
+		slog.Error("FLASHCII_CONFIG_PATH not set")
+	}
+
+	// check if database exists
+	if _, err := os.Stat(flashciiConfigPath + "/test.db"); errors.Is(err, os.ErrNotExist) {
+		// path/to/whatever does not exist
+		os.Create(flashciiConfigPath + "/test.db")
+	}
+
+	db, err := gorm.Open(sqlite.Open(flashciiConfigPath+"/test.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&model.User{})
+
+	var user model.User
+	tx := db.First(&user, 1)
+	if tx.Error != nil {
+		db.Create(&model.User{Name: "admin", Password: "admin"})
+	}
+
+	r := gin.Default()
+	page := 2
 
 	// Enable CORS middleware
 	r.Use(corsMiddleware())
