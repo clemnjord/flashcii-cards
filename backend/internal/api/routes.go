@@ -61,7 +61,12 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	var userCard model.UserCard
 	p := fsrs.DefaultParam()
 	now := time.Now()
-	appC.DB.Where("user_id = ? AND due < ?", 1, now).Order("due asc").Preload("Card").First(&userCard)
+	tx := appC.DB.Where("user_id = ? AND due < ?", 1, now).Order("due asc").Preload("Card").First(&userCard)
+
+	if tx.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No cards to show"})
+		return
+	}
 
 	schedulingCards := p.Repeat(userCard.FSRSCard, now)
 
