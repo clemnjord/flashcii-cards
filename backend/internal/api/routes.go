@@ -4,13 +4,15 @@ import (
 	"backend/internal/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/open-spaced-repetition/go-fsrs"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 )
 
 type questionContent struct {
-	QuestionID int    `json:"id"`
+	QuestionID uint   `json:"id"`
 	Data       string `json:"data"`
 }
 
@@ -27,19 +29,52 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 		return
 	}
 
+	// Retrieve card
+	var userCard model.UserCard
+	p := fsrs.DefaultParam()
+	now := time.Now()
+	appC.DB.Where("user_id = ?", 1).Order("due asc").Preload("Card").First(&userCard)
+
+	schedulingCards := p.Repeat(userCard.FSRSCard, now)
+
+	var rating fsrs.Rating
+	if answer.Difficulty == "HARD" {
+		rating = fsrs.Hard
+	} else if answer.Difficulty == "GOOD" {
+		rating = fsrs.Good
+	} else if answer.Difficulty == "EASY" {
+		rating = fsrs.Easy
+	} else {
+		rating = fsrs.Again
+	}
+	fsrsCard := schedulingCards[rating].Card
+	userCard.FSRSCard = fsrsCard
+
+	appC.DB.Save(&userCard)
+
 	slog.Debug("Received difficulty:", answer.Difficulty)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Answer received"})
 }
 
-func GetNewQuestion(appC *ApplicationContext, c *gin.Context, page int) {
-	var nextCard model.Card
-	tx := appC.DB.First(&nextCard, "id = ?", page)
-	if tx.Error != nil {
-		slog.Error("Error getting card:", tx.Error)
-	}
+func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
+	var userCard model.UserCard
+	p := fsrs.DefaultParam()
+	now := time.Now()
+	appC.DB.Where("user_id = ? AND due < ?", 1, now).Order("due asc").Preload("Card").First(&userCard)
 
-	filePath := fmt.Sprintf("%s/%s/card.html", appC.Options.CardsPath(), nextCard.DataPath)
+	schedulingCards := p.Repeat(userCard.FSRSCard, now)
+
+	// These values should be sent to the frontend to be used as tooltips for the buttons
+	slog.Info("Next if Again: " + schedulingCards[fsrs.Again].Card.Due.Sub(now).String())
+	slog.Info("Next if Hard: " + schedulingCards[fsrs.Hard].Card.Due.Sub(now).String())
+	slog.Info("Next if Good: " + schedulingCards[fsrs.Good].Card.Due.Sub(now).String())
+	slog.Info("Next if Easy: " + schedulingCards[fsrs.Easy].Card.Due.Sub(now).String())
+
+	userCard.LastSeen = time.Now()
+	appC.DB.Save(&userCard)
+
+	filePath := fmt.Sprintf("%s/%s/card.html", appC.Options.CardsPath(), userCard.Card.DataPath)
 
 	// Check if the file exists
 	_, err := os.Stat(filePath)
@@ -59,7 +94,7 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context, page int) {
 	s := string(buf)
 
 	data := &questionContent{
-		QuestionID: page,
+		QuestionID: userCard.CardID,
 		Data:       s,
 	}
 
