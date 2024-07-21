@@ -30,12 +30,12 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 	}
 
 	// Retrieve card
-	var userCard model.UserCard
+	var card model.Card
 	p := fsrs.DefaultParam()
 	now := time.Now()
-	appC.DB.Where("user_id = ?", 1).Order("due asc").Preload("Card").First(&userCard)
+	appC.DB.Where("user_id = ?", 1).Order("due asc").Preload("Card").First(&card)
 
-	schedulingCards := p.Repeat(userCard.FSRSCard, now)
+	schedulingCards := p.Repeat(card.FSRSCard, now)
 
 	var rating fsrs.Rating
 	if answer.Difficulty == "HARD" {
@@ -48,9 +48,9 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 		rating = fsrs.Again
 	}
 	fsrsCard := schedulingCards[rating].Card
-	userCard.FSRSCard = fsrsCard
+	card.FSRSCard = fsrsCard
 
-	appC.DB.Save(&userCard)
+	appC.DB.Save(&card)
 
 	slog.Debug("Received difficulty:", answer.Difficulty)
 
@@ -58,18 +58,21 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 }
 
 func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
-	var userCard model.UserCard
+	var card model.Card
 	p := fsrs.DefaultParam()
 	now := time.Now()
 
-	tx := appC.DB.Where("user_id = ? AND due < ?", 1, now).Order("due asc").Preload("Card").First(&userCard)
+	tx := appC.DB.Joins("JOIN collections ON collections.id = cards.collection_id").
+		Where("collections.user_id = ? AND due < ?", 1, now).
+		Order("due asc").
+		First(&card)
 
 	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No cards to show"})
 		return
 	}
 
-	schedulingCards := p.Repeat(userCard.FSRSCard, now)
+	schedulingCards := p.Repeat(card.FSRSCard, now)
 
 	// These values should be sent to the frontend to be used as tooltips for the buttons
 	slog.Info("Next if Again: " + schedulingCards[fsrs.Again].Card.Due.Sub(now).String())
@@ -77,10 +80,10 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	slog.Info("Next if Good: " + schedulingCards[fsrs.Good].Card.Due.Sub(now).String())
 	slog.Info("Next if Easy: " + schedulingCards[fsrs.Easy].Card.Due.Sub(now).String())
 
-	userCard.LastSeen = time.Now()
-	appC.DB.Save(&userCard)
+	card.LastSeen = time.Now()
+	appC.DB.Save(&card)
 
-	filePath := fmt.Sprintf("%s/%s/card.adoc", appC.Options.CardsPath(), userCard.Card.DataPath)
+	filePath := fmt.Sprintf("%s/%s/card.adoc", appC.Options.CardsPath(), card.DataPath)
 
 	// Check if the file exists
 	_, err := os.Stat(filePath)
@@ -100,7 +103,7 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	s := string(buf)
 
 	data := &questionContent{
-		QuestionID: userCard.CardID,
+		QuestionID: card.ID,
 		Data:       s,
 	}
 

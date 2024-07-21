@@ -6,8 +6,12 @@ import (
 
 type Collection struct {
 	gorm.Model
-	Title    string
-	RepoUrl  string
-	UserName string
-	Password string
+	UserID                uint
+	Title                 string
+	CollectionUrl         string
+	UserName              string
+	Password              string
+	CollectionOwnerThemes string // comma separated list of themes provided by collection owner
+	CollectionUserThemes  string // comma separated list of themes provided by collection user
+	CollectionVersion     string // version of the collection, git tag or commit hash ?
 }

@@ -29,30 +29,23 @@ func DatabaseConnection() *gorm.DB {
 
 	// Migrate the schema
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Collection{})
 	db.AutoMigrate(&model.Card{})
-	err = db.AutoMigrate(&model.UserCard{})
-	if err != nil {
-		return nil
-	}
 
 	// Create default user
-	var user model.User
-	tx := db.First(&user, 1)
-	if tx.Error != nil {
-		db.Create(&model.User{Name: "admin", Password: "admin"})
-	}
+
+	user := &model.User{Name: "admin", Password: "admin"}
+	db.FirstOrCreate(user, user)
+
+	// create test collection
+	collection := &model.Collection{UserID: user.ID, Title: "Test Collection", CollectionUrl: "www.test.com", UserName: "adminA", Password: "adminA", CollectionOwnerThemes: "testA", CollectionUserThemes: "testB", CollectionVersion: "1.0.0"}
+	db.FirstOrCreate(collection, collection)
 
 	// Create test cards
-	card := &model.Card{Title: "Card 1", DataPath: "test1"}
-	db.FirstOrCreate(card, card)
-	card = &model.Card{Title: "Card 2", DataPath: "test2"}
-	db.FirstOrCreate(card, card)
-
-	// Create test user_cards
-	userCard := &model.UserCard{UserID: 1, CardID: 1, FSRSCard: fsrs.NewCard()}
-	db.FirstOrCreate(userCard, userCard)
-	userCard = &model.UserCard{UserID: 1, CardID: 2, FSRSCard: fsrs.NewCard()}
-	db.FirstOrCreate(userCard, userCard)
+	card := &model.Card{CollectionID: collection.ID, Title: "Card 1", DataPath: "1", FSRSCard: fsrs.NewCard()}
+	db.FirstOrCreate(card)
+	card = &model.Card{CollectionID: collection.ID, Title: "Card 2", DataPath: "2", FSRSCard: fsrs.NewCard()}
+	db.FirstOrCreate(card)
 
 	return db
 }
