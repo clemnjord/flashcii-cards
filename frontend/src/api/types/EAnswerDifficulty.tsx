@@ -1,6 +1,7 @@
 export enum EAnswerDifficulty {
   NOT_SET = "NOT_SET",
+  AGAIN = "AGAIN",
   EASY = "EASY",
-  MEDIUM = "MEDIUM",
+  GOOD = "GOOD",
   HARD = "HARD",
 }

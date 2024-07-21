@@ -10,8 +10,9 @@ const DifficultyFooter: React.FC<DifficultyFooterProps> = ({ onButtonClick }) =>
     return (
         <div>
             <DifficultyButton onClick={() => onButtonClick(EAnswerDifficulty.EASY)} color="difficulty-button-green">Easy</DifficultyButton>
-            <DifficultyButton onClick={() => onButtonClick(EAnswerDifficulty.MEDIUM)} color="difficulty-button-yellow">Medium</DifficultyButton>
+            <DifficultyButton onClick={() => onButtonClick(EAnswerDifficulty.GOOD)} color="difficulty-button-yellow">Good</DifficultyButton>
             <DifficultyButton onClick={() => onButtonClick(EAnswerDifficulty.HARD)} color="difficulty-button-red">Hard</DifficultyButton>
+            <DifficultyButton onClick={() => onButtonClick(EAnswerDifficulty.AGAIN)} color="difficulty-button">Again</DifficultyButton>
         </div>
     );
 };
