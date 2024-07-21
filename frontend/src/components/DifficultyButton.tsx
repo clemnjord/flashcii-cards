@@ -11,6 +11,7 @@ const DifficultyButton: React.FC<ButtonProps> = ({ onClick, children, color = 'd
 
     return (
         <button onClick={onClick} type="button" className={color}>
+        {/*<button onClick={onClick} type="button" className={color}>*/}
             {children}
         </button>
     );
