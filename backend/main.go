@@ -19,6 +19,8 @@ func main() {
 	// Enable CORS middleware
 	r.Use(api.CorsMiddleware())
 
+	r.Static("/files", applicationContext.Options.CardsPath())
+
 	r.GET("/api/nextQuestion", func(c *gin.Context) {
 		api.GetNewQuestion(applicationContext, c)
 	})
