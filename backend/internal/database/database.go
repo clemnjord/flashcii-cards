@@ -4,6 +4,7 @@ import (
 	"backend/internal/config"
 	"backend/internal/model"
 	"errors"
+	"github.com/open-spaced-repetition/go-fsrs"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
@@ -29,6 +30,10 @@ func DatabaseConnection() *gorm.DB {
 	// Migrate the schema
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Card{})
+	err = db.AutoMigrate(&model.UserCard{})
+	if err != nil {
+		return nil
+	}
 
 	// Create default user
 	var user model.User
@@ -37,11 +42,17 @@ func DatabaseConnection() *gorm.DB {
 		db.Create(&model.User{Name: "admin", Password: "admin"})
 	}
 
-	//Create test cards
+	// Create test cards
 	card := &model.Card{Title: "Card 1", DataPath: "test1"}
 	db.FirstOrCreate(card, card)
 	card = &model.Card{Title: "Card 2", DataPath: "test2"}
 	db.FirstOrCreate(card, card)
+
+	// Create test user_cards
+	userCard := &model.UserCard{UserID: 1, CardID: 1, FSRSCard: fsrs.NewCard()}
+	db.FirstOrCreate(userCard, userCard)
+	userCard = &model.UserCard{UserID: 1, CardID: 2, FSRSCard: fsrs.NewCard()}
+	db.FirstOrCreate(userCard, userCard)
 
 	return db
 }

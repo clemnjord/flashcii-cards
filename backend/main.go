@@ -15,23 +15,16 @@ func main() {
 	}
 
 	r := gin.Default()
-	page := 2
 
 	// Enable CORS middleware
 	r.Use(api.CorsMiddleware())
 
 	r.GET("/api/nextQuestion", func(c *gin.Context) {
-		api.GetNewQuestion(applicationContext, c, page)
+		api.GetNewQuestion(applicationContext, c)
 	})
 
 	r.POST("/api/answer", func(c *gin.Context) {
 		api.UpdateAnswer(applicationContext, c)
-
-		if page == 2 {
-			page = 1
-		} else {
-			page = 2
-		}
 	})
 
 	r.Run(applicationContext.Options.BackendPort())
