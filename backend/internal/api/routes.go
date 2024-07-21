@@ -61,6 +61,7 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	var userCard model.UserCard
 	p := fsrs.DefaultParam()
 	now := time.Now()
+
 	tx := appC.DB.Where("user_id = ? AND due < ?", 1, now).Order("due asc").Preload("Card").First(&userCard)
 
 	if tx.Error != nil {
@@ -79,7 +80,7 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	userCard.LastSeen = time.Now()
 	appC.DB.Save(&userCard)
 
-	filePath := fmt.Sprintf("%s/%s/card.html", appC.Options.CardsPath(), userCard.Card.DataPath)
+	filePath := fmt.Sprintf("%s/%s/card.adoc", appC.Options.CardsPath(), userCard.Card.DataPath)
 
 	// Check if the file exists
 	_, err := os.Stat(filePath)
