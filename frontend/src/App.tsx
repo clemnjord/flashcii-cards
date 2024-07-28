@@ -4,48 +4,24 @@ import FlashcardContent from "./components/FlashcardContent";
 import { EAnswerDifficulty } from "./api/types/EAnswerDifficulty";
 import "./styles/globals.css";
 
-// Custom hook for data fetching
-const useData = () => {
-    const [cardId, setCardId] = useState("");
-
-    const getData = async () => {
-        try {
-            const response = await fetch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/api/nextQuestion`, { cache: 'no-store'});
-            const asciipage = await response.json();
-
-            if (response.status === 404 || asciipage.id === undefined)
-            {
-                asciipage.id = "-1"
-            }
-
-            setCardId(asciipage.id);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    useEffect(() => {
-        getData();
-    }, []);
-
-    return { cardId, getData };
-};
-
 function App() {
-    const { cardId, getData } = useData();
+    const { card, getData } = useData();
 
+    // Function to handle difficulty button clicks
     const difficultyButtonClick = async (difficulty: EAnswerDifficulty) => {
         console.log("Answer was: " + difficulty);
 
+        // Send the selected difficulty to the backend
         await fetch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/api/answer`, {
-            method: 'POST', // or 'PUT'
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ difficulty }),
+            body: JSON.stringify({ cardId: card.id, difficulty: difficulty }),
             cache: 'no-store'
         });
 
+        // Fetch the next question
         getData().catch(console.error);
     };
 
@@ -59,11 +35,19 @@ function App() {
                         </h1>
                     </div>
 
-                    <FlashcardContent cardId={cardId} />
+                    <FlashcardContent card={card} />
 
-                    <div className="flex justify-left w-1/2">
-                        <DifficultyFooter onButtonClick={difficultyButtonClick} />
-                    </div>
+                    {card.id !== "-1" ? (
+                        <div className="flex justify-left w-1/2">
+                            <DifficultyFooter onButtonClick={difficultyButtonClick} />
+                        </div>
+                    ) : (
+                        <div className="flex justify-left w-1/2">
+                            <button onClick={getData} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Get next question
+                            </button>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
@@ -71,3 +55,33 @@ function App() {
 }
 
 export default App;
+
+
+// Custom hook for data fetching
+const useData = () => {
+    const [card, setCard] = useState({id: "-1", data: "None"});
+
+    const getData = async () => {
+        try {
+            const response = await fetch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/api/nextQuestion`, { cache: 'no-store'});
+            let asciipage = await response.json();
+
+            // Check if the response status is 404 or if the asciipage id is undefined
+            if (response.status === 404 || asciipage.id === undefined)
+            {
+                asciipage.id = "-1"
+                asciipage.data = ""
+            }
+
+            setCard({id: asciipage.id, data: asciipage.data});
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        getData();
+    }, []);
+
+    return { card, getData };
+};
