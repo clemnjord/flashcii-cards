@@ -1,57 +1,43 @@
 import React, {useEffect, useState} from 'react';
-import { renderAsciidoc } from '../api/render/asciidoctorRender';import {parse} from "node-html-parser";
-import axios from "axios";
-
-const extractHtml = (content: string, classId: string) => {
-    const root = parse(content);
-    const questionDiv = root.querySelector(classId);
-    if (questionDiv) {
-        return questionDiv.outerHTML;
-    }
-    return "";
-};
+import { renderAsciidoc } from '../api/render/asciidoctorRender';
+import {parse} from "node-html-parser";
 
 interface FlashcardContentProps {
-    cardId: string;
+    card: {id: string, data: string};
 }
 
-const FlashcardContent: React.FC<FlashcardContentProps> = ({ cardId }) => {
+// FlashcardContent component to display the question and answer
+const FlashcardContent: React.FC<FlashcardContentProps> = ({ card }) => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
 
     useEffect(() => {
         const renderCard = async () => {
             try {
-                if (!cardId) {
-                    return;
-                }
-
-                if (cardId === "-1")
+                // If no more cards are available, set default messages
+                if (card.id === "-1")
                 {
                     setQuestion("No more cards available");
                     setAnswer("");
                     return;
                 }
 
-                const questionPath = `http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/files/${cardId}/`;
+                // TODO: Remove this once the backend serves pre-rendered pages
+                // Render the AsciiDoc content to HTML
+                const questionPath = `http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/files/${card.id}/`;
+                const htmlContent = renderAsciidoc(card.data, questionPath);
+                //
 
-                const response = await fetch(questionPath + "/card.adoc", {cache: 'no-store'});
-                const fileContent = await response.text();
-
-                const htmlContent = renderAsciidoc(fileContent, questionPath);
-
-                const question = extractHtml(htmlContent, "#question");
-                const answer = extractHtml(htmlContent, "#answer");
-
-                setQuestion(question);
-                setAnswer(answer);
+                // Extract and set the question and answer HTML content
+                setQuestion(extractHtml(htmlContent, "#question"));
+                setAnswer(extractHtml(htmlContent, "#answer"));
             } catch (error) {
                 console.error(error);
             }
         };
 
-        renderCard();
-    }, [cardId]);
+        renderCard().catch(console.error);
+    }, [card]);
 
 
     return (
@@ -64,3 +50,13 @@ const FlashcardContent: React.FC<FlashcardContentProps> = ({ cardId }) => {
 };
 
 export default FlashcardContent;
+
+// Function to extract HTML content based on a given class or ID
+const extractHtml = (content: string, classId: string) => {
+    const root = parse(content);
+    const div = root.querySelector(classId);
+    if (div) {
+        return div.outerHTML;
+    }
+    return "";
+};
