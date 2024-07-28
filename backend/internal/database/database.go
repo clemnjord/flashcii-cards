@@ -42,9 +42,27 @@ func DatabaseConnection() *gorm.DB {
 	db.FirstOrCreate(collection, collection)
 
 	// Create test cards
-	card := &model.Card{CollectionID: collection.ID, Title: "Card 1", DataPath: "1", FSRSCard: fsrs.NewCard()}
+	card := &model.Card{
+		Model: gorm.Model{
+			ID: 1,
+		},
+		CollectionID: collection.ID,
+		Title:        "Card 1",
+		DataPath:     "1",
+		FSRSCard:     fsrs.NewCard(),
+	}
+
 	db.FirstOrCreate(card)
-	card = &model.Card{CollectionID: collection.ID, Title: "Card 2", DataPath: "2", FSRSCard: fsrs.NewCard()}
+
+	card = &model.Card{
+		Model: gorm.Model{
+			ID: 2,
+		},
+		CollectionID: collection.ID,
+		Title:        "Card 2",
+		DataPath:     "2",
+		FSRSCard:     fsrs.NewCard(),
+	}
 	db.FirstOrCreate(card)
 
 	return db

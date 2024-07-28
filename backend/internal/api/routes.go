@@ -11,12 +11,13 @@ import (
 	"time"
 )
 
-type questionContent struct {
-	QuestionID uint   `json:"id"`
-	Data       string `json:"data"`
+type cardContent struct {
+	CardId uint   `json:"id"`
+	Data   string `json:"data"`
 }
 
 type answerContent struct {
+	CardId     uint   `json:"cardId"`
 	Difficulty string `json:"difficulty"`
 }
 
@@ -33,7 +34,7 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 	var card model.Card
 	p := fsrs.DefaultParam()
 	now := time.Now()
-	appC.DB.Where("user_id = ?", 1).Order("due asc").Preload("Card").First(&card)
+	appC.DB.Where("id = ?", answer.CardId).First(&card)
 
 	schedulingCards := p.Repeat(card.FSRSCard, now)
 
@@ -102,9 +103,9 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	// Send the content to the client
 	s := string(buf)
 
-	data := &questionContent{
-		QuestionID: card.ID,
-		Data:       s,
+	data := &cardContent{
+		CardId: card.ID,
+		Data:   s,
 	}
 
 	c.JSON(http.StatusOK, data)
