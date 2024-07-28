@@ -11,9 +11,16 @@ import (
 	"time"
 )
 
+type nextOccurrence struct {
+	AgainTime string `json:"againTime"`
+	HardTime  string `json:"hardTime"`
+	GoodTime  string `json:"goodTime"`
+	EasyTime  string `json:"easyTime"`
+}
 type cardContent struct {
-	CardId uint   `json:"id"`
-	Data   string `json:"data"`
+	CardId         uint           `json:"id"`
+	Data           string         `json:"data"`
+	NextOccurrence nextOccurrence `json:"nextOccurrence"`
 }
 
 type answerContent struct {
@@ -75,11 +82,12 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 
 	schedulingCards := p.Repeat(card.FSRSCard, now)
 
-	// These values should be sent to the frontend to be used as tooltips for the buttons
-	slog.Info("Next if Again: " + schedulingCards[fsrs.Again].Card.Due.Sub(now).String())
-	slog.Info("Next if Hard: " + schedulingCards[fsrs.Hard].Card.Due.Sub(now).String())
-	slog.Info("Next if Good: " + schedulingCards[fsrs.Good].Card.Due.Sub(now).String())
-	slog.Info("Next if Easy: " + schedulingCards[fsrs.Easy].Card.Due.Sub(now).String())
+	nextOccurrence := &nextOccurrence{
+		AgainTime: schedulingCards[fsrs.Again].Card.Due.Sub(now).String(),
+		HardTime:  schedulingCards[fsrs.Hard].Card.Due.Sub(now).String(),
+		GoodTime:  schedulingCards[fsrs.Good].Card.Due.Sub(now).String(),
+		EasyTime:  schedulingCards[fsrs.Easy].Card.Due.Sub(now).String(),
+	}
 
 	card.LastSeen = time.Now()
 	appC.DB.Save(&card)
@@ -104,8 +112,9 @@ func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
 	s := string(buf)
 
 	data := &cardContent{
-		CardId: card.ID,
-		Data:   s,
+		CardId:         card.ID,
+		Data:           s,
+		NextOccurrence: *nextOccurrence,
 	}
 
 	c.JSON(http.StatusOK, data)

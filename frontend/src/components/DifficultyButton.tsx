@@ -1,19 +1,22 @@
 import React from 'react';
+import { Tooltip } from "flowbite-react";
 import '../styles/DifficultyButton.css';
 
-interface ButtonProps {
+interface DifficultyButtonProps {
   onClick: () => void;
-  children: React.ReactNode;
   color: string;
+  tooltip: string;
+  children: React.ReactNode;
 }
 
-const DifficultyButton: React.FC<ButtonProps> = ({ onClick, children, color = 'difficulty-button' }) => {
+const DifficultyButton: React.FC<DifficultyButtonProps> = ({ onClick, children, color = 'difficulty-button', tooltip }) => {
 
     return (
-        <button onClick={onClick} type="button" className={color}>
-        {/*<button onClick={onClick} type="button" className={color}>*/}
-            {children}
-        </button>
+            <Tooltip content={tooltip}>
+                <button onClick={onClick} type="button" className={color}>
+                    {children}
+                </button>
+            </Tooltip>
     );
 };
 

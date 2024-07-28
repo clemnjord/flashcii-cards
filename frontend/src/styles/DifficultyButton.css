@@ -8,14 +8,19 @@
     }
     
     .difficulty-button-green {
-        @apply difficulty-button text-green-700 border-green-700 hover:bg-green-800 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600;
+        @apply difficulty-button text-green-500 border-green-500 hover:bg-green-500 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-500;
     }    
     
     .difficulty-button-red {
-        @apply difficulty-button text-red-700 border-red-700 hover:bg-red-800 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600;
+        @apply difficulty-button text-red-600 border-red-600 hover:bg-red-700 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600;
     }
 
     .difficulty-button-yellow {
-        @apply difficulty-button text-yellow-700 border-yellow-700 hover:bg-yellow-800 dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-600;
+        @apply difficulty-button text-yellow-400 border-yellow-400 hover:bg-yellow-400 dark:border-yellow-400 dark:text-yellow-400 dark:hover:bg-yellow-500;
+    }
+
+    .difficulty-button-white {
+        @apply difficulty-button text-white border-white hover:bg-white hover:text-black dark:border-white dark:text-black dark:hover:bg-white dark:hover:text-black;
+
     }
 }

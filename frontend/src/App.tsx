@@ -37,17 +37,15 @@ function App() {
 
                     <FlashcardContent card={card} />
 
-                    {card.id !== "-1" ? (
-                        <div className="flex justify-left w-1/2">
-                            <DifficultyFooter onButtonClick={difficultyButtonClick} />
-                        </div>
-                    ) : (
-                        <div className="flex justify-left w-1/2">
+                    <div>
+                        {card.id !== "-1" ? (
+                            <DifficultyFooter onButtonClick={difficultyButtonClick} nextOccurrence={card.nextOccurrence}/>
+                        ) : (
                             <button onClick={getData} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Get next question
                             </button>
-                        </div>
-                    )}
+                        )}
+                   </div>
                 </div>
             </main>
         </div>
@@ -59,7 +57,7 @@ export default App;
 
 // Custom hook for data fetching
 const useData = () => {
-    const [card, setCard] = useState({id: "-1", data: "None"});
+    const [card, setCard] = useState<Card>({id: "-1", data: "None", nextOccurrence: {againTime: "0", hardTime: "0", goodTime: "0", easyTime: "0"}});
 
     const getData = async () => {
         try {
@@ -72,8 +70,7 @@ const useData = () => {
                 asciipage.id = "-1"
                 asciipage.data = ""
             }
-
-            setCard({id: asciipage.id, data: asciipage.data});
+            setCard({id: asciipage.id, data: asciipage.data, nextOccurrence: asciipage.nextOccurrence});
         } catch (error) {
             console.error(error);
         }
@@ -84,4 +81,15 @@ const useData = () => {
     }, []);
 
     return { card, getData };
+};
+
+type Card = {
+    id: string,
+    data: string,
+    nextOccurrence: {
+        againTime: string,
+        hardTime: string,
+        goodTime: string,
+        easyTime: string
+    }
 };
