@@ -2,7 +2,7 @@ package database
 
 import (
 	"backend/internal/config"
-	"backend/internal/model"
+	"backend/internal/models"
 	"errors"
 	"github.com/open-spaced-repetition/go-fsrs"
 	"gorm.io/driver/sqlite"
@@ -28,21 +28,21 @@ func DatabaseConnection() *gorm.DB {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.Collection{})
-	db.AutoMigrate(&model.Card{})
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Collection{})
+	db.AutoMigrate(&models.Card{})
 
 	// Create default user
 
-	user := &model.User{Name: "admin", Password: "admin"}
+	user := &models.User{Name: "admin", Password: "admin"}
 	db.FirstOrCreate(user, user)
 
 	// create test collection
-	collection := &model.Collection{UserID: user.ID, Title: "Test Collection", CollectionUrl: "www.test.com", UserName: "adminA", Password: "adminA", CollectionOwnerThemes: "testA", CollectionUserThemes: "testB", CollectionVersion: "1.0.0"}
+	collection := &models.Collection{UserID: user.ID, Title: "Test Collection", CollectionUrl: "www.test.com", UserName: "adminA", Password: "adminA", CollectionOwnerThemes: "testA", CollectionUserThemes: "testB", CollectionVersion: "1.0.0"}
 	db.FirstOrCreate(collection, collection)
 
 	// Create test cards
-	card := &model.Card{
+	card := &models.Card{
 		Model: gorm.Model{
 			ID: 1,
 		},
@@ -54,7 +54,7 @@ func DatabaseConnection() *gorm.DB {
 
 	db.FirstOrCreate(card)
 
-	card = &model.Card{
+	card = &models.Card{
 		Model: gorm.Model{
 			ID: 2,
 		},

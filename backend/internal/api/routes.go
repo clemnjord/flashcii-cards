@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend/internal/model"
+	"backend/internal/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/open-spaced-repetition/go-fsrs"
@@ -38,7 +38,7 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 	}
 
 	// Retrieve card
-	var card model.Card
+	var card models.Card
 	p := fsrs.DefaultParam()
 	now := time.Now()
 	appC.DB.Where("id = ?", answer.CardId).First(&card)
@@ -66,7 +66,7 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 }
 
 func GetNewQuestion(appC *ApplicationContext, c *gin.Context) {
-	var card model.Card
+	var card models.Card
 	p := fsrs.DefaultParam()
 	now := time.Now()
 
