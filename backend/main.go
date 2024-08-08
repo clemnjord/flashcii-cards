@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/internal/api"
+	"backend/internal/api/middlewares"
 	"backend/internal/config"
 	"backend/internal/database"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ func main() {
 	r := gin.Default()
 
 	// Enable CORS middleware
-	r.Use(api.CorsMiddleware())
+	r.Use(middlewares.CorsMiddleware())
 
 	r.Static("/files", applicationContext.Options.CardsPath())
 

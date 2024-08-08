@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"github.com/open-spaced-repetition/go-fsrs"
@@ -8,7 +8,7 @@ import (
 
 type Card struct {
 	gorm.Model
-	CollectionID uint
+	CollectionID uint `gorm:"constraint:OnDelete:CASCADE;"`
 	Title        string
 	DataPath     string
 	LastSeen     time.Time
