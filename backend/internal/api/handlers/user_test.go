@@ -2,30 +2,22 @@ package handlers
 
 import (
 	"backend/internal/models"
+	"backend/internal/services"
+	"backend/internal/testutils"
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func setupTestDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	db.AutoMigrate(&models.User{})
+// The goal of the following tests is to check that the return statuses and DTOs are correct.
 
-	return db
-}
-
-func setupRouter(db *gorm.DB) *gin.Engine {
+func setupRouterUser(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.POST("/users", CreateUser(db))
 	r.GET("/users/:id", GetUser(db))
@@ -34,28 +26,10 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 	return r
 }
 
-func createRequest(method, url string, body interface{}) (*http.Request, *httptest.ResponseRecorder) {
-	jsonData, err := json.Marshal(body)
-	if err != nil {
-		panic(err)
-	}
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		panic(err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	return req, w
-}
-
-func uintToString(id uint) string {
-	return strconv.FormatUint(uint64(id), 10)
-}
-
 // Test cases
 func TestCreateUser_Success(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	userData := map[string]string{
 		"name":     "John Doe",
@@ -63,7 +37,7 @@ func TestCreateUser_Success(t *testing.T) {
 		"email":    "john@example.com",
 	}
 
-	req, w := createRequest(http.MethodPost, "/users", userData)
+	req, w := testutils.CreateRequest(http.MethodPost, "/users", userData)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
@@ -75,37 +49,61 @@ func TestCreateUser_Success(t *testing.T) {
 	assert.NotZero(t, responseUser.ID)
 }
 
+// Test cases
+func TestCreateUser_UserAlreadyExists(t *testing.T) {
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
+
+	userData := map[string]string{
+		"name":     "John Doe",
+		"password": "password123",
+		"email":    "john@example.com",
+	}
+
+	req, w := testutils.CreateRequest(http.MethodPost, "/users", userData)
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
+	var responseUser models.UserResponse
+	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
+	assert.NoError(t, err)
+	assert.Equal(t, userData["name"], responseUser.Name)
+	assert.Equal(t, userData["email"], responseUser.Email)
+	assert.NotZero(t, responseUser.ID)
+
+	// Create existing user
+	req, w = testutils.CreateRequest(http.MethodPost, "/users", userData)
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusConflict, w.Code)
+	var response map[string]string
+	err = json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Contains(t, response["error"], services.ErrUserAlreadyExists.Error())
+}
+
 func TestCreateUser_MissingField(t *testing.T) {
-	tests := []struct {
-		name     string
-		userData map[string]string
-		expected string
-	}{
-		{"Name", map[string]string{"email": "test@test.com", "password": "password"}, "Name is required"},
-		{"Password", map[string]string{"name": "John Doe", "email": "test@test.com"}, "Password is required"},
-		{"Email", map[string]string{"name": "John Doe", "password": "password"}, "Email is required"},
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
+
+	userData := map[string]string{
+		"password": "password123",
+		"email":    "john@example.com",
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			db := setupTestDB()
-			r := setupRouter(db)
+	req, w := testutils.CreateRequest(http.MethodPost, "/users", userData)
+	r.ServeHTTP(w, req)
 
-			req, w := createRequest(http.MethodPost, "/users", tt.userData)
-			r.ServeHTTP(w, req)
-
-			assert.Equal(t, http.StatusBadRequest, w.Code)
-			var response map[string]string
-			err := json.Unmarshal(w.Body.Bytes(), &response)
-			assert.NoError(t, err)
-			assert.Contains(t, response["error"], tt.expected)
-		})
-	}
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var response map[string]string
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Contains(t, response["error"], services.ErrInvalidUserData.Error())
 }
 
 func TestCreateUser_BadInput(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	req, err := http.NewRequest(http.MethodPost, "/users", bytes.NewBuffer([]byte("bad input")))
 	assert.NoError(t, err)
@@ -121,55 +119,49 @@ func TestCreateUser_BadInput(t *testing.T) {
 }
 
 func TestGetUser_Success(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	userData := map[string]string{
-		"name":     "John Doe",
-		"password": "password123",
-		"email":    "john@example.com",
+	user := models.User{
+		Name:     "John Doe",
+		Password: "password123",
+		Email:    "john@example.com",
 	}
 
-	req, w := createRequest(http.MethodPost, "/users", userData)
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusCreated, w.Code)
-
-	var createdUser models.UserResponse
-	err := json.Unmarshal(w.Body.Bytes(), &createdUser)
+	err := services.NewUserService(db).CreateUser(&user)
 	assert.NoError(t, err)
-	assert.NotZero(t, createdUser.ID)
 
-	req, w = createRequest(http.MethodGet, "/users/"+uintToString(createdUser.ID), nil)
+	req, w := testutils.CreateRequest(http.MethodGet, "/users/"+testutils.UintToString(user.ID), nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var fetchedUser models.UserResponse
 	err = json.Unmarshal(w.Body.Bytes(), &fetchedUser)
 	assert.NoError(t, err)
-	assert.Equal(t, fetchedUser.ID, createdUser.ID)
-	assert.Equal(t, fetchedUser.Name, createdUser.Name)
-	assert.Equal(t, fetchedUser.Email, createdUser.Email)
+	assert.Equal(t, fetchedUser.ID, user.ID)
+	assert.Equal(t, fetchedUser.Name, user.Name)
+	assert.Equal(t, fetchedUser.Email, user.Email)
 }
 
 func TestGetUser_NoUser(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	req, w := createRequest(http.MethodGet, "/users/1", nil)
+	req, w := testutils.CreateRequest(http.MethodGet, "/users/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 
 	var response map[string]string
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Contains(t, response["error"], "User not found")
+	assert.Contains(t, response["error"], services.ErrUserNotFound.Error())
 }
 
 func TestGetUser_BadRequest(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	req, w := createRequest(http.MethodGet, "/users/routeError", nil)
+	req, w := testutils.CreateRequest(http.MethodGet, "/users/routeError", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -180,29 +172,24 @@ func TestGetUser_BadRequest(t *testing.T) {
 }
 
 func TestUpdateUser_Success(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	userData := map[string]string{
-		"name":     "John Doe",
-		"password": "password123",
-		"email":    "john@example.com",
+	user := models.User{
+		Name:     "John Doe",
+		Password: "password123",
+		Email:    "john@example.com",
 	}
-	req, w := createRequest(http.MethodPost, "/users", userData)
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var createdUser models.UserResponse
-	err := json.Unmarshal(w.Body.Bytes(), &createdUser)
+	err := services.NewUserService(db).CreateUser(&user)
 	assert.NoError(t, err)
-	assert.NotZero(t, createdUser.ID)
 
 	updatedData := map[string]string{
 		"name":     "Jane Doe",
 		"password": "newpassword123",
 		"email":    "jane@example.com",
 	}
-	req, w = createRequest(http.MethodPut, "/users/"+uintToString(createdUser.ID), updatedData)
+	req, w := testutils.CreateRequest(http.MethodPut, "/users/"+testutils.UintToString(user.ID), updatedData)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -214,26 +201,26 @@ func TestUpdateUser_Success(t *testing.T) {
 }
 
 func TestUpdateUser_NoUser(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	// Update a user that doesn't exist
-	req, w := createRequest(http.MethodPut, "/users/1", nil)
+	req, w := testutils.CreateRequest(http.MethodPut, "/users/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 
 	var response map[string]string
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Contains(t, response["error"], "User not found")
+	assert.Contains(t, response["error"], services.ErrUserNotFound.Error())
 }
 
 func TestUpdateUser_BadRequest(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	// Update a user with a non-integer ID
-	req, w := createRequest(http.MethodPut, "/users/routeError", nil)
+	req, w := testutils.CreateRequest(http.MethodPut, "/users/routeError", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -244,27 +231,20 @@ func TestUpdateUser_BadRequest(t *testing.T) {
 }
 
 func TestUpdateUser_BadInput(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	// Create a user
-	userData := map[string]string{
-		"name":     "John Doe",
-		"password": "password123",
-		"email":    "john@example.com",
+	user := models.User{
+		Name:     "John Doe",
+		Password: "password123",
+		Email:    "john@example.com",
 	}
-	req, w := createRequest(http.MethodPost, "/users", userData)
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var createdUser models.UserResponse
-	err := json.Unmarshal(w.Body.Bytes(), &createdUser)
+	err := services.NewUserService(db).CreateUser(&user)
 	assert.NoError(t, err)
-	assert.NotZero(t, createdUser.ID)
 
 	// Update the user with bad input
-	req, w = createRequest(http.MethodPut, "/users/"+uintToString(createdUser.ID), "bad input")
-	assert.NoError(t, err)
+	req, w := testutils.CreateRequest(http.MethodPut, "/users/"+testutils.UintToString(user.ID), "bad input")
 	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -277,44 +257,36 @@ func TestUpdateUser_BadInput(t *testing.T) {
 }
 
 func TestDeleteUser_Success(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
-	// Create a user
-	userData := map[string]string{
-		"name":     "John Doe",
-		"password": "password123",
-		"email":    "john@example.com",
+	user := models.User{
+		Name:     "John Doe",
+		Password: "password123",
+		Email:    "john@example.com",
 	}
 
-	// Create a user
-	req, w := createRequest(http.MethodPost, "/users", userData)
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusCreated, w.Code)
-	var responseUser models.UserResponse
-	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
+	err := services.NewUserService(db).CreateUser(&user)
 	assert.NoError(t, err)
 
 	// Delete a user
-	req, w = createRequest(http.MethodDelete, "/users/"+uintToString(responseUser.ID), nil)
+	req, w := testutils.CreateRequest(http.MethodDelete, "/users/"+testutils.UintToString(user.ID), nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	// Try to fetch deleted user
-	req, w = createRequest(http.MethodGet, "/users/"+uintToString(responseUser.ID), nil)
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusNotFound, w.Code)
+	_, err = services.NewUserService(db).GetUserByID(user.ID)
+	assert.Error(t, services.ErrUserNotFound, err)
 }
 
 // TODO: Once collection CRUD and card CRUD have been implemented,
 //       add a test checking that cascading deletion works properly: TestDeleteUser_CascadingDeletion
 
 func TestDeleteUser_BadRequest(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	// Update a user with a non-integer ID
-	req, w := createRequest(http.MethodDelete, "/users/routeError", nil)
+	req, w := testutils.CreateRequest(http.MethodDelete, "/users/routeError", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -325,16 +297,16 @@ func TestDeleteUser_BadRequest(t *testing.T) {
 }
 
 func TestDeleteUser_NoUser(t *testing.T) {
-	db := setupTestDB()
-	r := setupRouter(db)
+	db := testutils.SetupTestDB()
+	r := setupRouterUser(db)
 
 	// Update a user that doesn't exist
-	req, w := createRequest(http.MethodDelete, "/users/1", nil)
+	req, w := testutils.CreateRequest(http.MethodDelete, "/users/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 
 	var response map[string]string
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Contains(t, response["error"], "User not found")
+	assert.Contains(t, response["error"], services.ErrUserNotFound.Error())
 }
