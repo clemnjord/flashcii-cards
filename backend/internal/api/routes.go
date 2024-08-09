@@ -60,7 +60,7 @@ func UpdateAnswer(appC *ApplicationContext, c *gin.Context) {
 
 	appC.DB.Save(&card)
 
-	slog.Debug("Received difficulty:", answer.Difficulty)
+	slog.Debug("Received difficulty", "Difficulty:", answer.Difficulty)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Answer received"})
 }
