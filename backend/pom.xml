@@ -24,11 +24,11 @@
     </properties>
 
     <modules>
-        <module>shared-kernel</module>
-        <module>domain-user</module>
-        <module>domain-card</module>
-        <module>domain-quiz</module>
-        <module>domain-fsrs</module>
+        <module>domain</module>
+        <module>usecase</module>
+        <module>infrastructure</module>
+        <module>api</module>
+        <module>application</module>
     </modules>
 
     <dependencyManagement>
