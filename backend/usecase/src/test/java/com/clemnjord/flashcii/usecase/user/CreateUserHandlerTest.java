@@ -6,8 +6,10 @@ import com.clemnjord.flashcii.domain.user.model.UserId;
 import com.clemnjord.flashcii.domain.user.repository.IUserRepository;
 import com.clemnjord.flashcii.usecase.user.command.CreateUserCommand;
 import com.clemnjord.flashcii.usecase.user.handler.CreateUserHandler;
+import com.clemnjord.flashcii.usecase.user.mapper.UserCommandMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.util.UUID;
 
@@ -21,11 +23,13 @@ class CreateUserHandlerTest {
 
     IUserRepository userRepository;
     CreateUserHandler createUserHandler;
+    UserCommandMapper userCommandMapper;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(IUserRepository.class);
-        createUserHandler = new CreateUserHandler(userRepository);
+        userCommandMapper = Mappers.getMapper(UserCommandMapper.class);
+        createUserHandler = new CreateUserHandler(userRepository, userCommandMapper);
     }
 
     @Test
