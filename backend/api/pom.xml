@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.clemnjord.flashcii</groupId>
-            <artifactId>usecase</artifactId>
+            <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

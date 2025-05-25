@@ -20,6 +20,7 @@
         <lombok.version>1.18.38</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <mockito.version>5.17.0</mockito.version>
+        <pitest.version>1.19.4</pitest.version>
         <!-- Plugins versions -->
         <maven.clean.version>3.4.0</maven.clean.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
@@ -31,11 +32,12 @@
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.site.version>3.12.1</maven.site.version>
         <maven.surefire.version>3.3.0</maven.surefire.version>
+        <pitest.junit.version>1.2.3</pitest.junit.version>
     </properties>
 
     <modules>
         <module>domain</module>
-        <module>usecase</module>
+        <module>service</module>
         <module>infrastructure</module>
         <module>api</module>
         <module>application</module>
@@ -83,6 +85,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-parent</artifactId>
+                <version>${pitest.version}</version>
+                <type>pom</type>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>
@@ -141,6 +151,12 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>${pitest.version}</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
