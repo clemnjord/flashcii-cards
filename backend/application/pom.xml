@@ -24,7 +24,7 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>com.clemnjord.flashcii</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>domain</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

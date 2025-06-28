@@ -1,9 +1,8 @@
-package com.clemnjord.flashcii.service.user.usecase;
+package com.clemnjord.flashcii.application.user.usecase;
 
 import com.clemnjord.flashcii.domain.user.model.User;
 
 public interface ICurrentUserUseCase {
 
-    User getCurrentUser();
-
+  User getCurrentUser();
 }
