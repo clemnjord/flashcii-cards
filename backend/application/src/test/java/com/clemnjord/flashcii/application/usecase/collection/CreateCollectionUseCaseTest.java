@@ -5,11 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
+import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
 import com.clemnjord.flashcii.domain.exception.collection.CollectionAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.*;
-import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
-import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
-
 import java.util.Collections;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,8 @@ class CreateCollectionUseCaseTest {
     mockCollectionDoesNotExist();
 
     var createCollectionCommand =
-        new CreateCollectionUseCase.CreateCollectionCommand("testCollection", "Test description", Collections.emptyList());
+        new CreateCollectionUseCase.CreateCollectionCommand(
+            "testCollection", "Test description", Collections.emptyList());
 
     // Act
     var result = createCollectionUseCase.execute(createCollectionCommand);
@@ -59,7 +59,8 @@ class CreateCollectionUseCaseTest {
     collectionExists();
 
     var createCollectionCommand =
-        new CreateCollectionUseCase.CreateCollectionCommand("testCollection", "Test description", Collections.emptyList());
+        new CreateCollectionUseCase.CreateCollectionCommand(
+            "testCollection", "Test description", Collections.emptyList());
 
     // Act & Assert
     assertThatThrownBy(() -> createCollectionUseCase.execute(createCollectionCommand))
@@ -68,7 +69,8 @@ class CreateCollectionUseCaseTest {
   }
 
   private void mockGetCurrentUser(UserId userId) {
-    when(currentUserUseCase.getCurrentUser()).thenReturn(new User(userId, new Username("testUsername")));
+    when(currentUserUseCase.getCurrentUser())
+        .thenReturn(new User(userId, new Username("testUsername")));
   }
 
   private void mockCollectionRepositorySave() {

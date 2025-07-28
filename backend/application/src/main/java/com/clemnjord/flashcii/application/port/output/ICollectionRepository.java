@@ -2,7 +2,6 @@ package com.clemnjord.flashcii.application.port.output;
 
 import com.clemnjord.flashcii.domain.model.Collection;
 import com.clemnjord.flashcii.domain.model.CollectionId;
-
 import java.util.Optional;
 
 public interface ICollectionRepository {

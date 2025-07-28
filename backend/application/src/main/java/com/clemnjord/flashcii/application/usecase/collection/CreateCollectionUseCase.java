@@ -1,16 +1,14 @@
 package com.clemnjord.flashcii.application.usecase.collection;
 
 import com.clemnjord.flashcii.application.port.input.ICreateCollectionUseCase;
+import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
+import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
 import com.clemnjord.flashcii.domain.exception.collection.CollectionAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.Collection;
-import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
-import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
 import com.clemnjord.flashcii.domain.model.User;
 import java.util.Collections;
-import java.util.List;
 
 public class CreateCollectionUseCase implements ICreateCollectionUseCase {
-
 
   private final ICollectionRepository collectionRepository;
   private final ICurrentUserUseCase currentUserUseCase;
@@ -27,7 +25,8 @@ public class CreateCollectionUseCase implements ICreateCollectionUseCase {
     User currentUser = currentUserUseCase.getCurrentUser();
 
     if (collectionRepository.existsByName(command.name())) {
-      throw new CollectionAlreadyExistsException("Collection with name '" + command.name() + "' already exists.");
+      throw new CollectionAlreadyExistsException(
+          "Collection with name '" + command.name() + "' already exists.");
     }
     // Create a new collection
     Collection collection =

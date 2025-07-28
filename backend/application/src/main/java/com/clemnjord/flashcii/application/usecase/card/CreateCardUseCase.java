@@ -1,12 +1,12 @@
 package com.clemnjord.flashcii.application.usecase.card;
 
 import com.clemnjord.flashcii.application.port.input.ICreateCardUseCase;
+import com.clemnjord.flashcii.application.port.output.ICardRepository;
+import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
 import com.clemnjord.flashcii.domain.exception.card.CardAlreadyExistsException;
 import com.clemnjord.flashcii.domain.exception.collection.CollectionNotFoundException;
 import com.clemnjord.flashcii.domain.model.Answer;
 import com.clemnjord.flashcii.domain.model.Card;
-import com.clemnjord.flashcii.application.port.output.ICardRepository;
-import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
 import com.clemnjord.flashcii.domain.model.Question;
 
 public class CreateCardUseCase implements ICreateCardUseCase {
@@ -25,11 +25,16 @@ public class CreateCardUseCase implements ICreateCardUseCase {
     var collection =
         cardCollectionRepository
             .findById(command.collectionId())
-            .orElseThrow(() -> new CollectionNotFoundException("Collection not found with ID: " + command.collectionId().uuid()));
+            .orElseThrow(
+                () ->
+                    new CollectionNotFoundException(
+                        "Collection not found with ID: " + command.collectionId().uuid()));
 
     // Check if card already exists in the collection
-    if (cardRepository.existsByQuestionAndCollectionId(command.question(), command.collectionId())) {
-      throw new CardAlreadyExistsException("A card with this question already exists in the collection");
+    if (cardRepository.existsByQuestionAndCollectionId(
+        command.question(), command.collectionId())) {
+      throw new CardAlreadyExistsException(
+          "A card with this question already exists in the collection");
     }
 
     // Create and save the new card
