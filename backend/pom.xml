@@ -21,6 +21,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <mockito.version>5.17.0</mockito.version>
         <pitest.version>1.19.4</pitest.version>
+        <pitest.junit5.version>1.2.3</pitest.junit5.version>
         <!-- Plugins versions -->
         <maven.clean.version>3.4.0</maven.clean.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
@@ -37,18 +38,31 @@
 
     <modules>
         <module>domain</module>
-        <module>service</module>
-        <module>infrastructure</module>
-        <module>api</module>
         <module>application</module>
+        <module>infrastructure</module>
+        <module>web</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Runtime dependencies -->
+
             <!-- Internal dependencies -->
             <dependency>
                 <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>shared-kernel</artifactId>
+                <artifactId>domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>infrastructure</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -63,6 +77,8 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
+
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -93,7 +109,11 @@
                 <type>pom</type>
             </dependency>
 
-
+            <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>${pitest.junit5.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
