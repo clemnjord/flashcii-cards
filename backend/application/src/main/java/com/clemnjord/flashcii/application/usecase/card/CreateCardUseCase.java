@@ -1,5 +1,6 @@
 package com.clemnjord.flashcii.application.usecase.card;
 
+import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.port.input.ICreateCardUseCase;
 import com.clemnjord.flashcii.application.port.output.ICardRepository;
 import com.clemnjord.flashcii.application.port.output.ICollectionRepository;
@@ -9,6 +10,7 @@ import com.clemnjord.flashcii.domain.model.Answer;
 import com.clemnjord.flashcii.domain.model.Card;
 import com.clemnjord.flashcii.domain.model.Question;
 
+@ApplicationService
 public class CreateCardUseCase implements ICreateCardUseCase {
   private final ICardRepository cardRepository;
   private final ICollectionRepository cardCollectionRepository;

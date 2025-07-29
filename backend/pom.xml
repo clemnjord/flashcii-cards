@@ -16,12 +16,16 @@
         <maven.compiler.target>21</maven.compiler.target>
         <!-- Dependencies versions -->
         <assertj.version>3.27.3</assertj.version>
+        <h2.version>2.3.232</h2.version>
+        <jansi.version>2.4.2</jansi.version>
         <junit.version>5.12.0</junit.version>
         <lombok.version>1.18.38</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <mockito.version>5.17.0</mockito.version>
+        <picocli.version>4.7.7</picocli.version>
         <pitest.version>1.19.4</pitest.version>
         <pitest.junit5.version>1.2.3</pitest.junit5.version>
+        <spring.boot.version>3.5.4</spring.boot.version>
         <!-- Plugins versions -->
         <maven.clean.version>3.4.0</maven.clean.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
@@ -41,11 +45,54 @@
         <module>application</module>
         <module>infrastructure</module>
         <module>web</module>
+        <module>cli</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <!-- Runtime dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${jansi.version}</version>
+            </dependency>
+
+            <!-- Picocli for command line parsing -->
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>${picocli.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli-spring-boot-starter</artifactId>
+                <version>${picocli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli-codegen</artifactId>
+                <version>${picocli.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
             <!-- Internal dependencies -->
             <dependency>
@@ -175,6 +222,11 @@
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
                     <version>${pitest.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
                 </plugin>
 
             </plugins>
