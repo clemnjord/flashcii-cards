@@ -1,0 +1,29 @@
+package com.clemnjord.flashcii.infrastructure.persistence.mapper;
+
+import com.clemnjord.flashcii.domain.model.flashcard.Answer;
+import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
+import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
+import com.clemnjord.flashcii.domain.model.flashcard.Question;
+import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
+import org.springframework.stereotype.Component;
+
+@Component
+public class FlashcardMapper {
+    public Flashcard toDomain(FlashcardEntity entity) {
+        return Flashcard.builder()
+                .flashcardId(new FlashcardId(entity.getUUID()))
+                .question(new Question(entity.getQuestion()))
+                .answer(new Answer(entity.getAnswer()))
+                .build();
+    }
+
+    public FlashcardEntity toEntity(Flashcard flashcard) {
+        FlashcardEntity entity = new FlashcardEntity();
+        if (flashcard.flashcardId() != null) {
+            entity.setUUID(flashcard.flashcardId().uuid());
+        }
+        entity.setQuestion(flashcard.question().value());
+        entity.setAnswer(flashcard.answer().value());
+        return entity;
+    }
+}

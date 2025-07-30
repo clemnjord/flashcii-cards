@@ -1,5 +1,6 @@
 package com.clemnjord.flashcii.domain.model;
 
+import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

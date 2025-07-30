@@ -1,10 +1,14 @@
 package com.clemnjord.flashcii.domain.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.UUID;
+import com.clemnjord.flashcii.domain.model.user.User;
+import com.clemnjord.flashcii.domain.model.user.UserId;
+import com.clemnjord.flashcii.domain.model.user.Username;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 

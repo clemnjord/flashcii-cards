@@ -1,18 +1,20 @@
 package com.clemnjord.flashcii.application.usecase.user;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.exception.user.UserAlreadyExistsException;
-import com.clemnjord.flashcii.domain.model.User;
-import com.clemnjord.flashcii.domain.model.UserId;
-import com.clemnjord.flashcii.domain.model.Username;
-import java.util.UUID;
+import com.clemnjord.flashcii.domain.model.user.User;
+import com.clemnjord.flashcii.domain.model.user.UserId;
+import com.clemnjord.flashcii.domain.model.user.Username;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CreateUserUseCaseTest {
 
