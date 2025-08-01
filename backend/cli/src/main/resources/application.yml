@@ -8,7 +8,7 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: create # Automatically create the schema for H2 during runtime
+      ddl-auto: update # Automatically create the schema for H2 during runtime
     show-sql: true # Optional: Enable SQL query logging
   main:
     banner-mode: "off" # Disable banner for CLI for cleaner output

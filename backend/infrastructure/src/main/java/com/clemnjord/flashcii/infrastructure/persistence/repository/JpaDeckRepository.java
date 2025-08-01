@@ -5,72 +5,64 @@ import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckEntity;
+import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
+import com.clemnjord.flashcii.infrastructure.persistence.mapper.DeckMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class JpaDeckRepository implements IDeckRepository {
-    private final SpringDataDeckRepository springRepository;
+    private final JpaDeckDao jpaDeckDao;
+    private final JpaUserDao jpaUserDao;
+    private final DeckMapper deckMapper;
 
-    public JpaDeckRepository(SpringDataDeckRepository springRepository) {
-        this.springRepository = springRepository;
+
+    public JpaDeckRepository(JpaDeckDao jpaDeckDao, JpaUserDao jpaUserDao, DeckMapper deckMapper) {
+        this.jpaDeckDao = jpaDeckDao;
+        this.jpaUserDao = jpaUserDao;
+        this.deckMapper = deckMapper;
     }
 
     @Override
     public Deck save(Deck deck) {
-        DeckEntity deckEntity = new DeckEntity();
-        deckEntity.setName(deck.getName());
-        deckEntity.setDescription(deck.getDescription());
+        UserEntity owner = jpaUserDao.findById(deck.getOwnerId().uuid())
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + deck.getOwnerId()));
 
-        DeckEntity saved = springRepository.save(deckEntity);
+        DeckEntity deckEntity = deckMapper.toEntity(deck, owner);
 
-        return new Deck(
-                new DeckId(saved.getUUID()),
-                saved.getName(),
-                saved.getDescription(),
-                new UserId(UUID.randomUUID()),
-                new HashSet<>());
+        DeckEntity saved = jpaDeckDao.save(deckEntity);
+
+        return deckMapper.toDomain(saved);
     }
 
     @Override
     public boolean existsByName(String name) {
 
-        return springRepository.existsByName(name);
+        return jpaDeckDao.existsByName(name);
     }
 
     @Override
     public boolean existsById(DeckId id) {
-        return springRepository.existsById(id.uuid());
+        return jpaDeckDao.existsById(id.uuid());
     }
 
     @Override
     public Optional<Deck> findByName(String name) {
-        return springRepository
-                .findByName(name)
-                .map(
-                        x ->
-                                new Deck(
-                                        new DeckId(x.getUUID()),
-                                        x.getName(),
-                                        x.getDescription(),
-                                        new UserId(UUID.randomUUID()),
-                                        new HashSet<>()));
+        return jpaDeckDao.findByName(name).map(x -> new Deck(new DeckId(x.getUUID()), x.getName(), x.getDescription(), new UserId(x.getOwner().getUuid()), new HashSet<>()));
     }
 
     @Override
     public Optional<Deck> findById(DeckId id) {
-        return springRepository
-                .findById(id.uuid())
-                .map(
-                        x ->
-                                new Deck(
-                                        new DeckId(x.getUUID()),
-                                        x.getName(),
-                                        x.getDescription(),
-                                        new UserId(UUID.randomUUID()),
-                                        new HashSet<>()));
+        return jpaDeckDao.findById(id.uuid()).map(x -> new Deck(new DeckId(x.getUUID()), x.getName(), x.getDescription(), new UserId(x.getOwner().getUuid()), new HashSet<>()));
+    }
+
+    @Override
+    public List<Deck> findAllByOwnerIdAndNameContainsIgnoreCase(UserId ownerId, String nameFilter) {
+        return jpaDeckDao.findAllByOwner_UuidAndNameContainsIgnoreCase(ownerId.uuid(), nameFilter).stream()
+                .map(deckMapper::toDomain)
+                .toList();
     }
 }

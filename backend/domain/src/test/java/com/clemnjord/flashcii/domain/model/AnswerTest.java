@@ -9,7 +9,7 @@ class AnswerTest {
   void shouldThrowIllegalExceptionWhenAnswerIsBlank() {
     Assertions.assertThatThrownBy(() -> new Answer(""))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Answer value cannot be blank");
+            .hasMessageContaining("Answer cannot be shorter than 3 characters");
   }
 
   @Test

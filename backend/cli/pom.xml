@@ -32,10 +32,26 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.clemnjord.flashcii</groupId>
+            <artifactId>spring-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Spring Boot CLI starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- AspectJ dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
         </dependency>
 
         <!-- Lombok for reducing boilerplate -->

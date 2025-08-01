@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface SpringDataCardRepository extends JpaRepository<FlashcardEntity, UUID> {
+public interface JpaFlashcardDao extends JpaRepository<FlashcardEntity, UUID> {
     boolean existsByQuestionAndDeck_Uuid(String question, UUID deckUUID);
 }

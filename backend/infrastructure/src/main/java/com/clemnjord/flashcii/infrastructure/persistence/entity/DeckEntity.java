@@ -1,6 +1,10 @@
 package com.clemnjord.flashcii.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +12,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "deck")
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DeckEntity {
 
     @Id
@@ -20,6 +28,10 @@ public class DeckEntity {
     @Column
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private UserEntity owner;
+
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FlashcardEntity> flashcards = new ArrayList<>();
 
@@ -31,30 +43,6 @@ public class DeckEntity {
 
     public void setId(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<FlashcardEntity> getFlashcards() {
-        return flashcards;
-    }
-
-    public void setFlashcards(List<FlashcardEntity> cards) {
-        this.flashcards = cards;
     }
 
     // Utility methods for managing the bidirectional relationship

@@ -13,9 +13,9 @@ import java.util.Optional;
 
 @Repository
 public class JpaFlashcardRepository implements IFlashcardRepository {
-    private final SpringDataCardRepository springRepository;
+    private final JpaFlashcardDao springRepository;
 
-    public JpaFlashcardRepository(SpringDataCardRepository springRepository) {
+    public JpaFlashcardRepository(JpaFlashcardDao springRepository) {
         this.springRepository = springRepository;
     }
 

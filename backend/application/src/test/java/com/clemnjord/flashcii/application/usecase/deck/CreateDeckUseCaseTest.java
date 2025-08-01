@@ -9,11 +9,15 @@ import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,84 +26,110 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class CreateDeckUseCaseTest {
+    @Mock
+    IDeckRepository deckRepository;
+    @Mock
+    ICurrentUserUseCase currentUserUseCase;
+    CreateDeckUseCase createDeckUseCase;
+    private AutoCloseable closeable;
 
-  IDeckRepository deckRepository;
-  ICurrentUserUseCase currentUserUseCase;
-  CreateDeckUseCase createDeckUseCase;
+    @BeforeEach
+    void setUp() {
+        closeable = MockitoAnnotations.openMocks(this);
 
-  @BeforeEach
-  void setUp() {
-    deckRepository = Mockito.mock(IDeckRepository.class);
-    currentUserUseCase = Mockito.mock(ICurrentUserUseCase.class);
-    createDeckUseCase = new CreateDeckUseCase(deckRepository, currentUserUseCase);
-  }
+        deckRepository = Mockito.mock(IDeckRepository.class);
+        currentUserUseCase = Mockito.mock(ICurrentUserUseCase.class);
+        createDeckUseCase = new CreateDeckUseCase(deckRepository, currentUserUseCase);
+    }
 
-  @Test
-  void shouldCreateDeckWhenNameIsUnique() {
-    // Arrange
-    UserId userId = new UserId(UUID.randomUUID());
-    mockGetCurrentUser(userId);
-    mockDeckRepositorySave();
-    mockDeckDoesNotExist();
+    @AfterEach
+    void releaseMocks() throws Exception {
+        closeable.close();
+    }
 
-    var createDeckCommand =
-            new ICreateDeckUseCase.CreateDeckCommand(
-                    "testDeck", "Test description", Collections.emptyList());
+    @Test
+    void shouldCreateDeckWhenNameIsUnique() {
+        // Arrange
+        UserId userId = new UserId(UUID.randomUUID());
+        mockGetCurrentUser(userId);
+        mockDeckRepositorySave();
+        mockDeckDoesNotExist();
 
-    // Act
-    var result = createDeckUseCase.execute(createDeckCommand);
+        var createDeckCommand =
+                new ICreateDeckUseCase.CreateDeckCommand(
+                        "testDeck", "Test description", Collections.emptyList());
 
-    // Assert
-    assertThat(result).isNotNull();
-    assertThat(result.getName()).isEqualTo("testDeck");
-    assertThat(result.getDescription()).isEqualTo("Test description");
-    assertThat(result.getOwnerId()).isEqualTo(userId);
-    assertThat(result.getFlashcardIds()).isEmpty();
-  }
+        // Act
+        var result = createDeckUseCase.execute(createDeckCommand);
 
-  @Test
-  void shouldThrowExceptionWhenDeckNameAlreadyExists() {
-    // Arrange
-    UserId userId = new UserId(UUID.randomUUID());
-    mockGetCurrentUser(userId);
-    deckExists();
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("testDeck");
+        assertThat(result.getDescription()).isEqualTo("Test description");
+        assertThat(result.getOwnerId()).isEqualTo(userId);
+        assertThat(result.getFlashcardIds()).isEmpty();
+    }
 
-    var createDeckCommand =
-            new ICreateDeckUseCase.CreateDeckCommand(
-                    "testDeck", "Test description", Collections.emptyList());
+    @Test
+    void shouldThrowExceptionWhenDeckNameAlreadyExists() {
+        // Arrange
+        UserId userId = new UserId(UUID.randomUUID());
+        mockGetCurrentUser(userId);
+        deckExists();
 
-    // Act & Assert
-    assertThatThrownBy(() -> createDeckUseCase.execute(createDeckCommand))
-            .isInstanceOf(DeckAlreadyExistsException.class)
-            .hasMessageContaining("Deck with name 'testDeck' already exists");
-  }
+        var createDeckCommand =
+                new ICreateDeckUseCase.CreateDeckCommand(
+                        "testDeck", "Test description", Collections.emptyList());
 
-  private void mockGetCurrentUser(UserId userId) {
-    when(currentUserUseCase.getCurrentUser())
-        .thenReturn(new User(userId, new Username("testUsername")));
-  }
+        // Act & Assert
+        assertThatThrownBy(() -> createDeckUseCase.execute(createDeckCommand))
+                .isInstanceOf(DeckAlreadyExistsException.class)
+                .hasMessageContaining("Deck with name 'testDeck' already exists");
+    }
 
-  private void mockDeckRepositorySave() {
-    when(deckRepository.save(any()))
-        .thenAnswer(
-            invocation -> {
-              var deck = (Deck) invocation.getArgument(0);
+    @Test
+    void shouldCreateDeckWithTags() {
+        // Test deck creation with tags
+        UserId userId = new UserId(UUID.randomUUID());
+        mockGetCurrentUser(userId);
+        mockDeckRepositorySave();
+        mockDeckDoesNotExist();
 
-              var deckId = new DeckId(UUID.randomUUID());
-              return new Deck(
-                      deckId,
-                      deck.getName(),
-                      deck.getDescription(),
-                      deck.getOwnerId(),
-                      deck.getFlashcardIds());
-            });
-  }
+        var createDeckCommand = new ICreateDeckUseCase.CreateDeckCommand(
+                "testDeck", "Test description", List.of("tag1", "tag2"));
 
-  private void mockDeckDoesNotExist() {
-    when(deckRepository.existsByName(any())).thenReturn(false);
-  }
+        var result = createDeckUseCase.execute(createDeckCommand);
 
-  private void deckExists() {
-    when(deckRepository.existsByName(any())).thenReturn(true);
-  }
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("testDeck");
+    }
+
+    private void mockGetCurrentUser(UserId userId) {
+        when(currentUserUseCase.getCurrentUser())
+                .thenReturn(new User(userId, new Username("testUsername")));
+    }
+
+    private void mockDeckRepositorySave() {
+        when(deckRepository.save(any()))
+                .thenAnswer(
+                        invocation -> {
+                            var deck = (Deck) invocation.getArgument(0);
+
+                            var deckId = new DeckId(UUID.randomUUID());
+                            return new Deck(
+                                    deckId,
+                                    deck.getName(),
+                                    deck.getDescription(),
+                                    deck.getOwnerId(),
+                                    deck.getFlashcardIds());
+                        });
+    }
+
+    private void mockDeckDoesNotExist() {
+        when(deckRepository.existsByName(any())).thenReturn(false);
+    }
+
+    private void deckExists() {
+        when(deckRepository.existsByName(any())).thenReturn(true);
+    }
 }

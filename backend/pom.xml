@@ -31,6 +31,7 @@
         <maven.compiler.version>3.13.0</maven.compiler.version>
         <maven.deploy.version>3.1.2</maven.deploy.version>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
+        <maven.failsafe.version>3.1.2</maven.failsafe.version>
         <maven.install.version>3.1.2</maven.install.version>
         <maven.jar.version>3.4.2</maven.jar.version>
         <maven.project.info.reports.version>3.6.1</maven.project.info.reports.version>
@@ -44,6 +45,7 @@
         <module>domain</module>
         <module>application</module>
         <module>infrastructure</module>
+        <module>spring-config</module>
         <module>web</module>
         <module>cli</module>
     </modules>
@@ -67,6 +69,18 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>6.2.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>1.9.24</version>
             </dependency>
 
             <dependency>
@@ -112,6 +126,13 @@
                 <artifactId>infrastructure</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>spring-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <!-- Development dependencies -->
             <dependency>
@@ -187,7 +208,11 @@
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven.enforcer.version}</version>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven.failsafe.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>

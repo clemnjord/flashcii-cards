@@ -2,6 +2,7 @@ package com.clemnjord.flashcii.cli;
 
 import com.clemnjord.flashcii.cli.commands.AddFlashcardCommand;
 import com.clemnjord.flashcii.cli.commands.CreateDeckCommand;
+import com.clemnjord.flashcii.cli.commands.ListDeckCommand;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -12,7 +13,7 @@ import picocli.CommandLine.Option;
         mixinStandardHelpOptions = true,
         version = "1.0",
         description = "Flashcii CLI Application for managing flashcards.",
-        subcommands = {AddFlashcardCommand.class, CreateDeckCommand.class})
+        subcommands = {AddFlashcardCommand.class, CreateDeckCommand.class, ListDeckCommand.class})
 public class RootCommand implements Runnable {
 
     @Option(
