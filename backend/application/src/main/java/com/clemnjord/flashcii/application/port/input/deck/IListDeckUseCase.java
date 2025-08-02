@@ -9,5 +9,10 @@ public interface IListDeckUseCase {
     List<Deck> execute(ListDeckCommand command);
 
     record ListDeckCommand(String nameFilter) {
+        public ListDeckCommand {
+            if (nameFilter == null) {
+                nameFilter = "";
+            }
+        }
     }
 }

@@ -3,12 +3,10 @@ package com.clemnjord.flashcii.spring.shared.usecase;
 import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
 import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.model.user.User;
-import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Stub component until there is a real authentication process with an identity provider.
@@ -25,14 +23,13 @@ public class StubCurrentUserUseCase implements ICurrentUserUseCase {
 
     @Override
     public User getCurrentUser() {
-        UserId currentUserId = new UserId(UUID.fromString("8672ef18-63b7-46c4-bf58-e7c2ca0e7730"));
-
-        Optional<User> currentUser = userRepository.findById(currentUserId);
+        String username = "default";
+        Optional<User> currentUser = userRepository.findByUsername(username);
 
         if (currentUser.isPresent()) {
             return currentUser.get();
         } else {
-            User newUser = new User(currentUserId, new Username("test"));
+            User newUser = new User(null, new Username(username));
             return userRepository.save(newUser);
         }
     }

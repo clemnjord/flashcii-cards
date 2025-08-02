@@ -34,6 +34,11 @@ public class JpaUserRepository implements IUserRepository {
 
     @Override
     public Optional<User> findById(UserId user) {
-        return springRepository.findById(user.uuid()).map(userMapper::toDomain);
+        return springRepository.findByUuid(user.uuid()).map(userMapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return springRepository.findByUsername(username).map(userMapper::toDomain);
     }
 }

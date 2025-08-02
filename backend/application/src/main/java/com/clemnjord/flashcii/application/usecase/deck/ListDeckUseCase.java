@@ -21,7 +21,7 @@ public class ListDeckUseCase implements IListDeckUseCase {
     }
 
     @Override
-    @ApplicationTransactional(readOnly = true)
+    @ApplicationTransactional
     public List<Deck> execute(ListDeckCommand command) {
         User currentUserId = currentUserUseCase.getCurrentUser();
 

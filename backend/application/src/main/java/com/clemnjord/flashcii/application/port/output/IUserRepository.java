@@ -11,4 +11,6 @@ public interface IUserRepository {
   boolean existsByUsername(String username);
 
   Optional<User> findById(UserId user);
+
+  Optional<User> findByUsername(String username);
 }
