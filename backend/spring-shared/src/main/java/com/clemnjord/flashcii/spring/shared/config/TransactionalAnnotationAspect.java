@@ -1,4 +1,4 @@
-package com.clemnjord.flashcii.spring.config;
+package com.clemnjord.flashcii.spring.shared.config;
 
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
 import org.aspectj.lang.ProceedingJoinPoint;

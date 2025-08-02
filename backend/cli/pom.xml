@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>com.clemnjord.flashcii</groupId>
-            <artifactId>spring-config</artifactId>
+            <artifactId>spring-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
 

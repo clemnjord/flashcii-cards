@@ -2,11 +2,11 @@ package com.clemnjord.flashcii.infrastructure.persistence.repository;
 
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
-import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
+import com.clemnjord.flashcii.infrastructure.persistence.mapper.FlashcardMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,21 +14,18 @@ import java.util.Optional;
 @Repository
 public class JpaFlashcardRepository implements IFlashcardRepository {
     private final JpaFlashcardDao springRepository;
+    private final FlashcardMapper flashcardMapper;
 
-    public JpaFlashcardRepository(JpaFlashcardDao springRepository) {
+    public JpaFlashcardRepository(JpaFlashcardDao springRepository, FlashcardMapper flashcardMapper) {
         this.springRepository = springRepository;
+        this.flashcardMapper = flashcardMapper;
     }
 
     @Override
     public Optional<Flashcard> findById(FlashcardId flashcardId) {
         return springRepository
                 .findById(flashcardId.uuid())
-                .map(
-                        x ->
-                                new Flashcard(
-                                        new FlashcardId(x.getUUID()),
-                                        new Question(x.getQuestion()),
-                                        new Answer(x.getAnswer())));
+                .map(flashcardMapper::toDomain);
     }
 
     @Override
@@ -38,15 +35,8 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
 
     @Override
     public Flashcard save(Flashcard flashcard) {
-        FlashcardEntity flashcardEntity = new FlashcardEntity();
-        flashcardEntity.setAnswer(flashcard.answer().value());
-        flashcardEntity.setQuestion(flashcard.question().value());
-
+        FlashcardEntity flashcardEntity = flashcardMapper.toEntity(flashcard);
         FlashcardEntity saved = springRepository.save(flashcardEntity);
-
-        return new Flashcard(
-                new FlashcardId(saved.getUUID()),
-                new Question(saved.getQuestion()),
-                new Answer(saved.getAnswer()));
+        return flashcardMapper.toDomain(saved);
     }
 }

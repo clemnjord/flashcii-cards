@@ -45,7 +45,7 @@
         <module>domain</module>
         <module>application</module>
         <module>infrastructure</module>
-        <module>spring-config</module>
+        <module>spring-shared</module>
         <module>web</module>
         <module>cli</module>
     </modules>
@@ -129,7 +129,7 @@
 
             <dependency>
                 <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>spring-config</artifactId>
+                <artifactId>spring-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
