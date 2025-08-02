@@ -25,13 +25,13 @@ public class DeckController {
         return listDeckUseCase
                 .execute(new IListDeckUseCase.ListDeckCommand(nameFilter))
                 .stream()
-                .map(deck -> new DeckDto.DeckResponse(deck.getDeckId().toString(), deck.getName(), deck.getDescription()))
+                .map(deck -> new DeckDto.DeckResponse(deck.getDeckId().uuid().toString(), deck.getName(), deck.getDescription()))
                 .toList();
     }
 
     @PostMapping
     public DeckDto.DeckResponse createDeck(@RequestBody DeckDto.DeckRequest deckRequest) {
         Deck deck = createDeckUseCase.execute(new ICreateDeckUseCase.CreateDeckCommand(deckRequest.name(), deckRequest.description(), List.of()));
-        return new DeckDto.DeckResponse(null, deck.getName(), deck.getDescription());
+        return new DeckDto.DeckResponse(deck.getDeckId().uuid().toString(), deck.getName(), deck.getDescription());
     }
 }
