@@ -9,14 +9,17 @@ public record Question(String value) {
     public Question {
         Objects.requireNonNull(value, "Question value cannot be null");
 
-        String trimmed = value.trim();
-        if (trimmed.length() > MAX_LENGTH) {
+        value = value.trim();
+        validateQuestion(value);
+    }
+
+    private static void validateQuestion(String value) {
+
+        if (value.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Question cannot be longer than " + MAX_LENGTH + " characters");
         }
-        if (trimmed.length() < MIN_LENGTH) {
+        if (value.length() < MIN_LENGTH) {
             throw new IllegalArgumentException("Question cannot be shorter than " + MIN_LENGTH + " characters");
         }
-
-        value = trimmed;
     }
 }

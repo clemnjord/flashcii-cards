@@ -4,8 +4,6 @@ import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
 import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
-import com.clemnjord.flashcii.domain.model.deck.Deck;
-import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
@@ -52,7 +50,6 @@ class CreateDeckUseCaseTest {
         // Arrange
         UserId userId = new UserId(UUID.randomUUID());
         mockGetCurrentUser(userId);
-        mockDeckRepositorySave();
         mockDeckDoesNotExist();
 
         var createDeckCommand =
@@ -64,10 +61,10 @@ class CreateDeckUseCaseTest {
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo("testDeck");
-        assertThat(result.getDescription()).isEqualTo("Test description");
-        assertThat(result.getOwnerId()).isEqualTo(userId);
-        assertThat(result.getFlashcardIds()).isEmpty();
+        assertThat(result.name()).isEqualTo("testDeck");
+        assertThat(result.description()).isEqualTo("Test description");
+        assertThat(result.ownerId()).isEqualTo(userId);
+        assertThat(result.flashcardIds()).isEmpty();
     }
 
     @Test
@@ -92,7 +89,6 @@ class CreateDeckUseCaseTest {
         // Test deck creation with tags
         UserId userId = new UserId(UUID.randomUUID());
         mockGetCurrentUser(userId);
-        mockDeckRepositorySave();
         mockDeckDoesNotExist();
 
         var createDeckCommand = new ICreateDeckUseCase.CreateDeckCommand(
@@ -101,28 +97,12 @@ class CreateDeckUseCaseTest {
         var result = createDeckUseCase.execute(createDeckCommand);
 
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo("testDeck");
+        assertThat(result.name()).isEqualTo("testDeck");
     }
 
     private void mockGetCurrentUser(UserId userId) {
         when(currentUserUseCase.getCurrentUser())
                 .thenReturn(new User(userId, new Username("testUsername")));
-    }
-
-    private void mockDeckRepositorySave() {
-        when(deckRepository.save(any()))
-                .thenAnswer(
-                        invocation -> {
-                            var deck = (Deck) invocation.getArgument(0);
-
-                            var deckId = new DeckId(UUID.randomUUID());
-                            return new Deck(
-                                    deckId,
-                                    deck.getName(),
-                                    deck.getDescription(),
-                                    deck.getOwnerId(),
-                                    deck.getFlashcardIds());
-                        });
     }
 
     private void mockDeckDoesNotExist() {

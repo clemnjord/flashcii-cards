@@ -6,7 +6,7 @@ import com.clemnjord.flashcii.domain.model.user.UserId;
 import java.util.Optional;
 
 public interface IUserRepository {
-  User save(User user);
+  void save(User user);
 
   boolean existsByUsername(String username);
 

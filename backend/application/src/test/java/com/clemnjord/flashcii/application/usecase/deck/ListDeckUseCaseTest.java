@@ -4,7 +4,6 @@ import com.clemnjord.flashcii.application.port.input.deck.IListDeckUseCase;
 import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
-import com.clemnjord.flashcii.domain.model.deck.DeckFactory;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
@@ -45,7 +44,7 @@ class ListDeckUseCaseTest {
     @Test
     void shouldReturnDecksWithoutFilter() {
         // Arrange
-        List<Deck> expectedDecks = List.of(DeckFactory.createEmpty("deckName", "deckDescription", userId));
+        List<Deck> expectedDecks = List.of(Deck.createNew("deckName", "deckDescription", userId));
 
         var command = new IListDeckUseCase.ListDeckCommand(null);
         when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, command.nameFilter())).thenReturn(expectedDecks);
@@ -62,7 +61,7 @@ class ListDeckUseCaseTest {
     @Test
     void shouldReturnDecksWithNameFilter() {
         // Test filtering functionality
-        List<Deck> expectedDecks = List.of(DeckFactory.createEmpty("filteredDeck", "description", userId));
+        List<Deck> expectedDecks = List.of(Deck.createNew("filteredDeck", "description", userId));
 
         var command = new IListDeckUseCase.ListDeckCommand("filtered");
         when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "filtered"))

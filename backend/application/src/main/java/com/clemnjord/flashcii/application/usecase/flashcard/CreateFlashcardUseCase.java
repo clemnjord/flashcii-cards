@@ -14,44 +14,44 @@ import com.clemnjord.flashcii.domain.model.flashcard.Question;
 @ApplicationService
 @ApplicationTransactional
 public class CreateFlashcardUseCase implements ICreateFlashcardUseCase {
-  private final IFlashcardRepository flashcardRepository;
-  private final IDeckRepository deckRepository;
+    private final IFlashcardRepository flashcardRepository;
+    private final IDeckRepository deckRepository;
 
-  public CreateFlashcardUseCase(
-          IFlashcardRepository flashcardRepository, IDeckRepository deckRepository) {
-    this.flashcardRepository = flashcardRepository;
-    this.deckRepository = deckRepository;
-  }
-
-  @Override
-  public Flashcard execute(CreateFlashcardCommand command) {
-    // Check if the deck exists
-    var deck =
-            deckRepository
-                    .findById(command.deckId())
-            .orElseThrow(
-                () ->
-                        new DeckNotFoundException(
-                                "Deck not found with ID: " + command.deckId().uuid()));
-
-    // Check if flashcard already exists in the deck
-    if (flashcardRepository.existsByQuestionAndDeckId(
-            new Question(command.question()), command.deckId())) {
-      throw new FlashcardAlreadyExistsException(
-              "A flashcard with this question already exists in the deck");
+    public CreateFlashcardUseCase(
+            IFlashcardRepository flashcardRepository, IDeckRepository deckRepository) {
+        this.flashcardRepository = flashcardRepository;
+        this.deckRepository = deckRepository;
     }
 
-    // Create and save the new flashcard
-    Flashcard flashcard = new Flashcard(null, new Question(command.question()), new Answer(command.answer()));
-    Flashcard savedFlashcard = flashcardRepository.save(flashcard);
+    @Override
+    public Flashcard execute(CreateFlashcardCommand command) {
+        // Check if the deck exists
+        var deck =
+                deckRepository
+                        .findById(command.deckId())
+                        .orElseThrow(
+                                () ->
+                                        new DeckNotFoundException(
+                                                "Deck not found with ID: " + command.deckId().uuid()));
 
-    // Associate the saved flashcard's ID to the deck
-    deck.addFlashcard(savedFlashcard.flashcardId());
+        // Check if flashcard already exists in the deck
+        if (flashcardRepository.existsByQuestionAndDeckId(
+                new Question(command.question()), command.deckId())) {
+            throw new FlashcardAlreadyExistsException(
+                    "A flashcard with this question already exists in the deck");
+        }
 
-    // Save the updated deck
-    deckRepository.save(deck);
+        // Create and save the new flashcard
+        Flashcard flashcard = Flashcard.createNew(new Question(command.question()), new Answer(command.answer()));
+        flashcardRepository.save(flashcard);
 
-    // Return the saved flashcard
-    return savedFlashcard;
-  }
+        // Associate the saved flashcard's ID to the deck
+        deck = deck.addFlashcard(flashcard.flashcardId());
+
+        // Save the updated deck
+        deckRepository.save(deck);
+
+        // Return the saved flashcard
+        return flashcard;
+    }
 }

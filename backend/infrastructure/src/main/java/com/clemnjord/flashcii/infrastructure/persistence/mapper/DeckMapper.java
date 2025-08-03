@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 @Component
 public class DeckMapper {
 
-    public Deck toDomain(DeckEntity entity) {
+    public Deck toDomainWithFlashcards(DeckEntity entity) {
         Set<FlashcardId> flashcardIds = entity.getFlashcards().stream().map(e -> new FlashcardId(e.getUUID())).collect(Collectors.toSet());
 
-        return new Deck(
+        return Deck.restore(
                 new DeckId(entity.getUUID()),
                 entity.getName(),
                 entity.getDescription(),
@@ -25,22 +25,27 @@ public class DeckMapper {
                 flashcardIds);
     }
 
+    public Deck toDomainWithoutFlashcards(DeckEntity entity) {
+        return Deck.restore(
+                new DeckId(entity.getUUID()),
+                entity.getName(),
+                entity.getDescription(),
+                new UserId(entity.getOwner().getUuid()),
+                Set.of());
+    }
+
+
     public DeckEntity toEntity(Deck deck, UserEntity owner) {
         DeckEntity entity = new DeckEntity();
 
         // Only set ID if it exists (for updates), let JPA generate it for new entities
-        if (deck.getDeckId() != null && deck.getDeckId().uuid() != null) {
-            entity.setId(deck.getDeckId().uuid());
+        if (deck.deckId() != null && deck.deckId().uuid() != null) {
+            entity.setId(deck.deckId().uuid());
         }
 
-        entity.setName(deck.getName());
-        entity.setDescription(deck.getDescription());
+        entity.setName(deck.name());
+        entity.setDescription(deck.description());
         entity.setOwner(owner);
-
-        // Or user `EntityManager` to create lazy reference without immediate fetch?
-//        UserEntity ownerRef = entityManager.getReference(UserEntity.class, deck.getOwnerId().uuid());
-//        entity.setOwner(ownerRef);
-
 
         return entity;
     }

@@ -20,11 +20,9 @@ public class JpaUserRepository implements IUserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public void save(User user) {
         UserEntity userEntity = userMapper.toEntity(user);
-        UserEntity saved = springRepository.save(userEntity);
-
-        return userMapper.toDomain(saved);
+        springRepository.save(userEntity);
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toDomain(UserEntity entity) {
-        return new User(
+        return User.restore(
                 new UserId(entity.getUuid()),
                 new Username(entity.getUsername())
         );

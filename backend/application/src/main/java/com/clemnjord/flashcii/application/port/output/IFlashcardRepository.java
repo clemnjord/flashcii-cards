@@ -8,7 +8,7 @@ import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import java.util.Optional;
 
 public interface IFlashcardRepository {
-    Flashcard save(Flashcard flashcard);
+    void save(Flashcard flashcard);
 
     Optional<Flashcard> findById(FlashcardId id);
 

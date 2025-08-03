@@ -4,12 +4,20 @@ import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.IListDeckUseCase;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.web.dto.DeckDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/decks")
+@RequestMapping(value = "/decks", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Decks", description = "Deck management operations")
 public class DeckController {
 
     IListDeckUseCase listDeckUseCase;
@@ -21,17 +29,25 @@ public class DeckController {
     }
 
     @GetMapping
-    public List<DeckDto.DeckResponse> getDecks(@RequestParam(required = false) String nameFilter) {
+    @Operation(summary = "List decks", description = "Retrieve all decks with optional name filtering")
+    @ApiResponse(responseCode = "200", description = "Decks retrieved successfully")
+    public List<DeckDto.DeckResponse> getDecks(
+            @Parameter(description = "Filter decks with optional name filter (case-insensitive")
+            @RequestParam(required = false) String nameFilter) {
         return listDeckUseCase
                 .execute(new IListDeckUseCase.ListDeckCommand(nameFilter))
                 .stream()
-                .map(deck -> new DeckDto.DeckResponse(deck.getDeckId().uuid().toString(), deck.getName(), deck.getDescription()))
+                .peek(x -> System.out.println("Found deck: " + x))
+                .map(deck -> new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description()))
                 .toList();
     }
 
     @PostMapping
-    public DeckDto.DeckResponse createDeck(@RequestBody DeckDto.DeckRequest deckRequest) {
+    @Operation(summary = "Create deck", description = "Create a new deck")
+    @ApiResponse(responseCode = "201", description = "Deck created successfully")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DeckDto.DeckResponse createDeck(@Valid @RequestBody DeckDto.DeckRequest deckRequest) {
         Deck deck = createDeckUseCase.execute(new ICreateDeckUseCase.CreateDeckCommand(deckRequest.name(), deckRequest.description(), List.of()));
-        return new DeckDto.DeckResponse(deck.getDeckId().uuid().toString(), deck.getName(), deck.getDescription());
+        return new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description());
     }
 }

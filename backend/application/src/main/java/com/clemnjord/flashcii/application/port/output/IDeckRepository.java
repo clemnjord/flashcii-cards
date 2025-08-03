@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface IDeckRepository {
 
-    Deck save(Deck deck);
+    void save(Deck deck);
 
     boolean existsByName(String name);
 

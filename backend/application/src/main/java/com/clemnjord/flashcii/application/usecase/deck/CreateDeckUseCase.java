@@ -9,8 +9,6 @@ import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.User;
 
-import java.util.Collections;
-
 @ApplicationService
 @ApplicationTransactional
 public class CreateDeckUseCase implements ICreateDeckUseCase {
@@ -34,15 +32,11 @@ public class CreateDeckUseCase implements ICreateDeckUseCase {
               "Deck with name '" + command.name() + "' already exists.");
     }
     // Create a new deck
-    Deck deck =
-            new Deck(
-            null,
-            command.name(),
-            command.description(),
-            currentUser.userId(),
-                    Collections.emptySet());
+    Deck deck = Deck.createNew(command.name(), command.description(), currentUser.userId());
 
     // Save the deck to the repository
-    return deckRepository.save(deck);
+    deckRepository.save(deck);
+
+    return deck;
   }
 }

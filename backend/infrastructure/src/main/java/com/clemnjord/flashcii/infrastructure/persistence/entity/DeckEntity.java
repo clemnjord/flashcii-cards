@@ -19,7 +19,6 @@ import java.util.UUID;
 public class DeckEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
     @Column(nullable = false, unique = true)
@@ -28,7 +27,7 @@ public class DeckEntity {
     @Column
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 

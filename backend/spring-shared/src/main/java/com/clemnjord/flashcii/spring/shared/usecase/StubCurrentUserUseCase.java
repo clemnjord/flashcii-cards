@@ -29,8 +29,9 @@ public class StubCurrentUserUseCase implements ICurrentUserUseCase {
         if (currentUser.isPresent()) {
             return currentUser.get();
         } else {
-            User newUser = new User(null, new Username(username));
-            return userRepository.save(newUser);
+            User newUser = User.createNew(new Username(username));
+            userRepository.save(newUser);
+            return newUser;
         }
     }
 }

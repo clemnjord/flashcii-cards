@@ -34,9 +34,8 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
     }
 
     @Override
-    public Flashcard save(Flashcard flashcard) {
+    public void save(Flashcard flashcard) {
         FlashcardEntity flashcardEntity = flashcardMapper.toEntity(flashcard);
-        FlashcardEntity saved = springRepository.save(flashcardEntity);
-        return flashcardMapper.toDomain(saved);
+        springRepository.save(flashcardEntity);
     }
 }
