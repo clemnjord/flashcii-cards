@@ -1,26 +1,31 @@
-package com.clemnjord.flashcii.domain.model;
+package com.clemnjord.flashcii.domain.model.user;
 
-import com.clemnjord.flashcii.domain.model.user.Username;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class UsernameTest {
   @Test
-  void shouldThrowIllegalArgumentExceptionWhenUsernameIsNull() {
+  void shouldCreateUsernameSuccessfully() {
+    Username username = new Username("testuser");
+    Assertions.assertThat(username.value()).isEqualTo("testuser");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUsernameIsNull() {
     Assertions.assertThatThrownBy(() -> new Username(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("Username cannot be null");
   }
 
   @Test
-  void shouldThrowIllegalArgumentExceptionWhenUsernameIsBlank() {
-    Assertions.assertThatThrownBy(() -> new Username(""))
+  void shouldThrowExceptionWhenUsernameIsTooShort() {
+    Assertions.assertThatThrownBy(() -> new Username("aa"))
         .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Username too short (min 3 characters)");
   }
 
   @Test
-  void shouldThrowIllegalArgumentExceptionWhenUsernameIsTooLong() {
+  void shouldThrowExceptionWhenUsernameIsTooLong() {
     String longUsername = "a".repeat(256);
     Assertions.assertThatThrownBy(() -> new Username(longUsername))
         .isInstanceOf(IllegalArgumentException.class)
@@ -28,7 +33,7 @@ class UsernameTest {
   }
 
   @Test
-  void shouldThrowIllegalArgumentExceptionWhenUsernameIsInvalid() {
+  void shouldThrowExceptionWhenUsernameIsInvalid() {
     Assertions.assertThatThrownBy(() -> new Username("invalid name!"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining(

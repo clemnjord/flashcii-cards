@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public record Deck(DeckId deckId, String name, String description, UserId ownerId, Set<FlashcardId> flashcardIds) {
+    private static final int MIN_LENGTH = 3;
     private static final int MAX_LENGTH = 100;
 
     public Deck {
@@ -46,11 +47,11 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
     }
 
     private static void validateName(String name) {
-        if (name.isEmpty()) {
-            throw new InvalidDeckException("Deck name cannot be empty");
+        if (name.length() < MIN_LENGTH) {
+            throw new InvalidDeckException("Deck name too short (min " + MIN_LENGTH + " characters)");
         }
         if (name.length() > MAX_LENGTH) {
-            throw new InvalidDeckException("Deck name too long");
+            throw new InvalidDeckException("Deck name too long (max " + MAX_LENGTH + " characters)");
         }
     }
 
@@ -64,17 +65,4 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
 
         return Deck.restore(deckId, name, description, ownerId, newFlashcards);
     }
-
-    public Deck removeFlashcard(FlashcardId flashcardId) {
-        if (!flashcardIds.contains(flashcardId)) {
-            return this; // No change needed
-        }
-
-        Set<FlashcardId> newFlashcards = new HashSet<>(flashcardIds);
-        newFlashcards.remove(flashcardId);
-
-        return new Deck(deckId, name, description, ownerId, newFlashcards);
-    }
-
-
 }
