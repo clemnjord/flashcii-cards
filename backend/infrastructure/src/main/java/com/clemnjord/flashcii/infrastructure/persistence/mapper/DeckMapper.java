@@ -38,11 +38,7 @@ public class DeckMapper {
     public DeckEntity toEntity(Deck deck, UserEntity owner) {
         DeckEntity entity = new DeckEntity();
 
-        // Only set ID if it exists (for updates), let JPA generate it for new entities
-        if (deck.deckId() != null && deck.deckId().uuid() != null) {
-            entity.setId(deck.deckId().uuid());
-        }
-
+        entity.setId(deck.deckId().uuid());
         entity.setName(deck.name());
         entity.setDescription(deck.description());
         entity.setOwner(owner);

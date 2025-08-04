@@ -4,6 +4,7 @@ import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
+import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
 import org.springframework.stereotype.Component;
 
@@ -17,13 +18,13 @@ public class FlashcardMapper {
         );
     }
 
-    public FlashcardEntity toEntity(Flashcard flashcard) {
+    public FlashcardEntity toEntity(Flashcard flashcard, DeckEntity deckEntity) {
         FlashcardEntity entity = new FlashcardEntity();
-        if (flashcard.flashcardId() != null) {
-            entity.setUUID(flashcard.flashcardId().uuid());
-        }
+
+        entity.setUUID(flashcard.flashcardId().uuid());
         entity.setQuestion(flashcard.question().value());
         entity.setAnswer(flashcard.answer().value());
+        entity.setDeck(deckEntity);
         return entity;
     }
 }

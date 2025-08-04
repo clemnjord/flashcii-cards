@@ -16,7 +16,7 @@ class UsernameTest {
   void shouldThrowIllegalArgumentExceptionWhenUsernameIsBlank() {
     Assertions.assertThatThrownBy(() -> new Username(""))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Username cannot be blank");
+            .hasMessageContaining("Username too short (min 3 characters)");
   }
 
   @Test
@@ -24,7 +24,7 @@ class UsernameTest {
     String longUsername = "a".repeat(256);
     Assertions.assertThatThrownBy(() -> new Username(longUsername))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Username must be between 3 and 50 characters");
+            .hasMessageContaining("Username too long (max 30 characters)");
   }
 
   @Test

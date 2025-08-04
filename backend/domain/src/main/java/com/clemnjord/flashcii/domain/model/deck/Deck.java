@@ -19,6 +19,9 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
 
         name = name.trim();
         validateName(name);
+
+        description = description != null ? description : "";
+
         flashcardIds = Set.copyOf(flashcardIds);
     }
 
@@ -42,7 +45,7 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
         );
     }
 
-    private void validateName(String name) {
+    private static void validateName(String name) {
         if (name.isEmpty()) {
             throw new InvalidDeckException("Deck name cannot be empty");
         }
@@ -59,7 +62,7 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
         Set<FlashcardId> newFlashcards = new HashSet<>(flashcardIds);
         newFlashcards.add(flashcardId);
 
-        return new Deck(deckId, name, description, ownerId, newFlashcards);
+        return Deck.restore(deckId, name, description, ownerId, newFlashcards);
     }
 
     public Deck removeFlashcard(FlashcardId flashcardId) {

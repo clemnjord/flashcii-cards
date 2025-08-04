@@ -14,6 +14,8 @@ public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
 
     Optional<DeckEntity> findByName(String name);
 
+    Optional<DeckEntity> findByUuid(UUID uuid);
+
     List<DeckEntity> findAllByOwner_UuidAndNameContainsIgnoreCase(UUID ownerId, String nameFilter);
 
 }

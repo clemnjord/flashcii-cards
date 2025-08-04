@@ -43,7 +43,7 @@ public class CreateFlashcardUseCase implements ICreateFlashcardUseCase {
 
         // Create and save the new flashcard
         Flashcard flashcard = Flashcard.createNew(new Question(command.question()), new Answer(command.answer()));
-        flashcardRepository.save(flashcard);
+        flashcardRepository.save(flashcard, command.deckId());
 
         // Associate the saved flashcard's ID to the deck
         deck = deck.addFlashcard(flashcard.flashcardId());
