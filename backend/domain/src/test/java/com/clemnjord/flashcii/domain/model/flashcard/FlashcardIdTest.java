@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FlashcardIdTest {
     @Test
-    void shouldGenerateNewFlashcardIdSuccessfully() {
+    void generateNewFlashcardId() {
         // --- Arrange & Act
         FlashcardId flashcardId = FlashcardId.generate();
 
@@ -16,7 +16,7 @@ class FlashcardIdTest {
     }
 
     @Test
-    void shouldCreateFlashcardSuccessfullyWhenFromStringIsValid() {
+    void createNewFlashcardIdWhenFromStringUuidIsValid() {
         // --- Arrange & Act
         FlashcardId flashcardId = FlashcardId.from("12345678-1234-1234-1234-123456789abc");
 
@@ -26,7 +26,7 @@ class FlashcardIdTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFromStringIsInvalid() {
+    void throwExceptionWhenFromStringUuidIsInvalid() {
         // --- Arrange & Act & Assert
         assertThatThrownBy(() -> FlashcardId.from("invalid flashcard id"))
                 .isInstanceOf(IllegalArgumentException.class)

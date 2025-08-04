@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserIdTest {
 
     @Test
-    void shouldGenerateNewUserIdSuccessfully() {
+    void generateNewUserId() {
         // --- Arrange & Act
         UserId userId = UserId.generate();
 
@@ -17,7 +17,7 @@ class UserIdTest {
     }
 
     @Test
-    void shouldCreateUserSuccessfullyWhenFromStringIsValid() {
+    void createUserIdWhenFromStringUuidIsValid() {
         // --- Arrange & Act
         UserId userId = UserId.from("12345678-1234-1234-1234-123456789abc");
 
@@ -27,7 +27,7 @@ class UserIdTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFromStringIsInvalid() {
+    void throwExceptionWhenFromStringUuidIsInvalid() {
         // --- Arrange & Act & Assert
         assertThatThrownBy(() -> UserId.from("invalid user id"))
                 .isInstanceOf(IllegalArgumentException.class)

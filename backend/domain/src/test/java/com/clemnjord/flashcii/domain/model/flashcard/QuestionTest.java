@@ -5,20 +5,20 @@ import org.junit.jupiter.api.Test;
 
 class QuestionTest {
   @Test
-  void shouldCreateQuestionSuccessfully() {
+  void createQuestionWhenInputIsValid() {
     Question question = new Question("What is the question?");
     Assertions.assertThat(question.value()).isEqualTo("What is the question?");
   }
 
   @Test
-  void shouldThrowExceptionWhenQuestionIsNull() {
+  void throwExceptionWhenQuestionIsNull() {
     Assertions.assertThatThrownBy(() -> new Question(null))
         .isInstanceOf(NullPointerException.class)
         .hasMessageContaining("Question value cannot be null");
   }
 
   @Test
-  void shouldThrowExceptionWhenQuestionIsTooLong() {
+  void throwExceptionWhenQuestionIsTooLong() {
     String longQuestion = "a".repeat(501);
     Assertions.assertThatThrownBy(() -> new Question(longQuestion))
         .isInstanceOf(IllegalArgumentException.class)
@@ -26,7 +26,7 @@ class QuestionTest {
   }
 
   @Test
-  void shouldThrowExceptionWhenQuestionIsTooShort() {
+  void throwExceptionWhenQuestionIsTooShort() {
     Assertions.assertThatThrownBy(() -> new Question("a"))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Question cannot be shorter than 3 characters");

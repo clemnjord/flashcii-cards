@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UserTest {
 
   @Test
-  void shouldCreateUserSuccessfullyWhenInputIsValid() {
+  void createNewUserWhenInputIsValid() {
     User user = User.createNew(new Username("testuser"));
 
     assertThat(user).isNotNull();
@@ -17,7 +17,7 @@ class UserTest {
   }
 
   @Test
-  void shouldThrowExceptionWhenUserIdIsNull() {
+  void throwExceptionWhenUserIdIsNull() {
     UserId userId = UserId.generate();
     Assertions.assertThatThrownBy(() -> new User(userId, null))
         .isInstanceOf(NullPointerException.class)
@@ -25,7 +25,7 @@ class UserTest {
   }
 
   @Test
-  void restoredUserShouldEqualOriginalUser() {
+  void restoredUserEqualsOriginalUser() {
     // --- Arrange & Act
     User originalUser = User.createNew(new Username("testuser"));
     User restoredUser = User.restore(originalUser.userId(), originalUser.username());

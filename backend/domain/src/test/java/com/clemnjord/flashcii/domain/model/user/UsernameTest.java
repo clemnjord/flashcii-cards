@@ -5,27 +5,27 @@ import org.junit.jupiter.api.Test;
 
 class UsernameTest {
   @Test
-  void shouldCreateUsernameSuccessfully() {
+  void createNewUsernameWhenInputIsValid() {
     Username username = new Username("testuser");
     Assertions.assertThat(username.value()).isEqualTo("testuser");
   }
 
   @Test
-  void shouldThrowExceptionWhenUsernameIsNull() {
+  void throwExceptionWhenUsernameIsNull() {
     Assertions.assertThatThrownBy(() -> new Username(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("Username cannot be null");
   }
 
   @Test
-  void shouldThrowExceptionWhenUsernameIsTooShort() {
+  void throwExceptionWhenUsernameIsTooShort() {
     Assertions.assertThatThrownBy(() -> new Username("aa"))
         .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Username too short (min 3 characters)");
   }
 
   @Test
-  void shouldThrowExceptionWhenUsernameIsTooLong() {
+  void throwExceptionWhenUsernameIsTooLong() {
     String longUsername = "a".repeat(256);
     Assertions.assertThatThrownBy(() -> new Username(longUsername))
         .isInstanceOf(IllegalArgumentException.class)
@@ -33,7 +33,7 @@ class UsernameTest {
   }
 
   @Test
-  void shouldThrowExceptionWhenUsernameIsInvalid() {
+  void throwExceptionWhenUsernameIsInvalid() {
     Assertions.assertThatThrownBy(() -> new Username("invalid name!"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining(

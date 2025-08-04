@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FlashcardTest {
 
     @Test
-    void shouldCreateFlashcardSuccessfullyWhenInputIsValid() {
+    void createFlashcardWhenInputIsValid() {
         // Arrange
         Question question = new Question("What is the capital of France?");
         Answer answer = new Answer("Paris");
@@ -24,7 +24,7 @@ class FlashcardTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenQuestionIsNull() {
+    void throwExceptionWhenQuestionIsNull() {
         // Arrange
         Answer answer = new Answer("Paris");
 
@@ -35,7 +35,7 @@ class FlashcardTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAnswerIsNull() {
+    void throwExceptionWhenAnswerIsNull() {
         // Arrange
         Question question = new Question("What is the capital of France?");
 
@@ -46,7 +46,7 @@ class FlashcardTest {
     }
 
     @Test
-    void restoredFlashcardShouldEqualOriginalFlashcard() {
+    void restoredFlashcardEqualsOriginalFlashcard() {
         // --- Arrange & Act
         Flashcard originalFlashcard = Flashcard.createNew(new Question("A question"), new Answer("An answer"));
         Flashcard restoredFlashcard = Flashcard.restore(originalFlashcard.flashcardId(), originalFlashcard.question(), originalFlashcard.answer());

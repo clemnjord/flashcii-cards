@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DeckTest {
     @Test
-    void shouldCreateNewDeckSuccessfully() {
+    void createNewDeckWhenInputIsValid() {
         // --- Arrange & Act
         Deck deck = Deck.createNew("Sample Deck", "A test deck", UserId.generate());
 
@@ -28,7 +28,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldHaveEmptyDescriptionWhenNotProvided() {
+    void hasEmptyDescriptionWhenNotProvided() {
         // --- Arrange & Act
         Deck deck = Deck.createNew("Sample Deck", null, UserId.generate());
 
@@ -37,7 +37,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNameIsNull() {
+    void throwExceptionWhenNameIsNull() {
         // --- Arrange
         UserId ownerId = UserId.generate();
 
@@ -48,7 +48,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNameIsTooShort() {
+    void throwExceptionWhenNameIsTooShort() {
         // --- Arrange
         UserId ownerId = UserId.generate();
 
@@ -59,7 +59,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNameIsTooLong() {
+    void throwExceptionWhenNameIsTooLong() {
         // --- Arrange
         UserId ownerId = UserId.generate();
         String longName = "a".repeat(101);
@@ -71,7 +71,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDeckIdIsNull() {
+    void throwExceptionWhenDeckIdIsNull() {
         // --- Arrange
         UserId ownerId = UserId.generate();
         Set<FlashcardId> flashcardIds = Set.of();
@@ -83,7 +83,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenOwnerIdIsNull() {
+    void throwExceptionWhenOwnerIdIsNull() {
         // --- Arrange & Act & Assert
         assertThatThrownBy(() -> Deck.createNew("Sample Deck", "A test deck", null))
                 .isInstanceOf(NullPointerException.class)
@@ -91,7 +91,7 @@ class DeckTest {
     }
 
     @Test
-    void restoredDeckShouldEqualOriginalDeck() {
+    void restoredDeckEqualsOriginalDeck() {
         // --- Arrange & Act
         Deck originalDeck = Deck.createNew("Sample Deck", "A test deck", UserId.generate());
         Deck restoredDeck = Deck.restore(originalDeck.deckId(), originalDeck.name(), originalDeck.description(), originalDeck.ownerId(), originalDeck.flashcardIds());
@@ -101,7 +101,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldAddFlashcardSuccessfully() {
+    void addFlashcardToEmptyDeck() {
         // --- Arrange
         UserId ownerId = UserId.generate();
         FlashcardId flashcardId = FlashcardId.generate();
@@ -116,7 +116,7 @@ class DeckTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFlashcardAlreadyExists() {
+    void throwExceptionWhenFlashcardAlreadyExists() {
         // --- Arrange
         UserId ownerId = UserId.from(UUID.randomUUID().toString());
         FlashcardId flashcardId = FlashcardId.generate();
