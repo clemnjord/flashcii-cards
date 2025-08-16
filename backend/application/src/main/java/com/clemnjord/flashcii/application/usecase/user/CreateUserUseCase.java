@@ -2,6 +2,7 @@ package com.clemnjord.flashcii.application.usecase.user;
 
 import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
+import com.clemnjord.flashcii.application.port.input.user.CreateUserCommand;
 import com.clemnjord.flashcii.application.port.input.user.ICreateUserUseCase;
 import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.exception.user.UserAlreadyExistsException;

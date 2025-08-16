@@ -26,7 +26,7 @@ public class ListDeckCommand implements Runnable {
         System.out.println("Listing decks...");
 
         var command =
-                new IListDeckUseCase.ListDeckCommand(nameFilter);
+                new com.clemnjord.flashcii.application.port.input.deck.ListDeckCommand(nameFilter);
         List<Deck> deckList = listDeckUseCase.execute(command);
 
         deckList.forEach(System.out::println);

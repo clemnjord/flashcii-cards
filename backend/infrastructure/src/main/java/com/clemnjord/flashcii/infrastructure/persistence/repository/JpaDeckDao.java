@@ -12,10 +12,13 @@ import java.util.UUID;
 public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
     boolean existsByName(String name);
 
-    Optional<DeckEntity> findByName(String name);
+    Optional<DeckEntity> findByNameAndOwner_Uuid(String name, UUID ownerUuid);
 
-    Optional<DeckEntity> findByUuid(UUID uuid);
+    Optional<DeckEntity> findByUuidAndOwner_Uuid(UUID uuid, UUID ownerUuid);
 
     List<DeckEntity> findAllByOwner_UuidAndNameContainsIgnoreCase(UUID ownerId, String nameFilter);
 
+    boolean existsByNameAndOwner_Uuid(String name, UUID ownerUuid);
+
+    boolean existsByUuidAndOwner_Uuid(UUID id, UUID ownerUuid);
 }

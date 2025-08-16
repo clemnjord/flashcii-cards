@@ -38,7 +38,7 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
 
     @Override
     public void save(Flashcard flashcard, DeckId deckId) {
-        Optional<DeckEntity> deckEntity = jpaDeckDao.findByUuid(deckId.uuid());
+        Optional<DeckEntity> deckEntity = jpaDeckDao.findById(deckId.uuid());
 
         if (deckEntity.isPresent()) {
 

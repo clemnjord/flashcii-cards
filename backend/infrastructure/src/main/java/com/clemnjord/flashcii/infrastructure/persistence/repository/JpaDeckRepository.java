@@ -28,36 +28,48 @@ public class JpaDeckRepository implements IDeckRepository {
     @Override
     public void save(Deck deck) {
         UserEntity owner = jpaUserDao.findById(deck.ownerId().uuid())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + deck.ownerId()));
+                                     .orElseThrow(() -> new IllegalArgumentException("User not found: " + deck.ownerId()));
 
         jpaDeckDao.save(deckMapper.toEntity(deck, owner));
     }
 
     @Override
-    public boolean existsByName(String name) {
+    public boolean existsByNameAndOwnerId(String name, UserId ownerId) {
 
-        return jpaDeckDao.existsByName(name);
+        return jpaDeckDao.existsByNameAndOwner_Uuid(name, ownerId.uuid());
     }
 
     @Override
-    public boolean existsById(DeckId id) {
-        return jpaDeckDao.existsById(id.uuid());
+    public boolean existsByIdAndOwnerId(DeckId id, UserId ownerId) {
+        return jpaDeckDao.existsByUuidAndOwner_Uuid(id.uuid(), ownerId.uuid());
     }
 
     @Override
-    public Optional<Deck> findByName(String name) {
-        return jpaDeckDao.findByName(name).map(x -> Deck.restore(new DeckId(x.getUUID()), x.getName(), x.getDescription(), new UserId(x.getOwner().getUuid()), new HashSet<>()));
+    public Optional<Deck> findByNameAndOwnerId(String name, UserId ownerId) {
+        return jpaDeckDao.findByNameAndOwner_Uuid(name, ownerId.uuid()).map(x -> Deck.restore(new DeckId(x.getUUID()),
+                x.getName(),
+                x.getDescription(),
+                new UserId(x.getOwner()
+                            .getUuid()),
+                new HashSet<>()
+        ));
     }
 
     @Override
-    public Optional<Deck> findById(DeckId id) {
-        return jpaDeckDao.findById(id.uuid()).map(x -> Deck.restore(new DeckId(x.getUUID()), x.getName(), x.getDescription(), new UserId(x.getOwner().getUuid()), new HashSet<>()));
+    public Optional<Deck> findByIdAndOwnerId(DeckId id, UserId ownerId) {
+        return jpaDeckDao.findByUuidAndOwner_Uuid(id.uuid(), ownerId.uuid())
+                         .map(x -> Deck.restore(new DeckId(x.getUUID()),
+                                 x.getName(),
+                                 x.getDescription(),
+                                 new UserId(x.getOwner().getUuid()),
+                                 new HashSet<>()
+                         ));
     }
 
     @Override
     public List<Deck> findAllByOwnerIdAndNameContainsIgnoreCase(UserId ownerId, String nameFilter) {
         return jpaDeckDao.findAllByOwner_UuidAndNameContainsIgnoreCase(ownerId.uuid(), nameFilter).stream()
-                .map(deckMapper::toDomainWithoutFlashcards)
-                .toList();
+                         .map(deckMapper::toDomainWithoutFlashcards)
+                         .toList();
     }
 }

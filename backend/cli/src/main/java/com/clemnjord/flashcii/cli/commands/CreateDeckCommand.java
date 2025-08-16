@@ -28,8 +28,7 @@ public class CreateDeckCommand implements Runnable {
     public void run() {
         System.out.println("Adding a new deck...");
 
-        var command =
-                new ICreateDeckUseCase.CreateDeckCommand(name, description, new ArrayList<>());
+        var command = new com.clemnjord.flashcii.application.port.input.deck.CreateDeckCommand(name, description, new ArrayList<>());
         Deck newDeck = createDeckUseCase.execute(command);
 
         System.out.println("Deck added successfully: " + newDeck);

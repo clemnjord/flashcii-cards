@@ -11,13 +11,13 @@ public interface IDeckRepository {
 
     void save(Deck deck);
 
-    boolean existsByName(String name);
+    boolean existsByNameAndOwnerId(String name, UserId ownerId);
 
-    boolean existsById(DeckId id);
+    boolean existsByIdAndOwnerId(DeckId id, UserId ownerId);
 
-    Optional<Deck> findByName(String name);
+    Optional<Deck> findByIdAndOwnerId(DeckId id, UserId ownedId);
 
-    Optional<Deck> findById(DeckId id);
+    Optional<Deck> findByNameAndOwnerId(String name, UserId ownerId);
 
     List<Deck> findAllByOwnerIdAndNameContainsIgnoreCase(UserId ownerId, String nameFilter);
 }

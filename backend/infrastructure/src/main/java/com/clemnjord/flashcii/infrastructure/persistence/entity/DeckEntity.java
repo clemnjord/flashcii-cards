@@ -21,7 +21,7 @@ public class DeckEntity {
     @Id
     private UUID uuid;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column

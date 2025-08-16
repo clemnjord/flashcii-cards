@@ -1,9 +1,11 @@
 package com.clemnjord.flashcii.cli.commands;
 
+import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardCommand;
 import com.clemnjord.flashcii.application.port.input.flashcard.ICreateFlashcardUseCase;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
+import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -20,12 +22,9 @@ public class AddFlashcardCommand implements Runnable {
     @CommandLine.Parameters(index = "1", description = "The answer of the flashcard.")
     private String answer;
 
-    @CommandLine.Parameters(
-            index = "2",
-            description = "The UUID of the deck to add the flashcard to.")
+    @CommandLine.Parameters(index = "2", description = "The UUID of the deck to add the flashcard to.")
     private UUID deckUUID;
 
-    @Autowired
     public AddFlashcardCommand(ICreateFlashcardUseCase createCardUseCase) {
         this.createCardUseCase = createCardUseCase;
     }
@@ -34,9 +33,10 @@ public class AddFlashcardCommand implements Runnable {
     public void run() {
         System.out.println("Adding a new flashcard...");
 
-        var command =
-                new ICreateFlashcardUseCase.CreateFlashcardCommand(
-                        new DeckId(deckUUID), question, answer);
+        var command = new CreateFlashcardCommand(new DeckId(deckUUID),
+                new Question(question),
+                new Answer(answer)
+        );
         Flashcard newFlashcard = createCardUseCase.execute(command);
 
         System.out.println("Flashcard added successfully: " + newFlashcard);

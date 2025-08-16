@@ -1,6 +1,6 @@
 package com.clemnjord.flashcii.spring.shared.usecase;
 
-import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
+import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.Username;
@@ -13,11 +13,11 @@ import java.util.Optional;
  * Until then, use this to ger a user and create it if it doesn't exist.
  */
 @Component
-public class StubCurrentUserUseCase implements ICurrentUserUseCase {
+public class StubUserContextService implements IUserContextService {
 
     IUserRepository userRepository;
 
-    public StubCurrentUserUseCase(IUserRepository userRepository) {
+    public StubUserContextService(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

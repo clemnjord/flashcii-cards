@@ -1,7 +1,9 @@
 package com.clemnjord.flashcii.web.controller;
 
+import com.clemnjord.flashcii.application.port.input.deck.CreateDeckCommand;
 import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.IListDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.ListDeckCommand;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.web.dto.DeckDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +37,7 @@ public class DeckController {
             @Parameter(description = "Filter decks with optional name filter (case-insensitive")
             @RequestParam(required = false) String nameFilter) {
         return listDeckUseCase
-                .execute(new IListDeckUseCase.ListDeckCommand(nameFilter))
+                .execute(new ListDeckCommand(nameFilter))
                 .stream()
                 .peek(x -> System.out.println("Found deck: " + x))
                 .map(deck -> new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description()))
@@ -47,7 +49,7 @@ public class DeckController {
     @ApiResponse(responseCode = "201", description = "Deck created successfully")
     @ResponseStatus(HttpStatus.CREATED)
     public DeckDto.DeckResponse createDeck(@Valid @RequestBody DeckDto.DeckRequest deckRequest) {
-        Deck deck = createDeckUseCase.execute(new ICreateDeckUseCase.CreateDeckCommand(deckRequest.name(), deckRequest.description(), List.of()));
+        Deck deck = createDeckUseCase.execute(new CreateDeckCommand(deckRequest.name(), deckRequest.description(), List.of()));
         return new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description());
     }
 }

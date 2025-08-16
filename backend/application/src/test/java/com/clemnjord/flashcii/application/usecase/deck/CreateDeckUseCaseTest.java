@@ -1,18 +1,17 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
-import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
-import com.clemnjord.flashcii.application.port.output.ICurrentUserUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.CreateDeckCommand;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
+import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,27 +22,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class CreateDeckUseCaseTest {
-    @Mock
-    IDeckRepository deckRepository;
-    @Mock
-    ICurrentUserUseCase currentUserUseCase;
+    @InjectMocks
     CreateDeckUseCase createDeckUseCase;
-    private AutoCloseable closeable;
-
-    @BeforeEach
-    void setUp() {
-        closeable = MockitoAnnotations.openMocks(this);
-
-        deckRepository = Mockito.mock(IDeckRepository.class);
-        currentUserUseCase = Mockito.mock(ICurrentUserUseCase.class);
-        createDeckUseCase = new CreateDeckUseCase(deckRepository, currentUserUseCase);
-    }
-
-    @AfterEach
-    void releaseMocks() throws Exception {
-        closeable.close();
-    }
+    @Mock
+    private IDeckRepository deckRepository;
+    @Mock
+    private IUserContextService userContextService;
 
     @Test
     void shouldCreateDeckWhenNameIsUnique() {
@@ -52,9 +38,7 @@ class CreateDeckUseCaseTest {
         mockGetCurrentUser(userId);
         mockDeckDoesNotExist();
 
-        var createDeckCommand =
-                new ICreateDeckUseCase.CreateDeckCommand(
-                        "testDeck", "Test description", Collections.emptyList());
+        var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", Collections.emptyList());
 
         // Act
         var result = createDeckUseCase.execute(createDeckCommand);
@@ -74,9 +58,7 @@ class CreateDeckUseCaseTest {
         mockGetCurrentUser(userId);
         deckExists();
 
-        var createDeckCommand =
-                new ICreateDeckUseCase.CreateDeckCommand(
-                        "testDeck", "Test description", Collections.emptyList());
+        var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", Collections.emptyList());
 
         // Act & Assert
         assertThatThrownBy(() -> createDeckUseCase.execute(createDeckCommand))
@@ -91,8 +73,7 @@ class CreateDeckUseCaseTest {
         mockGetCurrentUser(userId);
         mockDeckDoesNotExist();
 
-        var createDeckCommand = new ICreateDeckUseCase.CreateDeckCommand(
-                "testDeck", "Test description", List.of("tag1", "tag2"));
+        var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", List.of("tag1", "tag2"));
 
         var result = createDeckUseCase.execute(createDeckCommand);
 
@@ -100,16 +81,16 @@ class CreateDeckUseCaseTest {
         assertThat(result.name()).isEqualTo("testDeck");
     }
 
+    // Helper test methods
     private void mockGetCurrentUser(UserId userId) {
-        when(currentUserUseCase.getCurrentUser())
-                .thenReturn(new User(userId, new Username("testUsername")));
+        when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUsername")));
     }
 
     private void mockDeckDoesNotExist() {
-        when(deckRepository.existsByName(any())).thenReturn(false);
+        when(deckRepository.existsByNameAndOwnerId(any(), any())).thenReturn(false);
     }
 
     private void deckExists() {
-        when(deckRepository.existsByName(any())).thenReturn(true);
+        when(deckRepository.existsByNameAndOwnerId(any(), any())).thenReturn(true);
     }
 }
