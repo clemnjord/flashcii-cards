@@ -39,7 +39,6 @@ public class DeckController {
         return listDeckUseCase
                 .execute(new ListDeckCommand(nameFilter))
                 .stream()
-                .peek(x -> System.out.println("Found deck: " + x))
                 .map(deck -> new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description()))
                 .toList();
     }

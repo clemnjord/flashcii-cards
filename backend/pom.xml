@@ -47,7 +47,6 @@
         <module>infrastructure</module>
         <module>spring-shared</module>
         <module>web</module>
-        <module>cli</module>
     </modules>
 
     <dependencyManagement>
