@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .difficulty-footer {
+        @apply flex justify-start w-1/2;
+    }
+}
