@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ListDeckUseCaseTest {
+class ListDeckUseCaseImplTest {
     @Mock
     private IDeckRepository deckRepository;
 
@@ -28,7 +28,7 @@ class ListDeckUseCaseTest {
     private IUserContextService userContextService;
 
     @InjectMocks
-    private ListDeckUseCase listDeckUseCase;
+    private ListDeckUseCaseImpl listDeckUseCaseImpl;
 
     private UserId userId;
 
@@ -57,7 +57,7 @@ class ListDeckUseCaseTest {
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
         // Act
-        List<Deck> result = listDeckUseCase.execute(command);
+        List<Deck> result = listDeckUseCaseImpl.execute(command);
 
         // Assert
         assertThat(result).isEqualTo(expectedDecks);
@@ -72,7 +72,7 @@ class ListDeckUseCaseTest {
         when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "filtered")).thenReturn(expectedDecks);
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
-        List<Deck> result = listDeckUseCase.execute(command);
+        List<Deck> result = listDeckUseCaseImpl.execute(command);
 
         assertThat(result).isEqualTo(expectedDecks);
     }
@@ -84,7 +84,7 @@ class ListDeckUseCaseTest {
         when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "nonexistent")).thenReturn(List.of());
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
-        List<Deck> result = listDeckUseCase.execute(command);
+        List<Deck> result = listDeckUseCaseImpl.execute(command);
 
         assertThat(result).isEmpty();
     }

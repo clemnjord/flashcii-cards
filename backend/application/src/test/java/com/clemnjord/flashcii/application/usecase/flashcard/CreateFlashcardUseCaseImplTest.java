@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CreateFlashcardUseCaseTest {
+class CreateFlashcardUseCaseImplTest {
 
     private static final String DEFAULT_QUESTION = "What is Flashcii?";
     private static final String DEFAULT_ANSWER = "A flashcard app";
@@ -44,11 +44,11 @@ class CreateFlashcardUseCaseTest {
     @Mock
     private IUserContextService userContextService;
     @InjectMocks
-    private CreateFlashcardUseCase createFlashcardUseCase;
+    private CreateFlashcardUseCaseImpl createFlashcardUseCaseImpl;
 
     @BeforeEach
     void setUp() {
-        createFlashcardUseCase = new CreateFlashcardUseCase(flashcardRepository, deckRepository, userContextService);
+        createFlashcardUseCaseImpl = new CreateFlashcardUseCaseImpl(flashcardRepository, deckRepository, userContextService);
 
         when(userContextService.getCurrentUser()).thenReturn(testUser);
     }
@@ -62,7 +62,7 @@ class CreateFlashcardUseCaseTest {
         when(deckRepository.findByIdAndOwnerId(createCardCommand.deckId(), testUser.userId())).thenReturn(Optional.of(createTestDeck()));
 
         // Act
-        var result = createFlashcardUseCase.execute(createCardCommand);
+        var result = createFlashcardUseCaseImpl.execute(createCardCommand);
 
         // Assert
         assertThat(result).isNotNull();
@@ -82,7 +82,7 @@ class CreateFlashcardUseCaseTest {
         when(deckRepository.findByIdAndOwnerId(createCardCommand.deckId(), testUser.userId())).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> createFlashcardUseCase.execute(createCardCommand))
+        assertThatThrownBy(() -> createFlashcardUseCaseImpl.execute(createCardCommand))
                 .isInstanceOf(DeckNotFoundException.class)
                 .hasMessageContaining("Deck not found with ID: " + createCardCommand.deckId().uuid());
 
@@ -101,7 +101,7 @@ class CreateFlashcardUseCaseTest {
         when(flashcardRepository.existsByQuestionAndDeckId(createCardCommand.question(), createCardCommand.deckId())).thenReturn(true);
 
         // Act & Assert
-        assertThatThrownBy(() -> createFlashcardUseCase.execute(createCardCommand))
+        assertThatThrownBy(() -> createFlashcardUseCaseImpl.execute(createCardCommand))
                 .isInstanceOf(FlashcardAlreadyExistsException.class)
                 .hasMessageContaining("A flashcard with this question already exists in the deck");
 

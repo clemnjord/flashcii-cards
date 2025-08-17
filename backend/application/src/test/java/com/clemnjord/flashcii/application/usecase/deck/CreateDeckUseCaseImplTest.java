@@ -23,9 +23,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CreateDeckUseCaseTest {
+class CreateDeckUseCaseImplTest {
     @InjectMocks
-    CreateDeckUseCase createDeckUseCase;
+    CreateDeckUseCaseImpl createDeckUseCaseImpl;
     @Mock
     private IDeckRepository deckRepository;
     @Mock
@@ -41,7 +41,7 @@ class CreateDeckUseCaseTest {
         var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", Collections.emptyList());
 
         // Act
-        var result = createDeckUseCase.execute(createDeckCommand);
+        var result = createDeckUseCaseImpl.execute(createDeckCommand);
 
         // Assert
         assertThat(result).isNotNull();
@@ -61,7 +61,7 @@ class CreateDeckUseCaseTest {
         var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", Collections.emptyList());
 
         // Act & Assert
-        assertThatThrownBy(() -> createDeckUseCase.execute(createDeckCommand))
+        assertThatThrownBy(() -> createDeckUseCaseImpl.execute(createDeckCommand))
                 .isInstanceOf(DeckAlreadyExistsException.class)
                 .hasMessageContaining("Deck with name 'testDeck' already exists");
     }
@@ -75,7 +75,7 @@ class CreateDeckUseCaseTest {
 
         var createDeckCommand = new CreateDeckCommand("testDeck", "Test description", List.of("tag1", "tag2"));
 
-        var result = createDeckUseCase.execute(createDeckCommand);
+        var result = createDeckUseCaseImpl.execute(createDeckCommand);
 
         assertThat(result).isNotNull();
         assertThat(result.name()).isEqualTo("testDeck");

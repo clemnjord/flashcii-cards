@@ -100,7 +100,7 @@
 
     <build>
         <plugins>
-            <!-- Compiler plugin for Java 23 -->
+            <!-- Compiler plugin for Java 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

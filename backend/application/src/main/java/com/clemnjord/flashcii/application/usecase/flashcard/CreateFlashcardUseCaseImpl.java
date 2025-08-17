@@ -3,7 +3,7 @@ package com.clemnjord.flashcii.application.usecase.flashcard;
 import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
 import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardCommand;
-import com.clemnjord.flashcii.application.port.input.flashcard.ICreateFlashcardUseCase;
+import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardUseCase;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationService
 @ApplicationTransactional
-public class CreateFlashcardUseCase implements ICreateFlashcardUseCase {
-    private static final Logger logger = LoggerFactory.getLogger(CreateFlashcardUseCase.class);
+public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
+    private static final Logger logger = LoggerFactory.getLogger(CreateFlashcardUseCaseImpl.class);
 
     private final IFlashcardRepository flashcardRepository;
     private final IDeckRepository deckRepository;
     private final IUserContextService userContextService;
 
-    public CreateFlashcardUseCase(IFlashcardRepository flashcardRepository, IDeckRepository deckRepository, IUserContextService userContextService) {
+    public CreateFlashcardUseCaseImpl(IFlashcardRepository flashcardRepository, IDeckRepository deckRepository, IUserContextService userContextService) {
         this.flashcardRepository = flashcardRepository;
         this.deckRepository = deckRepository;
         this.userContextService = userContextService;

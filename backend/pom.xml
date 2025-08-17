@@ -9,12 +9,16 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>Flashcii Cards - Parent</name>
+    <description>Parent POM for Flashcii Cards application</description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <!-- Dependencies versions -->
+        <aspectj.weaver.version>1.9.24</aspectj.weaver.version>
         <assertj.version>3.27.3</assertj.version>
         <h2.version>2.3.232</h2.version>
         <jansi.version>2.4.2</jansi.version>
@@ -25,7 +29,10 @@
         <picocli.version>4.7.7</picocli.version>
         <pitest.version>1.19.4</pitest.version>
         <pitest.junit5.version>1.2.3</pitest.junit5.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <spring.aspects.version>6.2.9</spring.aspects.version>
         <spring.boot.version>3.5.4</spring.boot.version>
+        <springdoc.openapi.version>2.8.9</springdoc.openapi.version>
         <!-- Plugins versions -->
         <maven.clean.version>3.4.0</maven.clean.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
@@ -38,7 +45,6 @@
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.site.version>3.12.1</maven.site.version>
         <maven.surefire.version>3.3.0</maven.surefire.version>
-        <pitest.junit.version>1.2.3</pitest.junit.version>
     </properties>
 
     <modules>
@@ -51,7 +57,49 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Runtime dependencies -->
+            <!-- Internal dependencies -->
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.clemnjord.flashcii</groupId>
+                <artifactId>spring-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Spring dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -60,7 +108,7 @@
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
+                <artifactId>spring-boot-starter-validation</artifactId>
                 <version>${spring.boot.version}</version>
             </dependency>
 
@@ -73,96 +121,34 @@
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>2.8.9</version>
+                <version>${springdoc.openapi.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-actuator</artifactId>
-                <version>${spring.boot.version}</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${spring.aspects.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-validation</artifactId>
-                <version>${spring.boot.version}</version>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.weaver.version}</version>
             </dependency>
 
-
+            <!-- Database dependencies -->
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aspects</artifactId>
-                <version>6.2.9</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>1.9.24</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.fusesource.jansi</groupId>
-                <artifactId>jansi</artifactId>
-                <version>${jansi.version}</version>
-            </dependency>
-
-            <!-- Picocli for command line parsing -->
-            <dependency>
-                <groupId>info.picocli</groupId>
-                <artifactId>picocli</artifactId>
-                <version>${picocli.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>info.picocli</groupId>
-                <artifactId>picocli-spring-boot-starter</artifactId>
-                <version>${picocli.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>info.picocli</groupId>
-                <artifactId>picocli-codegen</artifactId>
-                <version>${picocli.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
+            <!--- Logging dependencies -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
+                <version>${slf4j.version}</version>
             </dependency>
-
-            <!-- Internal dependencies -->
-            <dependency>
-                <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>application</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.clemnjord.flashcii</groupId>
-                <artifactId>spring-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
 
             <!-- Development dependencies -->
             <dependency>
@@ -235,8 +221,9 @@
     </dependencyManagement>
 
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults -->
+        <pluginManagement>
             <plugins>
+                <!-- Base maven plugins. To avoid using Maven defaults. -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -292,17 +279,20 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.pitest</groupId>
-                    <artifactId>pitest-maven</artifactId>
-                    <version>${pitest.version}</version>
-                </plugin>
+
+                <!-- Spring boot plugins-->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.version}</version>
                 </plugin>
 
+                <!-- Test plugins -->
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>${pitest.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 

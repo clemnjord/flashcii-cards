@@ -3,7 +3,7 @@ package com.clemnjord.flashcii.application.usecase.deck;
 import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
 import com.clemnjord.flashcii.application.port.input.deck.CreateDeckCommand;
-import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.CreateDeckUseCase;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
@@ -17,19 +17,19 @@ import java.util.Objects;
 
 
 @ApplicationService
-@ApplicationTransactional
-public class CreateDeckUseCase implements ICreateDeckUseCase {
-    private static final Logger logger = LoggerFactory.getLogger(CreateDeckUseCase.class);
+public class CreateDeckUseCaseImpl implements CreateDeckUseCase {
+    private static final Logger logger = LoggerFactory.getLogger(CreateDeckUseCaseImpl.class);
 
     private final IDeckRepository deckRepository;
     private final IUserContextService userContextService;
 
-    public CreateDeckUseCase(IDeckRepository deckRepository, IUserContextService userContextService) {
+    public CreateDeckUseCaseImpl(IDeckRepository deckRepository, IUserContextService userContextService) {
         this.deckRepository = deckRepository;
         this.userContextService = userContextService;
     }
 
     @Override
+    @ApplicationTransactional
     public Deck execute(CreateDeckCommand command) {
         Objects.requireNonNull(command, "CreateDeckCommand cannot be null");
 

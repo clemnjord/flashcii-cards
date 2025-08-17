@@ -4,7 +4,7 @@ import com.clemnjord.flashcii.domain.model.deck.Deck;
 
 import java.util.List;
 
-public interface IListDeckUseCase {
+public interface ListDeckUseCase {
 
     List<Deck> execute(ListDeckCommand command);
 

@@ -1,8 +1,10 @@
 package com.clemnjord.flashcii.web.controller;
 
 
-import com.clemnjord.flashcii.application.port.input.deck.ICreateDeckUseCase;
-import com.clemnjord.flashcii.application.port.input.deck.IListDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.CreateDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.GetDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.ListDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardUseCase;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.DeckDto;
@@ -32,10 +34,16 @@ class DeckControllerWebTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private IListDeckUseCase listDeckUseCase;
+    private ListDeckUseCase listDeckUseCase;
 
     @MockitoBean
-    private ICreateDeckUseCase createDeckUseCase;
+    private CreateDeckUseCase createDeckUseCase;
+
+    @MockitoBean
+    private GetDeckUseCase getDeckUseCase;
+
+    @MockitoBean
+    private CreateFlashcardUseCase createFlashcardUseCase;
 
     @Test
     void shouldCreateDeck() throws Exception {
@@ -46,10 +54,10 @@ class DeckControllerWebTest {
 
         // When & Then
         mockMvc.perform(post("/decks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("New Deck"));
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(request)))
+               .andExpect(status().isCreated())
+               .andExpect(jsonPath("$.name").value("New Deck"));
     }
 
     @Test
@@ -57,9 +65,9 @@ class DeckControllerWebTest {
         DeckDto.DeckRequest invalidRequest = new DeckDto.DeckRequest("", "Valid description");
 
         mockMvc.perform(post("/decks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(invalidRequest)))
+               .andExpect(status().isBadRequest())
+               .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
     }
 }

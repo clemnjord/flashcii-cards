@@ -13,15 +13,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CreateUserUseCaseTest {
+class CreateUserUseCaseImplTest {
 
     IUserRepository userRepository;
-    CreateUserUseCase createUserUseCase;
+    CreateUserUseCaseImpl createUserUseCaseImpl;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(IUserRepository.class);
-        createUserUseCase = new CreateUserUseCase(userRepository);
+        createUserUseCaseImpl = new CreateUserUseCaseImpl(userRepository);
     }
 
     @Test
@@ -32,7 +32,7 @@ class CreateUserUseCaseTest {
         var createUserCommand = new CreateUserCommand("testuser");
 
         // Act
-        var result = createUserUseCase.execute(createUserCommand);
+        var result = createUserUseCaseImpl.execute(createUserCommand);
 
         // Assert
         assertThat(result).isNotNull();
@@ -47,7 +47,7 @@ class CreateUserUseCaseTest {
         var createUserCommand = new CreateUserCommand("testuser");
 
         // Act & Assert
-        assertThatThrownBy(() -> createUserUseCase.execute(createUserCommand))
+        assertThatThrownBy(() -> createUserUseCaseImpl.execute(createUserCommand))
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("User already exists with username: testuser");
     }
