@@ -31,7 +31,11 @@ public class DeckController {
     private final CreateDeckUseCase createDeckUseCase;
     private final CreateFlashcardUseCase createFlashcardUseCase;
 
-    public DeckController(GetDeckUseCase getDeckUseCase, ListDeckUseCase listDeckUseCase, CreateDeckUseCase createDeckUseCase, CreateFlashcardUseCase createFlashcardUseCase) {
+    public DeckController(
+            GetDeckUseCase getDeckUseCase,
+            ListDeckUseCase listDeckUseCase,
+            CreateDeckUseCase createDeckUseCase,
+            CreateFlashcardUseCase createFlashcardUseCase) {
         this.getDeckUseCase = getDeckUseCase;
         this.listDeckUseCase = listDeckUseCase;
         this.createDeckUseCase = createDeckUseCase;
@@ -74,11 +78,13 @@ public class DeckController {
     @ApiResponse(responseCode = "403", description = "Deck not owned")
     @ApiResponse(responseCode = "404", description = "Deck not found")
     @ResponseStatus(HttpStatus.CREATED)
-    public FlashcardDto.FlashcardResponse createFlashcard(@PathVariable String deckId, @Valid @RequestBody FlashcardDto.FlashcardRequest flashcardRequest) {
-        Flashcard flashcard = createFlashcardUseCase.execute(new CreateFlashcardCommand(DeckId.from(deckId), new Question(flashcardRequest.question()), new Answer(flashcardRequest.answer())));
-        return new FlashcardDto.FlashcardResponse(flashcard.flashcardId().uuid().toString(), flashcard
-                .question()
-                .value(), flashcard.answer().value()
-        );
+    public FlashcardDto.FlashcardResponse createFlashcard(
+            @PathVariable String deckId, @Valid @RequestBody FlashcardDto.FlashcardRequest flashcardRequest) {
+        Flashcard flashcard = createFlashcardUseCase.execute(new CreateFlashcardCommand(
+                DeckId.from(deckId), new Question(flashcardRequest.question()), new Answer(flashcardRequest.answer())));
+        return new FlashcardDto.FlashcardResponse(
+                flashcard.flashcardId().uuid().toString(),
+                flashcard.question().value(),
+                flashcard.answer().value());
     }
 }
