@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import DifficultyFooter from "./components/DifficultyFooter";
 import FlashcardContent from "./components/FlashcardContent";
-import { EAnswerDifficulty } from "./api/types/EAnswerDifficulty";
+import {EAnswerDifficulty} from "./api/types/EAnswerDifficulty";
 import "./styles/globals.css";
 
 function App() {
-    const { card, getData } = useData();
+    const {card, getData} = useData();
 
     // Function to handle difficulty button clicks
     const difficultyButtonClick = async (difficulty: EAnswerDifficulty) => {
@@ -17,7 +17,7 @@ function App() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ cardId: card.id, difficulty: difficulty }),
+            body: JSON.stringify({cardId: card.id, difficulty: difficulty}),
             cache: 'no-store'
         });
 
@@ -35,17 +35,19 @@ function App() {
                         </h1>
                     </div>
 
-                    <FlashcardContent card={card} />
+                    <FlashcardContent card={card}/>
 
                     <div>
                         {card.id !== "-1" ? (
-                            <DifficultyFooter onButtonClick={difficultyButtonClick} nextOccurrence={card.nextOccurrence}/>
+                            <DifficultyFooter onButtonClick={difficultyButtonClick}
+                                              nextOccurrence={card.nextOccurrence}/>
                         ) : (
-                            <button onClick={getData} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <button onClick={getData}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Get next question
                             </button>
                         )}
-                   </div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -57,16 +59,19 @@ export default App;
 
 // Custom hook for data fetching
 const useData = () => {
-    const [card, setCard] = useState<Card>({id: "-1", data: "None", nextOccurrence: {againTime: "0", hardTime: "0", goodTime: "0", easyTime: "0"}});
+    const [card, setCard] = useState<Card>({
+        id: "-1",
+        data: "None",
+        nextOccurrence: {againTime: "0", hardTime: "0", goodTime: "0", easyTime: "0"}
+    });
 
     const getData = async () => {
         try {
-            const response = await fetch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/api/nextQuestion`, { cache: 'no-store'});
+            const response = await fetch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:${process.env.REACT_APP_BACKEND_PORT}/api/nextQuestion`, {cache: 'no-store'});
             let asciipage = await response.json();
 
             // Check if the response status is 404 or if the asciipage id is undefined
-            if (response.status === 404 || asciipage.id === undefined)
-            {
+            if (response.status === 404 || asciipage.id === undefined) {
                 asciipage.id = "-1"
                 asciipage.data = ""
             }
@@ -80,7 +85,7 @@ const useData = () => {
         getData();
     }, []);
 
-    return { card, getData };
+    return {card, getData};
 };
 
 type Card = {

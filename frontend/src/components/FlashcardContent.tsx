@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import { renderAsciidoc } from '../api/render/asciidoctorRender';
+import {renderAsciidoc} from '../api/render/asciidoctorRender';
 import {parse} from "node-html-parser";
 
 interface FlashcardContentProps {
-    card: {id: string, data: string};
+    card: { id: string, data: string };
 }
 
 // FlashcardContent component to display the question and answer
-const FlashcardContent: React.FC<FlashcardContentProps> = ({ card }) => {
+const FlashcardContent: React.FC<FlashcardContentProps> = ({card}) => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
 
@@ -15,8 +15,7 @@ const FlashcardContent: React.FC<FlashcardContentProps> = ({ card }) => {
         const renderCard = async () => {
             try {
                 // If no more cards are available, set default messages
-                if (card.id === "-1")
-                {
+                if (card.id === "-1") {
                     setQuestion("No more cards available");
                     setAnswer("");
                     return;

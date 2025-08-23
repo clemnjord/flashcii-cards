@@ -10,8 +10,8 @@ services:
   front:
     build: "./frontend"
     environment:
-        # Not used for now
-      - BACK_ADDRESS=192.168.1.27 
+      # Not used for now
+      - BACK_ADDRESS=192.168.1.27
       - BACK_PORT=8080
     ports:
       - "3000:3000"

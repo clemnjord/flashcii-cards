@@ -1,7 +1,25 @@
 = Flashcii Cards
 
 The goal of Flashcii Cards is to provide an open-source, self-hostable, containerized and asciidoc-based flashcard learning software.
-The front is made with the Next.js framework, and the back is in Go.
+
+== State of the project
+
+This project is very much a hobbyist project.
+It's in its infancy and doesn't do much.
+Specifically, it doesn't uses Asciidoc at all for now.
+
+My goal is to make something usable, maintainable and evolvable first.
+Then I will look into Asciidoc.
+
+== Tech stack
+
+The front is made with the React, and the back is in Java.
+
+Initially, I developed a proto backend in Go, to start learning the language, then switched to Java, because I know the language better and I wanted to experiment with Clean Architecture and Spring Boot.
+
+I switched to React from Next.js because I had trouble with Next.js.
+Until then, I learned a little bit more and might switch back (pretty painless at that point, there is almost nothing).
+
 
 // == Install
 // == Contribute

@@ -13,4 +13,4 @@ const renderAsciidoc = (asciidocContent: string, cardPath: string): string => {
     return html.toString()
 };
 
-export { renderAsciidoc };
+export {renderAsciidoc};
