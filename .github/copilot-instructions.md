@@ -133,6 +133,8 @@ frontend/
 ### Code Quality Tools
 - **Qodana configuration**: `qodana.yaml` - JVM linter with recommended profile
 - **Lefthook configuration**: `lefthook.yml` - Git hooks (examples only, not active)
+  - Contains commented example for Spotless formatting: `mvn -f backend/pom.xml spotless:apply`
+  - Currently no active git hooks are configured
 
 ## Common Issues and Workarounds
 
