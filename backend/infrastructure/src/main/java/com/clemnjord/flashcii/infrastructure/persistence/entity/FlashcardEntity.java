@@ -1,15 +1,20 @@
 package com.clemnjord.flashcii.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "flashcard")
 public class FlashcardEntity {
 
     @Id
-    private UUID uuid;
+    private FlashcardEntityId id;
 
     @Column(nullable = false)
     private String question;
@@ -17,41 +22,23 @@ public class FlashcardEntity {
     @Column(nullable = false)
     private String answer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deck_id", nullable = false)
-    private DeckEntity deck;
+    @OneToMany(mappedBy = "flashcard", cascade = CascadeType.ALL)
+    private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();
+
 
     // Getters and setters
-
-    public UUID getUUID() {
-        return uuid;
+    public FlashcardEntityId getID() {
+        return id;
     }
 
-    public void setUUID(UUID uuid) {
-        this.uuid = uuid;
+    public void setID(FlashcardEntityId id) {
+        this.id = id;
     }
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public DeckEntity getDeck() {
-        return deck;
-    }
-
-    public void setDeck(DeckEntity deck) {
-        this.deck = deck;
+    // Utility methods
+    public List<DeckEntity> getDecks() {
+        return deckFlashcards.stream()
+                .map(DeckFlashcardEntity::getDeck)
+                .toList();
     }
 }

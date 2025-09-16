@@ -51,7 +51,7 @@ public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
 
         // Create and save the new flashcard
         Flashcard flashcard = Flashcard.createNew(command.question(), command.answer());
-        flashcardRepository.save(flashcard, command.deckId());
+        flashcardRepository.save(flashcard, command.deckId(), currentUser.userId());
 
         // Associate the saved flashcard's ID to the deck
         deck = deck.addFlashcard(flashcard.flashcardId());

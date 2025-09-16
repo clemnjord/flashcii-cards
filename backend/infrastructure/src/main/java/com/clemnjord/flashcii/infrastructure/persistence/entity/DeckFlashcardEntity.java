@@ -1,0 +1,36 @@
+package com.clemnjord.flashcii.infrastructure.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "deck_flashcard")
+@Getter
+@Setter
+@NoArgsConstructor
+public class DeckFlashcardEntity {
+
+    @EmbeddedId
+    private DeckFlashcardEntityId id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deck_id")
+    @MapsId("deckId")
+    private DeckEntity deck;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name = "flashcard_id", referencedColumnName = "flashcardId"),
+        @JoinColumn(name = "owner_id", referencedColumnName = "ownerId")
+    })
+    @MapsId("flashcardId")
+    private FlashcardEntity flashcard;
+
+    public DeckFlashcardEntity(DeckEntity deck, FlashcardEntity flashcard) {
+        this.id = new DeckFlashcardEntityId(deck.getUUID(), flashcard.getID());
+        this.deck = deck;
+        this.flashcard = flashcard;
+    }
+}

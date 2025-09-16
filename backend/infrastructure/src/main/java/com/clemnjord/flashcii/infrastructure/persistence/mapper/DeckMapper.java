@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 public class DeckMapper {
 
     public Deck toDomainWithFlashcards(DeckEntity entity) {
-        Set<FlashcardId> flashcardIds = entity.getFlashcards().stream().map(e -> new FlashcardId(e.getUUID())).collect(Collectors.toSet());
+        Set<FlashcardId> flashcardIds = entity.getFlashcards().stream()
+                .map(e -> new FlashcardId(e.getID().getFlashcardId()))
+                .collect(Collectors.toSet());
 
         return Deck.restore(
                 new DeckId(entity.getUUID()),
@@ -33,7 +35,6 @@ public class DeckMapper {
                 new UserId(entity.getOwner().getUuid()),
                 Set.of());
     }
-
 
     public DeckEntity toEntity(Deck deck, UserEntity owner) {
         DeckEntity entity = new DeckEntity();
