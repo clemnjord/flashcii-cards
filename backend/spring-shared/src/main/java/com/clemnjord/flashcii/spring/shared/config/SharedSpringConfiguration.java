@@ -12,19 +12,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(
         basePackages = {
-                "com.clemnjord.flashcii.application",
-                "com.clemnjord.flashcii.infrastructure",
-                "com.clemnjord.flashcii.spring.config"
+            "com.clemnjord.flashcii.application",
+            "com.clemnjord.flashcii.infrastructure",
+            "com.clemnjord.flashcii.spring.shared.config"
         },
         includeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ANNOTATION,
-                        classes = {ApplicationService.class})
+            @ComponentScan.Filter(
+                    type = FilterType.ANNOTATION,
+                    classes = {ApplicationService.class})
         })
-@EnableJpaRepositories(
-        basePackages = "com.clemnjord.flashcii.infrastructure.persistence.repository")
+@EnableJpaRepositories(basePackages = "com.clemnjord.flashcii.infrastructure.persistence.repository")
 @EntityScan(basePackages = "com.clemnjord.flashcii.infrastructure.persistence.entity")
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class SharedSpringConfiguration {
-}
+public class SharedSpringConfiguration {}

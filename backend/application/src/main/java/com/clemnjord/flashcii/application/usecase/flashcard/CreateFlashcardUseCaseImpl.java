@@ -8,7 +8,6 @@ import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
-import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.user.User;
 import org.slf4j.Logger;
@@ -43,11 +42,6 @@ public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
                                  .orElseThrow(() -> new DeckNotFoundException("Deck not found with ID: " + command
                                          .deckId()
                                          .uuid()));
-
-        // Check if flashcard already exists in the deck
-        if (flashcardRepository.existsByQuestionAndDeckId(command.question(), command.deckId())) {
-            throw new FlashcardAlreadyExistsException("A flashcard with this question already exists in the deck");
-        }
 
         // Create and save the new flashcard
         Flashcard flashcard = Flashcard.createNew(command.question(), command.answer());

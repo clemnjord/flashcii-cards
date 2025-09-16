@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -20,4 +21,17 @@ public class FlashcardEntityId implements Serializable {
     }
 
     protected FlashcardEntityId() {}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FlashcardEntityId that = (FlashcardEntityId) o;
+        return Objects.equals(flashcardId, that.flashcardId) && Objects.equals(ownerId, that.ownerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(flashcardId, ownerId);
+    }
 }

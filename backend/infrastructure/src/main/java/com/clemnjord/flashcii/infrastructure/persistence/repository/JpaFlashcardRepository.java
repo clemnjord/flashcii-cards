@@ -6,7 +6,6 @@ import com.clemnjord.flashcii.domain.exception.user.UserNotFoundException;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
-import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckFlashcardEntity;
@@ -41,11 +40,6 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
     @Override
     public Optional<Flashcard> findById(FlashcardId flashcardId) {
         return jpaFlashcardDao.findById(flashcardId.uuid()).map(flashcardMapper::toDomain);
-    }
-
-    @Override
-    public boolean existsByQuestionAndDeckId(Question question, DeckId deckId) {
-        return jpaFlashcardDao.existsByQuestionAndDeck_Uuid(question.value(), deckId.uuid());
     }
 
     @Override
