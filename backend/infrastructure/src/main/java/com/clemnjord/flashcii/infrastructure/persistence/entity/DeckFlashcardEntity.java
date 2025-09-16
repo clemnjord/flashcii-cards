@@ -22,8 +22,8 @@ public class DeckFlashcardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "flashcard_id", referencedColumnName = "flashcardId"),
-        @JoinColumn(name = "owner_id", referencedColumnName = "ownerId")
+        @JoinColumn(name = "flashcard_id", referencedColumnName = "flashcard_id", nullable = false),
+        @JoinColumn(name = "owner_id", referencedColumnName = "owner_id", nullable = false)
     })
     @MapsId("flashcardId")
     private FlashcardEntity flashcard;

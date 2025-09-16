@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "flashcard")
 public class FlashcardEntity {
 
-    @Id
+    @EmbeddedId
     private FlashcardEntityId id;
 
     @Column(nullable = false)

@@ -1,0 +1,76 @@
+package com.clemnjord.flashcii.infrastructure.persistence.entity;
+
+import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
+import jakarta.persistence.PersistenceException;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@DataJpaTest
+@ContextConfiguration(classes = TestJpaConfiguration.class)
+@ActiveProfiles("test")
+class UserEntityTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Test
+    void shouldPersistValidUserEntity() {
+        // Given
+        UserEntity user = new UserEntity();
+        UUID userId = UUID.randomUUID();
+        user.setUuid(userId);
+        user.setUsername("testuser");
+
+        // When
+        UserEntity savedUser = entityManager.persistAndFlush(user);
+
+        // Then
+        assertThat(savedUser.getUuid()).isNotNull();
+        assertThat(savedUser.getUuid()).isEqualTo(userId);
+        assertThat(savedUser.getUsername()).isEqualTo("testuser");
+    }
+
+    @Test
+    void shouldValidateConstraints() {
+        // Given
+        UserEntity user = new UserEntity();
+        // Missing required fields
+
+        // When & Then
+        assertThatThrownBy(() -> {
+                    entityManager.persistAndFlush(user);
+                })
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    void shouldHandleUniqueConstraints() {
+        // Given
+        UserEntity user1 = new UserEntity();
+        user1.setUuid(UUID.randomUUID());
+        user1.setUsername("testuser");
+
+        UserEntity user2 = new UserEntity();
+        user2.setUuid(UUID.randomUUID());
+        user2.setUsername("testuser"); // Same username
+
+        // When & Then
+        entityManager.persist(user1);
+        entityManager.flush();
+
+        assertThatThrownBy(() -> {
+                    entityManager.persist(user2);
+                    entityManager.flush();
+                })
+                .isInstanceOf(PersistenceException.class);
+    }
+}

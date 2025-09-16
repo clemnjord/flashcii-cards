@@ -1,5 +1,6 @@
 package com.clemnjord.flashcii.infrastructure.persistence.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,10 @@ import java.util.UUID;
 @Setter
 @Embeddable
 public class FlashcardEntityId implements Serializable {
+    @Column(name = "flashcard_id")
     private UUID flashcardId;
+
+    @Column(name = "owner_id")
     private UUID ownerId;
 
     public FlashcardEntityId(UUID flashcardId, UUID ownerId) {

@@ -11,32 +11,32 @@ import java.util.Optional;
 
 @Repository
 public class JpaUserRepository implements IUserRepository {
-    private final JpaUserDao springRepository;
+    private final JpaUserDao jpaUserDao;
     private final UserMapper userMapper;
 
-    public JpaUserRepository(JpaUserDao springRepository, UserMapper userMapper) {
-        this.springRepository = springRepository;
+    public JpaUserRepository(JpaUserDao jpaUserDao, UserMapper userMapper) {
+        this.jpaUserDao = jpaUserDao;
         this.userMapper = userMapper;
     }
 
     @Override
     public void save(User user) {
         UserEntity userEntity = userMapper.toEntity(user);
-        springRepository.save(userEntity);
+        jpaUserDao.save(userEntity);
     }
 
     @Override
     public boolean existsByUsername(String username) {
-        return springRepository.existsByUsername(username);
+        return jpaUserDao.existsByUsername(username);
     }
 
     @Override
     public Optional<User> findById(UserId user) {
-        return springRepository.findByUuid(user.uuid()).map(userMapper::toDomain);
+        return jpaUserDao.findByUuid(user.uuid()).map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return springRepository.findByUsername(username).map(userMapper::toDomain);
+        return jpaUserDao.findByUsername(username).map(userMapper::toDomain);
     }
 }
