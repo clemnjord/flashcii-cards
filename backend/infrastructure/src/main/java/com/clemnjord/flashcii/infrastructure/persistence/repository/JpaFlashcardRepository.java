@@ -7,10 +7,7 @@ import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
-import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckEntity;
-import com.clemnjord.flashcii.infrastructure.persistence.entity.DeckFlashcardEntity;
-import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
-import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
+import com.clemnjord.flashcii.infrastructure.persistence.entity.*;
 import com.clemnjord.flashcii.infrastructure.persistence.mapper.FlashcardMapper;
 import org.springframework.stereotype.Repository;
 
@@ -38,8 +35,10 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
     }
 
     @Override
-    public Optional<Flashcard> findById(FlashcardId flashcardId) {
-        return jpaFlashcardDao.findById(flashcardId.uuid()).map(flashcardMapper::toDomain);
+    public Optional<Flashcard> findByFlashcardIdAndOwnerId(FlashcardId flashcardId, UserId ownerId) {
+        return jpaFlashcardDao
+                .findById(new FlashcardEntityId(flashcardId.uuid(), ownerId.uuid()))
+                .map(flashcardMapper::toDomain);
     }
 
     @Override

@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface IFlashcardRepository {
     void save(Flashcard flashcard, DeckId deckId, UserId userId);
 
-    Optional<Flashcard> findById(FlashcardId id);
+    Optional<Flashcard> findByFlashcardIdAndOwnerId(FlashcardId flashcardId, UserId ownerId);
 }
