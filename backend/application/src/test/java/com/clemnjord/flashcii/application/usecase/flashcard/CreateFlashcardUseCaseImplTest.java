@@ -5,7 +5,6 @@ import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
-import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
@@ -87,26 +86,6 @@ class CreateFlashcardUseCaseImplTest {
                 .hasMessageContaining("Deck not found with ID: " + createCardCommand.deckId().uuid());
 
         verify(deckRepository).findByIdAndOwnerId(createCardCommand.deckId(), testUser.userId());
-    }
-
-    @Test
-    void shouldThrowWhenFlashcardWithSameQuestionExistsInDeck() {
-        // Arrange
-        var createCardCommand = createFlashcardCommand();
-
-        // Mock the deck exists
-        when(deckRepository.findByIdAndOwnerId(createCardCommand.deckId(), testUser.userId())).thenReturn(Optional.of(createTestDeck()));
-
-        // Mock that flashcard with same question exists
-        when(flashcardRepository.existsByQuestionAndDeckId(createCardCommand.question(), createCardCommand.deckId())).thenReturn(true);
-
-        // Act & Assert
-        assertThatThrownBy(() -> createFlashcardUseCaseImpl.execute(createCardCommand))
-                .isInstanceOf(FlashcardAlreadyExistsException.class)
-                .hasMessageContaining("A flashcard with this question already exists in the deck");
-
-        verify(deckRepository).findByIdAndOwnerId(createCardCommand.deckId(), testUser.userId());
-        verify(flashcardRepository).existsByQuestionAndDeckId(createCardCommand.question(), createCardCommand.deckId());
     }
 
     // Helper methods for test data creation

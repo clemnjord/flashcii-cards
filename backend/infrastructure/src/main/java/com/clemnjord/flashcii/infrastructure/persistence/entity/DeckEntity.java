@@ -1,7 +1,6 @@
 package com.clemnjord.flashcii.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DeckEntity {
 
     @Id
@@ -32,10 +30,10 @@ public class DeckEntity {
     private UserEntity owner;
 
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FlashcardEntity> flashcards = new ArrayList<>();
+    private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();
+
 
     // Getters and setters
-
     public UUID getUUID() {
         return uuid;
     }
@@ -44,14 +42,10 @@ public class DeckEntity {
         this.uuid = uuid;
     }
 
-    // Utility methods for managing the bidirectional relationship
-    public void addFlashcard(FlashcardEntity flashcard) {
-        flashcards.add(flashcard);
-        flashcard.setDeck(this);
+    public List<FlashcardEntity> getFlashcards() {
+        return deckFlashcards.stream()
+                .map(DeckFlashcardEntity::getFlashcard)
+                .toList();
     }
 
-    public void removeCard(FlashcardEntity flashcard) {
-        flashcards.remove(flashcard);
-        flashcard.setDeck(null);
-    }
 }
