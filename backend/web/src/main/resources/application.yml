@@ -4,8 +4,8 @@ spring:
   datasource:
     url: jdbc:h2:file:./data/flashciicards-db;DB_CLOSE_ON_EXIT=TRUE
     driver-class-name: org.h2.Driver
-    username: sa
-    password: password
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:password}
   jpa:
     hibernate:
       ddl-auto: create
@@ -18,9 +18,9 @@ spring:
 
 logging:
   level:
-    root: INFO
-    com.clemnjord.flashcii: DEBUG # Detailed logs for the application namespace
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.clemnjord.flashcii: ${LOG_LEVEL_APP:DEBUG} # Detailed logs for the application namespace
     org:
       hibernate:
-        SQL: DEBUG
-        type.descriptor.sql.BasicBinder: TRACE
+        SQL: ${LOG_LEVEL_SQL:DEBUG}
+        type.descriptor.sql.BasicBinder: ${LOG_LEVEL_SQL_TRACE:TRACE}

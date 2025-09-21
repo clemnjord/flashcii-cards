@@ -1,17 +1,16 @@
 services:
   back:
-    build: "./backend"
+    image: flashcii-back:latest
     environment:
-      - FLASHCII_CARDS_PATH=/cards
+      - DATABASE_USERNAME=changeusername
+      - DATABASE_PASSWORD=changepassword
+      - LOG_LEVEL_ROOT=INFO
+      - LOG_LEVEL_APP=INFO
+      - LOG_LEVEL_SQL=INFO
+      - LOG_LEVEL_SQL_TRACE=INFO
+      - PUID=1000
+      - PGID=1000
     ports:
       - "8080:8080"
     volumes:
-      - "./example/rendered_asciidoc:/cards"
-  front:
-    build: "./frontend"
-    environment:
-      # Not used for now
-      - BACK_ADDRESS=192.168.1.27
-      - BACK_PORT=8080
-    ports:
-      - "3000:3000"
+      - "./container-test:/app/data:Z"
