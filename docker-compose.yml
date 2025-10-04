@@ -1,5 +1,6 @@
 services:
   back:
+    build: ./backend
     image: flashcii-back:latest
     environment:
       - DATABASE_USERNAME=changeusername
@@ -8,9 +9,8 @@ services:
       - LOG_LEVEL_APP=INFO
       - LOG_LEVEL_SQL=INFO
       - LOG_LEVEL_SQL_TRACE=INFO
-      - PUID=1000
-      - PGID=1000
+    user: 1000:1000
     ports:
       - "8080:8080"
     volumes:
-      - "./container-test:/app/data:Z"
+      - "./container-test:/app/data:U,z"
