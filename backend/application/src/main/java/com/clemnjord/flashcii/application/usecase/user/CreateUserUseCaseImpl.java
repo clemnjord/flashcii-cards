@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 public class CreateUserUseCaseImpl implements CreateUserUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateUserUseCaseImpl.class);
 
-
     private final IUserRepository userRepository;
 
     public CreateUserUseCaseImpl(IUserRepository userRepository) {
@@ -29,8 +28,7 @@ public class CreateUserUseCaseImpl implements CreateUserUseCase {
 
         // Check if the user already exists
         if (userRepository.existsByUsername(command.username())) {
-            throw new UserAlreadyExistsException(
-                    "User already exists with username: " + command.username());
+            throw new UserAlreadyExistsException("User already exists with username: " + command.username());
         }
 
         // Map the command to a User entity

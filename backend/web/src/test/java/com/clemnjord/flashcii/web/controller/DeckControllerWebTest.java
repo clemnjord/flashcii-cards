@@ -1,10 +1,9 @@
 package com.clemnjord.flashcii.web.controller;
 
-
+import com.clemnjord.flashcii.application.port.input.deck.AddCardToDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.CreateDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.GetDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.ListDeckUseCase;
-import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardUseCase;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.DeckDto;
@@ -34,7 +33,7 @@ class DeckControllerWebTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private ListDeckUseCase listDeckUseCase;
+    private AddCardToDeckUseCase addCardToDeckUseCase;
 
     @MockitoBean
     private CreateDeckUseCase createDeckUseCase;
@@ -43,7 +42,7 @@ class DeckControllerWebTest {
     private GetDeckUseCase getDeckUseCase;
 
     @MockitoBean
-    private CreateFlashcardUseCase createFlashcardUseCase;
+    private ListDeckUseCase listDeckUseCase;
 
     @Test
     void shouldCreateDeck() throws Exception {

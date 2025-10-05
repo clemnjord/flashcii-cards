@@ -1,6 +1,8 @@
 package com.clemnjord.flashcii.web.controller;
 
+import com.clemnjord.flashcii.application.port.input.deck.AddCardToDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.CreateDeckUseCase;
+import com.clemnjord.flashcii.application.port.input.deck.GetDeckUseCase;
 import com.clemnjord.flashcii.application.port.input.deck.ListDeckUseCase;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.UserId;
@@ -20,12 +22,18 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DeckControllerTest {
+    @Mock
+    private AddCardToDeckUseCase addCardToDeckUseCase;
+
+    @Mock
+    private CreateDeckUseCase createDeckUseCase;
+
+    @Mock
+    private GetDeckUseCase getDeckUseCase;
 
     @Mock
     private ListDeckUseCase listDeckUseCase;
 
-    @Mock
-    private CreateDeckUseCase createDeckUseCase;
 
     @InjectMocks
     private DeckController deckController;
