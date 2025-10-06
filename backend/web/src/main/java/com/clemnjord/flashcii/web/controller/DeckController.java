@@ -4,7 +4,6 @@ import com.clemnjord.flashcii.application.port.input.deck.*;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
-import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.DeckDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,9 +78,8 @@ public class DeckController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFlashcardToDeck(
             @Parameter(description = "UUID of the deck") @PathVariable String deckId,
-            @Parameter(description = "UUID of the flashcard") @PathVariable String flashcardId,
-            @Parameter(description = "UUID of the owner") @RequestParam String userId) {
+            @Parameter(description = "UUID of the flashcard") @PathVariable String flashcardId) {
         addCardToDeckUseCase.execute(
-                new AddCardToDeckCommand(DeckId.from(deckId), FlashcardId.from(flashcardId), UserId.from(userId)));
+                new AddCardToDeckCommand(DeckId.from(deckId), FlashcardId.from(flashcardId)));
     }
 }

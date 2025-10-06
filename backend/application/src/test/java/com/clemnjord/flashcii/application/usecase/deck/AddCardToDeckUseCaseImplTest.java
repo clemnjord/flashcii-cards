@@ -1,13 +1,11 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
 import com.clemnjord.flashcii.application.port.input.deck.AddCardToDeckCommand;
-import com.clemnjord.flashcii.application.port.output.IAuthorizationService;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
 import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardNotFoundException;
-import com.clemnjord.flashcii.domain.exception.user.UnauthorizedException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
@@ -27,7 +25,6 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +33,7 @@ class AddCardToDeckUseCaseImplTest {
     private final User testUser = User.createNew(new Username("testUser"));
     private final DeckId testDeckId = DeckId.generate();
     private final FlashcardId testFlashcardId = FlashcardId.generate();
-    AddCardToDeckCommand command = new AddCardToDeckCommand(testDeckId, testFlashcardId, testUser.userId());
+    AddCardToDeckCommand command = new AddCardToDeckCommand(testDeckId, testFlashcardId);
     Flashcard flashcard = Flashcard.restore(testFlashcardId, new Question("Question"), new Answer("Answer"));
     Deck deck = Deck.restore(testDeckId, "Test", "Desc", testUser.userId(), new HashSet<>());
 
@@ -49,9 +46,6 @@ class AddCardToDeckUseCaseImplTest {
     @Mock
     private IUserContextService userContextService;
 
-    @Mock
-    private IAuthorizationService authorizationService;
-
     @InjectMocks
     private AddCardToDeckUseCaseImpl addCardToDeckUseCase;
 
@@ -63,7 +57,6 @@ class AddCardToDeckUseCaseImplTest {
     @Test
     void shouldAddFlashcardToDeck() {
         // Arrange
-        mockAuthorization(true);
         mockFindByFlashcardAndOwnerId(true);
         mockFindDeckByIdAndOwnerId(true);
 
@@ -77,7 +70,6 @@ class AddCardToDeckUseCaseImplTest {
     @Test
     void shouldNotAddWhenFlashcardAlreadyInDeck() {
         // Arrange
-        mockAuthorization(true);
         mockFindByFlashcardAndOwnerId(true);
         mockFindDeckByIdAndOwnerId(true);
 
@@ -93,22 +85,8 @@ class AddCardToDeckUseCaseImplTest {
     }
 
     @Test
-    void shouldThrowWhenUnauthorized() {
-        // Arrange
-        mockAuthorization(false);
-
-        // Act & Assert
-        assertThatThrownBy(() -> addCardToDeckUseCase.execute(command))
-                .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining(
-                        "User " + testUser.userId().uuid() + " is not authorized to add flashcards for user "
-                                + command.ownerId().uuid());
-    }
-
-    @Test
     void shouldThrowWhenFlashcardNotFound() {
         // Arrange
-        mockAuthorization(true);
         mockFindByFlashcardAndOwnerId(false);
 
         // Act & Assert
@@ -121,7 +99,6 @@ class AddCardToDeckUseCaseImplTest {
     @Test
     void shouldThrowWhenDeckNotFound() {
         // Arrange
-        mockAuthorization(true);
         mockFindByFlashcardAndOwnerId(true);
         mockFindDeckByIdAndOwnerId(false);
 
@@ -133,10 +110,6 @@ class AddCardToDeckUseCaseImplTest {
     }
 
     // --- Helpers ---
-
-    private void mockAuthorization(boolean canManage) {
-        when(authorizationService.canManageResourceFor(any(), any())).thenReturn(canManage);
-    }
 
     private void mockFindDeckByIdAndOwnerId(boolean isDeckFound) {
         var stub = when(deckRepository.findByIdAndOwnerId(testDeckId, testUser.userId()));

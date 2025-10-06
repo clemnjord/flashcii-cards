@@ -89,19 +89,15 @@ public class JpaDeckRepository implements IDeckRepository {
     public void addFlashcardToDeck(DeckId deckId, FlashcardId flashcardId, UserId ownerId) {
         FlashcardEntity flashcardEntity = jpaFlashcardDao
                 .findById(new FlashcardEntityId(flashcardId.uuid(), ownerId.uuid()))
-                .orElseThrow(() ->
-                        new IllegalStateException("Flashcard must exist before adding to deck: " + flashcardId));
+                .orElseThrow(
+                        () -> new IllegalStateException("Flashcard must exist before adding to deck: " + flashcardId));
 
         DeckEntity deckEntity = jpaDeckDao
                 .findByUuidAndOwner_Uuid(deckId.uuid(), ownerId.uuid())
-                .orElseThrow(() -> new IllegalStateException("Deck must exist before adding flashcard: " + deckId.uuid()));
+                .orElseThrow(
+                        () -> new IllegalStateException("Deck must exist before adding flashcard: " + deckId.uuid()));
 
-        boolean existsInDeck = jpaDeckFlashcardDao.existsByDeck_UuidAndFlashcard_Id_FlashcardIdAndFlashcard_Id_OwnerId(
-                deckId.uuid(), flashcardId.uuid(), ownerId.uuid());
-
-        if (!existsInDeck) {
-            DeckFlashcardEntity deckFlashcardEntity = new DeckFlashcardEntity(deckEntity, flashcardEntity);
-            jpaDeckFlashcardDao.save(deckFlashcardEntity);
-        }
+        DeckFlashcardEntity deckFlashcardEntity = new DeckFlashcardEntity(deckEntity, flashcardEntity);
+        jpaDeckFlashcardDao.save(deckFlashcardEntity);
     }
 }
