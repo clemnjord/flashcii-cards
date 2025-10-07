@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class JpaDeckRepository implements IDeckRepository {
@@ -68,14 +69,17 @@ public class JpaDeckRepository implements IDeckRepository {
 
     @Override
     public Optional<Deck> findByIdAndOwnerId(DeckId id, UserId ownerId) {
-        return jpaDeckDao
-                .findByUuidAndOwner_Uuid(id.uuid(), ownerId.uuid())
-                .map(x -> Deck.restore(
+        Optional<DeckEntity> deckEntity = jpaDeckDao.findByUuidAndOwner_Uuid(id.uuid(), ownerId.uuid());
+
+        return deckEntity.map(x -> Deck.restore(
                         new DeckId(x.getUUID()),
                         x.getName(),
                         x.getDescription(),
                         new UserId(x.getOwner().getUuid()),
-                        new HashSet<>()));
+                        new HashSet<>(x.getDeckFlashcards().stream()
+                                .map(f -> f.getFlashcard().getID())
+                                .map(i -> FlashcardId.from(i.getFlashcardId().toString()))
+                                .collect(Collectors.toSet()))));
     }
 
     @Override
@@ -98,6 +102,7 @@ public class JpaDeckRepository implements IDeckRepository {
                         () -> new IllegalStateException("Deck must exist before adding flashcard: " + deckId.uuid()));
 
         DeckFlashcardEntity deckFlashcardEntity = new DeckFlashcardEntity(deckEntity, flashcardEntity);
-        jpaDeckFlashcardDao.save(deckFlashcardEntity);
+        deckEntity.getDeckFlashcards().add(deckFlashcardEntity);
+        jpaDeckDao.save(deckEntity);
     }
 }

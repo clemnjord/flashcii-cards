@@ -70,7 +70,7 @@ public class DeckController {
         return new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description());
     }
 
-    @PostMapping("/{deckId}/flashcards/{flashcardId}")
+    @PostMapping("/{deckId}/flashcards")
     @Operation(summary = "Add flashcard to deck", description = "Add an existing flashcard to a deck")
     @ApiResponse(responseCode = "204", description = "Flashcard added successfully")
     @ApiResponse(responseCode = "403", description = "User not authorized")
@@ -78,7 +78,7 @@ public class DeckController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFlashcardToDeck(
             @Parameter(description = "UUID of the deck") @PathVariable String deckId,
-            @Parameter(description = "UUID of the flashcard") @PathVariable String flashcardId) {
+            @Parameter(description = "UUID of the flashcard") @Valid @RequestBody String flashcardId) {
         addCardToDeckUseCase.execute(
                 new AddCardToDeckCommand(DeckId.from(deckId), FlashcardId.from(flashcardId)));
     }

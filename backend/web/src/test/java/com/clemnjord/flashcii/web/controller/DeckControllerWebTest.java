@@ -53,10 +53,10 @@ class DeckControllerWebTest {
 
         // When & Then
         mockMvc.perform(post("/decks")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(request)))
-               .andExpect(status().isCreated())
-               .andExpect(jsonPath("$.name").value("New Deck"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("New Deck"));
     }
 
     @Test
@@ -64,9 +64,20 @@ class DeckControllerWebTest {
         DeckDto.DeckRequest invalidRequest = new DeckDto.DeckRequest("", "Valid description");
 
         mockMvc.perform(post("/decks")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(invalidRequest)))
-               .andExpect(status().isBadRequest())
-               .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
+    }
+
+    @Test
+    void shouldReturnSuccessWhenAddingCardToDeck() throws Exception{
+        String deckId = UUID.randomUUID().toString();
+        String flashcardId = UUID.randomUUID().toString();
+
+        mockMvc.perform(post("/decks/" + deckId + "/flashcards")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(flashcardId))
+                .andExpect(status().isNoContent());
     }
 }

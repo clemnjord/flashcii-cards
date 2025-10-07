@@ -12,7 +12,6 @@ import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -32,8 +31,6 @@ class JpaFlashcardRepositoryTest {
     private JpaFlashcardRepository flashcardRepository;
     @Autowired
     private JpaDeckRepository deckRepository;
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Test
     void saveFlashcard() {
