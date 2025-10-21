@@ -26,7 +26,7 @@ public class FlashcardController {
 
     @PostMapping
     @Operation(summary = "Create flashcard", description = "Create a new flashcard")
-    @ApiResponse(responseCode = "201", description = "Deck created successfully")
+    @ApiResponse(responseCode = "201", description = "Flashcard created successfully")
     @ResponseStatus(HttpStatus.CREATED)
     public FlashcardDto.FlashcardResponse createDeck(@Valid @RequestBody FlashcardDto.FlashcardCreateRequest request) {
         Flashcard flashcard = createFlashcardUseCase.execute(new CreateFlashcardCommand(

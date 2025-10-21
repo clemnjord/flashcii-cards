@@ -10,10 +10,11 @@ public class AuthorizationUseCase implements IAuthorizationService {
 
     @Override
     public boolean canManageResourceFor(User currentUser, UserId resourceOwnerId) {
+        // TODO: Implement once application roles are implemented
         // Admin can manage anything
-//        if (currentUser.role() == Role.ADMIN) {
-//            return true;
-//        }
+        //        if (currentUser.role() == Role.ADMIN) {
+        //            return true;
+        //        }
 
         // User can only manage their own resources
         return currentUser.userId().equals(resourceOwnerId);
