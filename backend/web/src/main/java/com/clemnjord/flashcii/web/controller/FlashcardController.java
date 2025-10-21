@@ -9,36 +9,29 @@ import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.FlashcardDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "User", description = "User management operations")
-public class UserController {
+@RequestMapping(value = "/flashcards", produces = MediaType.APPLICATION_JSON_VALUE)
+public class FlashcardController {
 
     private final CreateFlashcardUseCase createFlashcardUseCase;
 
-    public UserController(CreateFlashcardUseCase createFlashcardUseCase) {
+    public FlashcardController(CreateFlashcardUseCase createFlashcardUseCase) {
         this.createFlashcardUseCase = createFlashcardUseCase;
     }
 
-    @PostMapping("/{userId}/flashcards")
-    @Operation(summary = "Create flashcard", description = "Create a flashcard")
-    @ApiResponse(responseCode = "201", description = "Flashcard created successfully")
-    @ApiResponse(responseCode = "403", description = "User not authorized")
-    @ApiResponse(responseCode = "404", description = "User not found")
+    @PostMapping
+    @Operation(summary = "Create flashcard", description = "Create a new flashcard")
+    @ApiResponse(responseCode = "201", description = "Deck created successfully")
     @ResponseStatus(HttpStatus.CREATED)
-    public FlashcardDto.FlashcardResponse createFlashcard(
-            @PathVariable String userId,
-            @Valid @RequestBody FlashcardDto.FlashcardCreateRequest flashcardCreateRequest) {
+    public FlashcardDto.FlashcardResponse createDeck(@Valid @RequestBody FlashcardDto.FlashcardCreateRequest request) {
         Flashcard flashcard = createFlashcardUseCase.execute(new CreateFlashcardCommand(
-                UserId.from(userId),
-                new Question(flashcardCreateRequest.question()),
-                new Answer(flashcardCreateRequest.answer())));
+                UserId.from(request.userId()), new Question(request.question()), new Answer(request.answer())));
+
         return new FlashcardDto.FlashcardResponse(
                 flashcard.flashcardId().uuid().toString(),
                 flashcard.question().value(),

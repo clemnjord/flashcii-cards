@@ -45,7 +45,13 @@ public class DeckController {
                     @RequestParam(required = false)
                     String nameFilter) {
         return listDeckUseCase.execute(new ListDeckCommand(nameFilter)).stream()
-                .map(deck -> new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description()))
+                .map(deck -> new DeckDto.DeckResponse(
+                        deck.deckId().uuid().toString(),
+                        deck.name(),
+                        deck.description(),
+                        deck.flashcardIds().stream()
+                                .map(f -> f.uuid().toString())
+                                .toList()))
                 .toList();
     }
 
@@ -56,7 +62,11 @@ public class DeckController {
     public DeckDto.DeckResponse createDeck(@Valid @RequestBody DeckDto.DeckRequest deckRequest) {
         Deck deck = createDeckUseCase.execute(
                 new CreateDeckCommand(deckRequest.name(), deckRequest.description(), List.of()));
-        return new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description());
+        return new DeckDto.DeckResponse(
+                deck.deckId().uuid().toString(),
+                deck.name(),
+                deck.description(),
+                deck.flashcardIds().stream().map(f -> f.uuid().toString()).toList());
     }
 
     @GetMapping("/{deckId}")
@@ -67,7 +77,11 @@ public class DeckController {
     public DeckDto.DeckResponse getDeck(
             @Parameter(description = "UUID of the deck to retrieve") @PathVariable String deckId) {
         Deck deck = getDeckUseCase.execute(new GetDeckCommand(DeckId.from(deckId)));
-        return new DeckDto.DeckResponse(deck.deckId().uuid().toString(), deck.name(), deck.description());
+        return new DeckDto.DeckResponse(
+                deck.deckId().uuid().toString(),
+                deck.name(),
+                deck.description(),
+                deck.flashcardIds().stream().map(f -> f.uuid().toString()).toList());
     }
 
     @PostMapping("/{deckId}/flashcards")
@@ -78,8 +92,8 @@ public class DeckController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFlashcardToDeck(
             @Parameter(description = "UUID of the deck") @PathVariable String deckId,
+            // TODO: Create a simple DTO
             @Parameter(description = "UUID of the flashcard") @Valid @RequestBody String flashcardId) {
-        addCardToDeckUseCase.execute(
-                new AddCardToDeckCommand(DeckId.from(deckId), FlashcardId.from(flashcardId)));
+        addCardToDeckUseCase.execute(new AddCardToDeckCommand(DeckId.from(deckId), FlashcardId.from(flashcardId)));
     }
 }

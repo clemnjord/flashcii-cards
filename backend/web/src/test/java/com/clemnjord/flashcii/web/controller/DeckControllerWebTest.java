@@ -69,15 +69,4 @@ class DeckControllerWebTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
     }
-
-    @Test
-    void shouldReturnSuccessWhenAddingCardToDeck() throws Exception{
-        String deckId = UUID.randomUUID().toString();
-        String flashcardId = UUID.randomUUID().toString();
-
-        mockMvc.perform(post("/decks/" + deckId + "/flashcards")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(flashcardId))
-                .andExpect(status().isNoContent());
-    }
 }

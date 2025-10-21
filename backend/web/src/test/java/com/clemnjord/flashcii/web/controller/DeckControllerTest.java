@@ -34,7 +34,6 @@ class DeckControllerTest {
     @Mock
     private ListDeckUseCase listDeckUseCase;
 
-
     @InjectMocks
     private DeckController deckController;
 

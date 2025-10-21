@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public class DeckDto {
     public record DeckRequest(
             @NotBlank(message = "Name is required")
@@ -15,7 +17,5 @@ public class DeckDto {
             String description) {
     }
 
-    public record DeckResponse(String uuid, String name, String description) {
-    }
-
+    public record DeckResponse(String uuid, String name, String description, List<String> flashcardIds) {}
 }
