@@ -20,13 +20,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FlashcardControllerTest {
+class UserControllerTest {
 
     @Mock
     private CreateFlashcardUseCase createFlashcardUseCase;
 
     @InjectMocks
-    private FlashcardController flashcardController;
+    private UserController userController;
 
     @Test
     void shouldCreateFlashcard() {
@@ -35,10 +35,10 @@ class FlashcardControllerTest {
         when(createFlashcardUseCase.execute(any())).thenReturn(flashcard);
 
         // --- When
-        FlashcardCreateRequest request = new FlashcardCreateRequest(UUID.randomUUID().toString(), "Question", "Answer");
+        FlashcardCreateRequest request = new FlashcardCreateRequest("Question", "Answer");
 
-
-        FlashcardResponse response = flashcardController.createDeck(request);
+        FlashcardResponse response =
+                userController.createFlashcard(UUID.randomUUID().toString(), request);
 
         // --- Then
         assertThat(response.uuid()).isEqualTo(flashcard.flashcardId().uuid().toString());

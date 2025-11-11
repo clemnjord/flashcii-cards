@@ -10,23 +10,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(FlashcardController.class)
-class FlashcardControllerWebTest {
+@WebMvcTest(UserController.class)
+class UserControllerWebTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvcTester mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,19 +36,23 @@ class FlashcardControllerWebTest {
     @Test
     void shouldCreateFlashcard() throws Exception {
         // --- Given
-        var request = new FlashcardDto.FlashcardCreateRequest(UUID.randomUUID().toString(), "Question", "Answer");
+        var request = new FlashcardDto.FlashcardCreateRequest("Question", "Answer");
         Flashcard mockFlashcard = new Flashcard(FlashcardId.generate(), new Question("Question"), new Answer("Answer"));
 
         when(createFlashcardUseCase.execute(any())).thenReturn(mockFlashcard);
 
         // --- When & Then
-        mockMvc.perform(post("/flashcards")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.uuid")
-                        .value(mockFlashcard.flashcardId().uuid().toString()))
-                .andExpect(jsonPath("$.question").value("Question"))
-                .andExpect(jsonPath("$.answer").value("Answer"));
+        mockMvc.post()
+                .uri("/users/" + UUID.randomUUID() + "/flashcards")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .assertThat()
+                .hasStatus(HttpStatus.CREATED)
+                .bodyJson()
+                .convertTo(FlashcardDto.FlashcardResponse.class)
+                .satisfies(response -> {
+                    assertThat(response.question()).isEqualTo("Question");
+                    assertThat(response.answer()).isEqualTo("Answer");
+                });
     }
 }
