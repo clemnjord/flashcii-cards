@@ -4,5 +4,5 @@ import com.clemnjord.flashcii.domain.model.user.User;
 
 public interface IUserContextService {
 
-  User getCurrentUser();
+    User getCurrentUser();
 }

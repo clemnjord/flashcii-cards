@@ -7,7 +7,5 @@ public class FlashcardDto {
             @NotBlank(message = "Question is required") String question,
             @NotBlank(message = "Answer is required") String answer) {}
 
-    public record FlashcardResponse(String uuid, String question, String answer) {
-    }
-
+    public record FlashcardResponse(String uuid, String question, String answer) {}
 }

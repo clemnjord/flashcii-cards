@@ -7,12 +7,11 @@ import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.*;
 import com.clemnjord.flashcii.infrastructure.persistence.mapper.DeckMapper;
-import org.springframework.stereotype.Repository;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class JpaDeckRepository implements IDeckRepository {
@@ -72,14 +71,14 @@ public class JpaDeckRepository implements IDeckRepository {
         Optional<DeckEntity> deckEntity = jpaDeckDao.findByUuidAndOwner_Uuid(id.uuid(), ownerId.uuid());
 
         return deckEntity.map(x -> Deck.restore(
-                        new DeckId(x.getUUID()),
-                        x.getName(),
-                        x.getDescription(),
-                        new UserId(x.getOwner().getUuid()),
-                        new HashSet<>(x.getDeckFlashcards().stream()
-                                .map(f -> f.getFlashcard().getID())
-                                .map(i -> FlashcardId.from(i.getFlashcardId().toString()))
-                                .collect(Collectors.toSet()))));
+                new DeckId(x.getUUID()),
+                x.getName(),
+                x.getDescription(),
+                new UserId(x.getOwner().getUuid()),
+                new HashSet<>(x.getDeckFlashcards().stream()
+                        .map(f -> f.getFlashcard().getID())
+                        .map(i -> FlashcardId.from(i.getFlashcardId().toString()))
+                        .collect(Collectors.toSet()))));
     }
 
     @Override

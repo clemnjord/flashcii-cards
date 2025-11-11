@@ -41,10 +41,7 @@ public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
                             + command.ownerId().uuid());
         }
 
-        logger.debug("Creating flashcard with question '{}' and answer '{}'",
-                command.question(),
-                command.answer()
-        );
+        logger.debug("Creating flashcard with question '{}' and answer '{}'", command.question(), command.answer());
 
         // Create and save the new flashcard
         Flashcard flashcard = Flashcard.createNew(command.question(), command.answer());

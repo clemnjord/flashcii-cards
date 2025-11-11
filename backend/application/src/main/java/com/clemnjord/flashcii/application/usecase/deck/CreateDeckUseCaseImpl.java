@@ -10,11 +10,9 @@ import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
-
 
 @ApplicationService
 public class CreateDeckUseCaseImpl implements CreateDeckUseCase {
@@ -34,7 +32,8 @@ public class CreateDeckUseCaseImpl implements CreateDeckUseCase {
         Objects.requireNonNull(command, "CreateDeckCommand cannot be null");
 
         User currentUser = userContextService.getCurrentUser();
-        logger.debug("User '{}' creating deck with name '{}'", currentUser.username().value(), command.name());
+        logger.debug(
+                "User '{}' creating deck with name '{}'", currentUser.username().value(), command.name());
 
         validateDeckCreationRules(command, currentUser.userId());
 

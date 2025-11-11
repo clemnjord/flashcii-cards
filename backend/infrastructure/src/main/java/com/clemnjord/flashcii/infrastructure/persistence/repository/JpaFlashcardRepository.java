@@ -9,9 +9,8 @@ import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntityId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.mapper.FlashcardMapper;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class JpaFlashcardRepository implements IFlashcardRepository {
@@ -20,9 +19,7 @@ public class JpaFlashcardRepository implements IFlashcardRepository {
     private final FlashcardMapper flashcardMapper;
 
     public JpaFlashcardRepository(
-            JpaFlashcardDao jpaFlashcardDao,
-            JpaUserDao jpaUserDao,
-            FlashcardMapper flashcardMapper) {
+            JpaFlashcardDao jpaFlashcardDao, JpaUserDao jpaUserDao, FlashcardMapper flashcardMapper) {
         this.jpaFlashcardDao = jpaFlashcardDao;
         this.jpaUserDao = jpaUserDao;
         this.flashcardMapper = flashcardMapper;

@@ -3,7 +3,6 @@ package com.clemnjord.flashcii.application.port.input.flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.UserId;
-
 import java.util.Objects;
 
 public record CreateFlashcardCommand(UserId ownerId, Question question, Answer answer) {

@@ -1,5 +1,11 @@
 package com.clemnjord.flashcii.application.usecase.flashcard;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardCommand;
 import com.clemnjord.flashcii.application.port.output.IAuthorizationService;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
@@ -16,12 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateFlashcardUseCaseImplTest {

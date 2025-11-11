@@ -4,7 +4,6 @@ import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
-
 import java.util.List;
 import java.util.Optional;
 

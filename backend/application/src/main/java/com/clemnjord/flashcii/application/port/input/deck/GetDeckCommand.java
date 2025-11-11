@@ -1,7 +1,6 @@
 package com.clemnjord.flashcii.application.port.input.deck;
 
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
-
 import java.util.Objects;
 
 public record GetDeckCommand(DeckId deckId) {

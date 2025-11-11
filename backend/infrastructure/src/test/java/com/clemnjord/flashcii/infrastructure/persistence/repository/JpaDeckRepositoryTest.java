@@ -1,5 +1,8 @@
 package com.clemnjord.flashcii.infrastructure.persistence.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
@@ -9,16 +12,12 @@ import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
 import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @ContextConfiguration(classes = TestJpaConfiguration.class)
@@ -27,8 +26,10 @@ class JpaDeckRepositoryTest {
 
     @Autowired
     JpaUserRepository userRepository;
+
     @Autowired
     private JpaFlashcardRepository flashcardRepository;
+
     @Autowired
     private JpaDeckRepository deckRepository;
 
@@ -164,5 +165,4 @@ class JpaDeckRepositoryTest {
         assertThat(foundDeck.get().flashcardIds()).contains(flashcard.flashcardId());
         assertThat(foundDeck.get().flashcardIds()).hasSize(1);
     }
-
 }

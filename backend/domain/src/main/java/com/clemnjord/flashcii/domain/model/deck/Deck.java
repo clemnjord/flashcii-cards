@@ -4,7 +4,6 @@ import com.clemnjord.flashcii.domain.exception.deck.InvalidDeckException;
 import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,23 +26,12 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
     }
 
     public static Deck createNew(String name, String description, UserId ownerId) {
-        return new Deck(
-                DeckId.generate(),
-                name,
-                description,
-                ownerId,
-                Set.of()
-        );
+        return new Deck(DeckId.generate(), name, description, ownerId, Set.of());
     }
 
-    public static Deck restore(DeckId deckId, String name, String description, UserId ownerId, Set<FlashcardId> flashcardIds) {
-        return new Deck(
-                deckId,
-                name,
-                description,
-                ownerId,
-                flashcardIds
-        );
+    public static Deck restore(
+            DeckId deckId, String name, String description, UserId ownerId, Set<FlashcardId> flashcardIds) {
+        return new Deck(deckId, name, description, ownerId, flashcardIds);
     }
 
     private static void validateName(String name) {

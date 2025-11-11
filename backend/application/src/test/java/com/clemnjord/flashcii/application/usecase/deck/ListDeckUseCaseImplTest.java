@@ -1,5 +1,8 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import com.clemnjord.flashcii.application.port.input.deck.ListDeckCommand;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
@@ -7,17 +10,13 @@ import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ListDeckUseCaseImplTest {
@@ -52,7 +51,8 @@ class ListDeckUseCaseImplTest {
         List<Deck> expectedDecks = List.of(Deck.createNew("deckName", "deckDescription", userId));
 
         var command = new ListDeckCommand(null);
-        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, command.nameFilter())).thenReturn(expectedDecks);
+        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, command.nameFilter()))
+                .thenReturn(expectedDecks);
 
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
@@ -69,7 +69,8 @@ class ListDeckUseCaseImplTest {
         List<Deck> expectedDecks = List.of(Deck.createNew("filteredDeck", "description", userId));
 
         var command = new ListDeckCommand("filtered");
-        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "filtered")).thenReturn(expectedDecks);
+        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "filtered"))
+                .thenReturn(expectedDecks);
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
         List<Deck> result = listDeckUseCaseImpl.execute(command);
@@ -81,7 +82,8 @@ class ListDeckUseCaseImplTest {
     void shouldReturnEmptyListWhenNoDecksFound() {
         // Test empty result case
         var command = new ListDeckCommand("nonexistent");
-        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "nonexistent")).thenReturn(List.of());
+        when(deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(userId, "nonexistent"))
+                .thenReturn(List.of());
         when(userContextService.getCurrentUser()).thenReturn(new User(userId, new Username("testUser")));
 
         List<Deck> result = listDeckUseCaseImpl.execute(command);

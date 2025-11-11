@@ -5,9 +5,8 @@ import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.mapper.UserMapper;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class JpaUserRepository implements IUserRepository {

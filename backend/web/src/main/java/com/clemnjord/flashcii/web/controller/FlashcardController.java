@@ -6,6 +6,4 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/flashcards", produces = MediaType.APPLICATION_JSON_VALUE)
-public class FlashcardController {
-
-}
+public class FlashcardController {}

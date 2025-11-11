@@ -1,5 +1,8 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
 import com.clemnjord.flashcii.application.port.input.deck.AddCardToDeckCommand;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
@@ -14,18 +17,14 @@ import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.Username;
+import java.util.HashSet;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.HashSet;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AddCardToDeckUseCaseImplTest {

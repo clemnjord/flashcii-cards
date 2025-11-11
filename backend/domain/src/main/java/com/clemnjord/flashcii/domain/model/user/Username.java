@@ -20,6 +20,5 @@ public record Username(String value) {
         if (!value.matches(VALID_PATTERN)) {
             throw new IllegalArgumentException("Username can only contain letters, numbers, underscores and hyphens");
         }
-
     }
 }

@@ -1,20 +1,19 @@
 package com.clemnjord.flashcii.infrastructure.persistence.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.Username;
 import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ContextConfiguration(classes = TestJpaConfiguration.class)

@@ -11,5 +11,4 @@ import java.lang.annotation.RetentionPolicy;
  *     Design Reference</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ApplicationService {
-}
+public @interface ApplicationService {}

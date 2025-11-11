@@ -1,8 +1,7 @@
 package com.clemnjord.flashcii.domain.model.user;
 
-import lombok.Builder;
-
 import java.util.Objects;
+import lombok.Builder;
 
 @Builder
 public record User(UserId userId, Username username) {

@@ -2,7 +2,6 @@ package com.clemnjord.flashcii.application.port.input.deck;
 
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
-
 import java.util.Objects;
 
 public record AddCardToDeckCommand(DeckId deckId, FlashcardId flashcardId) {

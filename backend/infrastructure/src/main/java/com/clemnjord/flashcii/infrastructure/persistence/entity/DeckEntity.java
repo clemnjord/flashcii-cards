@@ -1,13 +1,12 @@
 package com.clemnjord.flashcii.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "deck")
@@ -32,7 +31,6 @@ public class DeckEntity {
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();
 
-
     // Getters and setters
     public UUID getUUID() {
         return uuid;
@@ -43,9 +41,6 @@ public class DeckEntity {
     }
 
     public List<FlashcardEntity> getFlashcards() {
-        return deckFlashcards.stream()
-                .map(DeckFlashcardEntity::getFlashcard)
-                .toList();
+        return deckFlashcards.stream().map(DeckFlashcardEntity::getFlashcard).toList();
     }
-
 }
