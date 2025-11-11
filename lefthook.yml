@@ -1,9 +1,15 @@
-# EXAMPLE USAGE:
-#
-#   Refer for explanation to following link:
-#   https://lefthook.dev/configuration/
-
 pre-commit:
   jobs:
     # Get all staged files absolute path and concatenate them with comma, then run spotless:apply with the concatenated files.
-    - run: toto=$(.lefthook/pre-commit/replace_spaces.sh {staged_files}) && mvn -f backend/pom.xml spotless:apply -DspotlessFiles=$(toto)
+    - run: |
+        java_files=$(echo "{staged_files}" | tr ' ' '\n' | grep -E '\.java$' | while read file; do
+          if [ -f "$file" ]; then
+            realpath "$file"
+          fi
+        done | tr '\n' ',' | sed 's/,$//')
+        if [ -n "$java_files" ]; then
+          mvn -f backend/pom.xml spotless:apply -DspotlessFiles="$java_files"
+          echo "Formatted Java files: $java_files"
+        else
+          echo "No Java files to format"
+        fi
