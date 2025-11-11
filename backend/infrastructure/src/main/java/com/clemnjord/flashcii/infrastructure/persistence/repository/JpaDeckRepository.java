@@ -75,8 +75,8 @@ public class JpaDeckRepository implements IDeckRepository {
                 x.getName(),
                 x.getDescription(),
                 new UserId(x.getOwner().getUuid()),
-                new HashSet<>(x.getDeckFlashcards().stream()
-                        .map(f -> f.getFlashcard().getID())
+                new HashSet<>(x.getFlashcards().stream()
+                        .map(FlashcardEntity::getID)
                         .map(i -> FlashcardId.from(i.getFlashcardId().toString()))
                         .collect(Collectors.toSet()))));
     }
@@ -100,8 +100,7 @@ public class JpaDeckRepository implements IDeckRepository {
                 .orElseThrow(
                         () -> new IllegalStateException("Deck must exist before adding flashcard: " + deckId.uuid()));
 
-        DeckFlashcardEntity deckFlashcardEntity = new DeckFlashcardEntity(deckEntity, flashcardEntity);
-        deckEntity.getDeckFlashcards().add(deckFlashcardEntity);
+        deckEntity.addFlashcard(flashcardEntity);
         jpaDeckDao.save(deckEntity);
     }
 }
