@@ -10,6 +10,12 @@ pre-commit:
         if [ -n "$java_files" ]; then
           mvn -f backend/pom.xml spotless:apply -DspotlessFiles="$java_files"
           echo "Formatted Java files: $java_files"
+          # Re-stage the formatted files
+          echo "{staged_files}" | tr ' ' '\n' | grep -E '\.java$' | while read file; do
+            if [ -f "$file" ]; then
+              git add "$file"
+            fi
+          done
         else
           echo "No Java files to format"
         fi

@@ -15,5 +15,7 @@ public class DeckDto {
 
     public record DeckResponse(String uuid, String name, String description, List<String> flashcardIds) {}
 
+    public record SimpleDeckResponse(String uuid, String name, String description) {}
+
     public record AddFlashcardToDeckRequest(@NotBlank(message = "Flashcard ID is required") String flashcardId) {}
 }

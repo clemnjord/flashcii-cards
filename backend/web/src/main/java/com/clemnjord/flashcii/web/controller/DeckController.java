@@ -39,17 +39,13 @@ public class DeckController {
     @GetMapping
     @Operation(summary = "List decks", description = "Retrieve all decks with optional name filtering")
     @ApiResponse(responseCode = "200", description = "Decks retrieved successfully")
-    public List<DeckDto.DeckResponse> getDecks(
+    public List<DeckDto.SimpleDeckResponse> getDecks(
             @Parameter(description = "Filter decks with optional name filter (case-insensitive")
                     @RequestParam(required = false)
                     String nameFilter) {
         return listDeckUseCase.execute(new ListDeckCommand(nameFilter)).stream()
-                .map(deck -> new DeckDto.DeckResponse(
-                        deck.deckId().uuid().toString(),
-                        deck.name(),
-                        deck.description(),
-                        List.of() // Empty list because we do not want to expose the flashcards when getting decks
-                        ))
+                .map(deck -> new DeckDto.SimpleDeckResponse(
+                        deck.deckId().uuid().toString(), deck.name(), deck.description()))
                 .toList();
     }
 

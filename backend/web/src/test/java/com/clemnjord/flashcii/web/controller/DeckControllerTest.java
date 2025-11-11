@@ -43,7 +43,7 @@ class DeckControllerTest {
         when(listDeckUseCase.execute(any())).thenReturn(List.of(mockDeck));
 
         // When
-        List<DeckDto.DeckResponse> result = deckController.getDecks("test");
+        List<DeckDto.SimpleDeckResponse> result = deckController.getDecks("test");
 
         // Then
         assertThat(result).hasSize(1);
