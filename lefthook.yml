@@ -1,23 +1,21 @@
-# EXAMPLE USAGE:
-#
-#   Refer for explanation to following link:
-#   https://lefthook.dev/configuration/
-#
-# pre-push:
-#   jobs:
-#     - name: packages audit
-#       tags:
-#         - frontend
-#         - security
-#       run: yarn audit
-#
-#     - name: gems audit
-#       tags:
-#         - backend
-#         - security
-#       run: bundle audit
-#
-# pre-commit:
-#   commands:
-#      spotless:
-#         run: mvn -f backend/pom.xml spotless:apply
+pre-commit:
+  jobs:
+    # Get all staged files absolute path and concatenate them with comma, then run spotless:apply with the concatenated files.
+    - run: |
+        java_files=$(echo "{staged_files}" | tr ' ' '\n' | grep -E '\.java$' | while read file; do
+          if [ -f "$file" ]; then
+            realpath "$file"
+          fi
+        done | tr '\n' ',' | sed 's/,$//')
+        if [ -n "$java_files" ]; then
+          mvn -f backend/pom.xml spotless:apply -DspotlessFiles="$java_files"
+          echo "Formatted Java files: $java_files"
+          # Re-stage the formatted files
+          echo "{staged_files}" | tr ' ' '\n' | grep -E '\.java$' | while read file; do
+            if [ -f "$file" ]; then
+              git add "$file"
+            fi
+          done
+        else
+          echo "No Java files to format"
+        fi

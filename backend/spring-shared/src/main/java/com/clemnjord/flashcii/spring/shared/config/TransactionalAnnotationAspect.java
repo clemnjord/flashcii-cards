@@ -1,6 +1,7 @@
 package com.clemnjord.flashcii.spring.shared.config;
 
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
+import java.lang.reflect.Method;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,8 +12,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.lang.reflect.Method;
-
 /**
  * Aspect that intercepts methods annotated with @ApplicationTransactional
  * and applies Spring transaction management.
@@ -21,7 +20,6 @@ import java.lang.reflect.Method;
  *
  * @ApplicationTransactional annotations with proper transaction boundaries.
  */
-
 @Aspect
 @Component
 public class TransactionalAnnotationAspect {
@@ -32,8 +30,8 @@ public class TransactionalAnnotationAspect {
         this.transactionManager = transactionManager;
     }
 
-    @Around("@annotation(com.clemnjord.flashcii.application.annotation.ApplicationTransactional) || " +
-            "@within(com.clemnjord.flashcii.application.annotation.ApplicationTransactional)")
+    @Around("@annotation(com.clemnjord.flashcii.application.annotation.ApplicationTransactional) || "
+            + "@within(com.clemnjord.flashcii.application.annotation.ApplicationTransactional)")
     public Object handleTransaction(ProceedingJoinPoint joinPoint) throws Throwable {
         // Get the annotation from method or class
         ApplicationTransactional annotation = getApplicationTransactionalAnnotation(joinPoint);

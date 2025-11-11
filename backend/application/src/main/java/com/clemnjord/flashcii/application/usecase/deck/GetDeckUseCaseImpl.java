@@ -28,8 +28,7 @@ public class GetDeckUseCaseImpl implements GetDeckUseCase {
 
         return deckRepository
                 .findByIdAndOwnerId(command.deckId(), currentUser.userId())
-                .orElseThrow(() -> new DeckNotFoundException("Deck not found with ID: " + command
-                        .deckId()
-                        .uuid() + "."));
+                .orElseThrow(() -> new DeckNotFoundException(
+                        "Deck not found with ID: " + command.deckId().uuid() + "."));
     }
 }

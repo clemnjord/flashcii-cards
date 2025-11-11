@@ -1,5 +1,10 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.clemnjord.flashcii.application.port.input.deck.CreateDeckCommand;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
@@ -7,27 +12,23 @@ import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class CreateDeckUseCaseImplTest {
     @InjectMocks
     CreateDeckUseCaseImpl createDeckUseCaseImpl;
+
     @Mock
     private IDeckRepository deckRepository;
+
     @Mock
     private IUserContextService userContextService;
 

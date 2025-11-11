@@ -4,10 +4,10 @@ import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
 import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardCommand;
 import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardUseCase;
-import com.clemnjord.flashcii.application.port.output.IDeckRepository;
+import com.clemnjord.flashcii.application.port.output.IAuthorizationService;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
-import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
+import com.clemnjord.flashcii.domain.exception.user.UnauthorizedException;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.user.User;
 import org.slf4j.Logger;
@@ -19,39 +19,33 @@ public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateFlashcardUseCaseImpl.class);
 
     private final IFlashcardRepository flashcardRepository;
-    private final IDeckRepository deckRepository;
     private final IUserContextService userContextService;
+    private final IAuthorizationService authorizationService;
 
-    public CreateFlashcardUseCaseImpl(IFlashcardRepository flashcardRepository, IDeckRepository deckRepository, IUserContextService userContextService) {
+    public CreateFlashcardUseCaseImpl(
+            IFlashcardRepository flashcardRepository,
+            IUserContextService userContextService,
+            IAuthorizationService authorizationService) {
         this.flashcardRepository = flashcardRepository;
-        this.deckRepository = deckRepository;
         this.userContextService = userContextService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Flashcard execute(CreateFlashcardCommand command) {
         User currentUser = userContextService.getCurrentUser();
 
-        logger.debug("Creating flashcard with question '{}' and answer '{}'",
-                command.question(),
-                command.answer()
-        );
+        if (!authorizationService.canManageResourceFor(currentUser, command.ownerId())) {
+            throw new UnauthorizedException(
+                    "User " + currentUser.userId().uuid() + " is not authorized to create flashcards for user "
+                            + command.ownerId().uuid());
+        }
 
-        // Check if the deck exists
-        var deck = deckRepository.findByIdAndOwnerId(command.deckId(), currentUser.userId())
-                                 .orElseThrow(() -> new DeckNotFoundException("Deck not found with ID: " + command
-                                         .deckId()
-                                         .uuid()));
+        logger.debug("Creating flashcard with question '{}' and answer '{}'", command.question(), command.answer());
 
         // Create and save the new flashcard
         Flashcard flashcard = Flashcard.createNew(command.question(), command.answer());
-        flashcardRepository.save(flashcard, command.deckId(), currentUser.userId());
-
-        // Associate the saved flashcard's ID to the deck
-        deck = deck.addFlashcard(flashcard.flashcardId());
-
-        // Save the updated deck
-        deckRepository.save(deck);
+        flashcardRepository.save(flashcard, command.ownerId());
 
         // Return the saved flashcard
         return flashcard;

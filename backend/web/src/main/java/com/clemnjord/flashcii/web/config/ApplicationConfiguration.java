@@ -6,6 +6,4 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(SharedSpringConfiguration.class)
-public class ApplicationConfiguration {
-}
-
+public class ApplicationConfiguration {}

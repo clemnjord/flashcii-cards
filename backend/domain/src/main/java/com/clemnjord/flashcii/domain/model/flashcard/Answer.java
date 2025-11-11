@@ -21,5 +21,4 @@ public record Answer(String value) {
             throw new IllegalArgumentException("Answer cannot be shorter than " + MIN_LENGTH + " characters");
         }
     }
-
 }

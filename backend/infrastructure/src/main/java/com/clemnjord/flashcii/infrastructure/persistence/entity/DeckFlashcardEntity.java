@@ -16,20 +16,25 @@ public class DeckFlashcardEntity {
     private DeckFlashcardEntityId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deck_id")
-    @MapsId("deckId")
+    @JoinColumn(name = "deck_id", insertable = false, updatable = false)
     private DeckEntity deck;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "flashcard_id", referencedColumnName = "flashcard_id", nullable = false),
-        @JoinColumn(name = "owner_id", referencedColumnName = "owner_id", nullable = false)
+        @JoinColumn(
+                name = "flashcard_id",
+                referencedColumnName = "flashcard_id",
+                insertable = false,
+                updatable = false),
+        @JoinColumn(name = "owner_id", referencedColumnName = "owner_id", insertable = false, updatable = false)
     })
-    @MapsId("flashcardId")
     private FlashcardEntity flashcard;
 
     public DeckFlashcardEntity(DeckEntity deck, FlashcardEntity flashcard) {
-        this.id = new DeckFlashcardEntityId(deck.getUUID(), flashcard.getID());
+        this.id = new DeckFlashcardEntityId(
+                deck.getUUID(),
+                flashcard.getID().getFlashcardId(),
+                flashcard.getID().getOwnerId());
         this.deck = deck;
         this.flashcard = flashcard;
     }

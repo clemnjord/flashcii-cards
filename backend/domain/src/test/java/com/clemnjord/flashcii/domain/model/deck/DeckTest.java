@@ -1,16 +1,15 @@
 package com.clemnjord.flashcii.domain.model.deck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.clemnjord.flashcii.domain.exception.deck.InvalidDeckException;
 import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
-import org.junit.jupiter.api.Test;
-
 import java.util.Set;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.Test;
 
 class DeckTest {
     @Test
@@ -94,7 +93,12 @@ class DeckTest {
     void restoredDeckEqualsOriginalDeck() {
         // --- Arrange & Act
         Deck originalDeck = Deck.createNew("Sample Deck", "A test deck", UserId.generate());
-        Deck restoredDeck = Deck.restore(originalDeck.deckId(), originalDeck.name(), originalDeck.description(), originalDeck.ownerId(), originalDeck.flashcardIds());
+        Deck restoredDeck = Deck.restore(
+                originalDeck.deckId(),
+                originalDeck.name(),
+                originalDeck.description(),
+                originalDeck.ownerId(),
+                originalDeck.flashcardIds());
 
         // --- Assert
         assertThat(restoredDeck).isEqualTo(originalDeck);

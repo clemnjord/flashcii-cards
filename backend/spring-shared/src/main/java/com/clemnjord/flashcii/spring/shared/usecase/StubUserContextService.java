@@ -4,9 +4,8 @@ import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.Username;
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 /**
  * Stub component until there is a real authentication process with an identity provider.

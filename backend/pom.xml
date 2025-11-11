@@ -45,6 +45,7 @@
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.site.version>3.12.1</maven.site.version>
         <maven.surefire.version>3.3.0</maven.surefire.version>
+        <spotless.version>2.43.0</spotless.version>
     </properties>
 
     <modules>
@@ -312,6 +313,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <palantirJavaFormat/>
+                    </java>
+                </configuration>
             </plugin>
         </plugins>
     </build>

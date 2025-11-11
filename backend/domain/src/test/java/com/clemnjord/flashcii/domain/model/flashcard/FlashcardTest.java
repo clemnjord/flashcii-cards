@@ -1,9 +1,9 @@
 package com.clemnjord.flashcii.domain.model.flashcard;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
 
 class FlashcardTest {
 
@@ -49,10 +49,10 @@ class FlashcardTest {
     void restoredFlashcardEqualsOriginalFlashcard() {
         // --- Arrange & Act
         Flashcard originalFlashcard = Flashcard.createNew(new Question("A question"), new Answer("An answer"));
-        Flashcard restoredFlashcard = Flashcard.restore(originalFlashcard.flashcardId(), originalFlashcard.question(), originalFlashcard.answer());
+        Flashcard restoredFlashcard = Flashcard.restore(
+                originalFlashcard.flashcardId(), originalFlashcard.question(), originalFlashcard.answer());
 
         // --- Assert
         assertThat(restoredFlashcard).isEqualTo(originalFlashcard);
     }
-
 }
