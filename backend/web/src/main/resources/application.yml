@@ -4,8 +4,9 @@ spring:
   main:
     banner-mode: "off" # Disable banner for CLI for cleaner output
   profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
     group:
-      default: h2-file
+      dev: h2-file
       test: h2-mem
 
 logging:
