@@ -1,20 +1,13 @@
 spring:
   application:
     name: flashcii-web
-  datasource:
-    url: jdbc:h2:file:./data/flashciicards-db;DB_CLOSE_ON_EXIT=TRUE
-    driver-class-name: org.h2.Driver
-    username: ${DATABASE_USERNAME:sa}
-    password: ${DATABASE_PASSWORD:password}
-  jpa:
-    hibernate:
-      ddl-auto: create
-    show-sql: true
   main:
     banner-mode: "off" # Disable banner for CLI for cleaner output
-  sql:
-    init:
-      mode: always
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+    group:
+      dev: h2-file
+      test: h2-mem
 
 logging:
   level:
@@ -24,3 +17,6 @@ logging:
       hibernate:
         SQL: ${LOG_LEVEL_SQL:DEBUG}
         type.descriptor.sql.BasicBinder: ${LOG_LEVEL_SQL_TRACE:TRACE}
+
+server:
+  port: ${SERVER_PORT:8083}
