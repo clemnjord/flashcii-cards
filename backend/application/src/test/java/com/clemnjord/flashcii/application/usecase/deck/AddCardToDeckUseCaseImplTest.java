@@ -1,7 +1,9 @@
 package com.clemnjord.flashcii.application.usecase.deck;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.clemnjord.flashcii.application.port.input.deck.AddCardToDeckCommand;
 import com.clemnjord.flashcii.application.port.output.IDeckRepository;
