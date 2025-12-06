@@ -13,8 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
     boolean existsByName(String name);
 
-    @Query(
-            """
+    @Query("""
         SELECT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
         WHERE LOWER(d.name) = LOWER(:name)
@@ -22,8 +21,7 @@ public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
         """)
     Optional<DeckEntity> findByNameAndOwner_Uuid(@Param("name") String name, @Param("ownerUuid") UUID ownerUuid);
 
-    @Query(
-            """
+    @Query("""
         SELECT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
         WHERE d.uuid = :uuid
@@ -31,8 +29,7 @@ public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
         """)
     Optional<DeckEntity> findByUuidAndOwner_Uuid(@Param("uuid") UUID uuid, @Param("ownerUuid") UUID ownerUuid);
 
-    @Query(
-            """
+    @Query("""
         SELECT DISTINCT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
         WHERE d.owner.uuid = :ownerId

@@ -10,15 +10,15 @@ import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.web.dto.FlashcardDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest(UserController.class)
 class UserControllerWebTest {
@@ -33,7 +33,7 @@ class UserControllerWebTest {
     private CreateFlashcardUseCase createFlashcardUseCase;
 
     @Test
-    void shouldCreateFlashcard() throws Exception {
+    void shouldCreateFlashcard() {
         // --- Given
         var request = new FlashcardDto.FlashcardCreateRequest("Question", "Answer");
         Flashcard mockFlashcard = new Flashcard(FlashcardId.generate(), new Question("Question"), new Answer("Answer"));

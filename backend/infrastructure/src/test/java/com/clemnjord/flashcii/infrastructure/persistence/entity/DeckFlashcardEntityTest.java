@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +117,7 @@ class DeckFlashcardEntityTest {
         // Then
         DeckEntity retrievedDeck = deckRepository.findById(testDeck.getUUID()).orElseThrow();
         assertThat(retrievedDeck.getFlashcards()).hasSize(1);
-        assertThat(retrievedDeck.getFlashcards().get(0).getID().getFlashcardId())
+        assertThat(retrievedDeck.getFlashcards().getFirst().getID().getFlashcardId())
                 .isEqualTo(testFlashcard.getID().getFlashcardId());
     }
 }

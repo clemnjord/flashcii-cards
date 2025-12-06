@@ -25,4 +25,5 @@ dependencies {
     testImplementation(libs.mockito.junit.jupiter)
 
     testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.starter.data.jpa.test)
 }
