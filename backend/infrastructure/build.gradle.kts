@@ -13,7 +13,8 @@ dependencies {
     implementation(project(":application"))
 
     implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.h2)
+    runtimeOnly(libs.h2)
+    testRuntimeOnly(libs.h2)
 
     testImplementation(libs.assertj)
     testImplementation(libs.junit.jupiter.api)
