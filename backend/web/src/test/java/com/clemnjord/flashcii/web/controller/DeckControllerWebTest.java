@@ -11,15 +11,15 @@ import com.clemnjord.flashcii.application.port.input.deck.ListDeckUseCase;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.DeckDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest(DeckController.class)
 class DeckControllerWebTest {
@@ -43,7 +43,7 @@ class DeckControllerWebTest {
     private ListDeckUseCase listDeckUseCase;
 
     @Test
-    void shouldCreateDeck() throws Exception {
+    void shouldCreateDeck() {
         // Given
         DeckDto.DeckRequest request = new DeckDto.DeckRequest("New Deck", "New Description");
         Deck mockDeck = Deck.createNew("New Deck", "New Description", new UserId(UUID.randomUUID()));
@@ -58,13 +58,11 @@ class DeckControllerWebTest {
                 .hasStatus(HttpStatus.CREATED)
                 .bodyJson()
                 .convertTo(DeckDto.DeckResponse.class)
-                .satisfies(response -> {
-                    assertThat(response.name()).isEqualTo("New Deck");
-                });
+                .satisfies(response -> assertThat(response.name()).isEqualTo("New Deck"));
     }
 
     @Test
-    void shouldReturn400WhenCreatingDeckWithInvalidInput() throws Exception {
+    void shouldReturn400WhenCreatingDeckWithInvalidInput() {
         DeckDto.DeckRequest invalidRequest = new DeckDto.DeckRequest("", "Valid description");
 
         mockMvc.post()
@@ -74,8 +72,6 @@ class DeckControllerWebTest {
                 .assertThat()
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
-                .satisfies(response -> {
-                    response.assertThat().extractingPath("$.errorCode").isEqualTo("VALIDATION_FAILED");
-                });
+                .satisfies(response -> response.assertThat().extractingPath("$.errorCode").isEqualTo("VALIDATION_FAILED"));
     }
 }

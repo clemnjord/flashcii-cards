@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.gradle.test.logger.plugin)
     alias(libs.plugins.spotless.plugin)

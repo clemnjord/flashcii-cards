@@ -8,8 +8,8 @@ import jakarta.persistence.PersistenceException;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -45,9 +45,7 @@ class UserEntityTest {
         // Missing required fields
 
         // When & Then
-        assertThatThrownBy(() -> {
-                    entityManager.persistAndFlush(user);
-                })
+        assertThatThrownBy(() -> entityManager.persistAndFlush(user))
                 .isInstanceOf(PersistenceException.class);
     }
 
@@ -67,8 +65,7 @@ class UserEntityTest {
         entityManager.flush();
 
         assertThatThrownBy(() -> {
-                    entityManager.persist(user2);
-                    entityManager.flush();
+                    entityManager.persistAndFlush(user2);
                 })
                 .isInstanceOf(PersistenceException.class);
     }
