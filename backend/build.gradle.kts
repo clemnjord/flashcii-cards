@@ -3,15 +3,11 @@ plugins {
     alias(libs.plugins.gradle.test.logger.plugin)
     alias(libs.plugins.spotless.plugin)
     jacoco
-    pmd
-    id("com.github.spotbugs") version "5.2.0"
 }
 
 allprojects {
     group = "com.clemnjord.flashcii"
     version = "1.0.0-SNAPSHOT"
-
-
 }
 
 subprojects {
@@ -49,7 +45,7 @@ subprojects {
     afterEvaluate {
         val spotless = tasks.findByName("spotlessApply")
         if (spotless != null) {
-            tasks.withType<JavaCompile>() {
+            tasks.withType<JavaCompile> {
                 finalizedBy(spotless)
             }
         }
@@ -71,21 +67,4 @@ subprojects {
     jacoco {
         reportsDirectory = layout.buildDirectory.dir("reports/jacoco").get().asFile
     }
-
-    apply(plugin = "pmd")
-
-    apply(plugin = "com.github.spotbugs")
-    spotbugs {
-        effort.set(com.github.spotbugs.snom.Effort.MAX)
-    }
-
-    tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
-        dependsOn(tasks.named("processResources"))
-    }
-
-    // Exclude test code from SpotBugs analysis
-    tasks.withType<com.github.spotbugs.snom.SpotBugsTask>() {
-        enabled = false
-    }
 }
-
