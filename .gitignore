@@ -4,3 +4,8 @@
 
 .idea/
 **/target/
+**/out/
+
+**/build/
+**/build-cache/
+**/.gradle/
