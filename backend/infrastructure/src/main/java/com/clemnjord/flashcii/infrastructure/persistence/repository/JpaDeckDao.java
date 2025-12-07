@@ -11,34 +11,32 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JpaDeckDao extends JpaRepository<DeckEntity, UUID> {
-    boolean existsByName(String name);
-
     @Query("""
         SELECT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
         WHERE LOWER(d.name) = LOWER(:name)
-        AND d.owner.uuid = :ownerUuid
+        AND d.owner.id = :ownerId
         """)
-    Optional<DeckEntity> findByNameAndOwner_Uuid(@Param("name") String name, @Param("ownerUuid") UUID ownerUuid);
+    Optional<DeckEntity> findByNameAndOwner_Id(@Param("name") String name, @Param("ownerId") UUID ownerId);
 
     @Query("""
         SELECT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
-        WHERE d.uuid = :uuid
-        AND d.owner.uuid = :ownerUuid
+        WHERE d.id = :id
+        AND d.owner.id = :ownerId
         """)
-    Optional<DeckEntity> findByUuidAndOwner_Uuid(@Param("uuid") UUID uuid, @Param("ownerUuid") UUID ownerUuid);
+    Optional<DeckEntity> findByIdAndOwner_Id(@Param("id") UUID id, @Param("ownerId") UUID ownerId);
 
     @Query("""
         SELECT DISTINCT d FROM DeckEntity d
         LEFT JOIN FETCH d.deckFlashcards
-        WHERE d.owner.uuid = :ownerId
+        WHERE d.owner.id = :ownerId
         AND LOWER(d.name) LIKE LOWER(CONCAT('%', :nameFilter, '%'))
         """)
-    List<DeckEntity> findAllByOwner_UuidAndNameContainsIgnoreCase(
+    List<DeckEntity> findAllByOwner_IdAndNameContainsIgnoreCase(
             @Param("ownerId") UUID ownerId, @Param("nameFilter") String nameFilter);
 
-    boolean existsByNameAndOwner_Uuid(String name, UUID ownerUuid);
+    boolean existsByNameAndOwner_Id(String name, UUID ownerId);
 
-    boolean existsByUuidAndOwner_Uuid(UUID id, UUID ownerUuid);
+    boolean existsByIdAndOwner_Id(UUID id, UUID ownerId);
 }

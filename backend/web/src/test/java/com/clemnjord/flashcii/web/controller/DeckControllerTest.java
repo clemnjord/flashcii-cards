@@ -13,28 +13,70 @@ import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.web.dto.DeckDto;
 import java.util.List;
 import java.util.UUID;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(DeckController.class)
 class DeckControllerTest {
-    @Mock
+
+    @Autowired
+    private MockMvcTester mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
     private AddCardToDeckUseCase addCardToDeckUseCase;
 
-    @Mock
+    @MockitoBean
     private CreateDeckUseCase createDeckUseCase;
 
-    @Mock
+    @MockitoBean
     private GetDeckUseCase getDeckUseCase;
 
-    @Mock
+    @MockitoBean
     private ListDeckUseCase listDeckUseCase;
 
-    @InjectMocks
-    private DeckController deckController;
+    @Test
+    void shouldCreateDeck() {
+        // Given
+        DeckDto.DeckRequest request = new DeckDto.DeckRequest("New Deck", "New Description");
+        Deck mockDeck = Deck.createNew("New Deck", "New Description", new UserId(UUID.randomUUID()));
+        when(createDeckUseCase.execute(any())).thenReturn(mockDeck);
+
+        // When & Then
+        mockMvc.post()
+                .uri("/decks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .assertThat()
+                .hasStatus(HttpStatus.CREATED)
+                .bodyJson()
+                .convertTo(DeckDto.DeckResponse.class)
+                .satisfies(response -> assertThat(response.name()).isEqualTo("New Deck"));
+    }
+
+    @Test
+    void shouldReturn400WhenCreatingDeckWithInvalidInput() {
+        DeckDto.DeckRequest invalidRequest = new DeckDto.DeckRequest("", "Valid description");
+
+        mockMvc.post()
+                .uri("/decks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidRequest))
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .satisfies(response ->
+                        response.assertThat().extractingPath("$.errorCode").isEqualTo("VALIDATION_FAILED"));
+    }
 
     @Test
     void shouldReturnDecksWhenListing() {
@@ -43,10 +85,14 @@ class DeckControllerTest {
         when(listDeckUseCase.execute(any())).thenReturn(List.of(mockDeck));
 
         // When
-        List<DeckDto.SimpleDeckResponse> result = deckController.getDecks("test");
-
-        // Then
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().name()).isEqualTo("Test Deck");
+        mockMvc.get()
+                .uri("/decks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatus(HttpStatus.OK)
+                .bodyJson()
+                .convertTo(InstanceOfAssertFactories.list(DeckDto.DeckResponse.class))
+                .hasSize(1)
+                .satisfies(result -> assertThat(result.getFirst().name()).isEqualTo("Test Deck"));
     }
 }

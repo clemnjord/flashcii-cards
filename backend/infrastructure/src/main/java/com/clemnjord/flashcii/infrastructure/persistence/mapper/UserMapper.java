@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toDomain(UserEntity entity) {
-        return User.restore(new UserId(entity.getUuid()), new Username(entity.getUsername()));
+        return User.restore(new UserId(entity.getId()), new Username(entity.getUsername()));
     }
 
     public UserEntity toEntity(User user) {
         UserEntity entity = new UserEntity();
 
         if (user.userId() != null && user.userId().uuid() != null) {
-            entity.setUuid(user.userId().uuid());
+            entity.setId(user.userId().uuid());
         }
 
         entity.setUsername(user.username().value());

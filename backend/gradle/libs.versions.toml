@@ -1,6 +1,7 @@
 [versions]
 aspectj = "1.9.25"
 assertj = "3.27.3"
+assertj-db = "3.0.0"
 h2 = "2.3.232"
 jansi = "2.4.2"
 junit = "6.0.1"
@@ -9,10 +10,12 @@ mapstruct = "1.6.3"
 mockito = "5.20.0"
 pitest = "1.19.4"
 pitest-junit5 = "1.2.3"
+postgresql = "42.7.8"
 slf4j = "2.0.17"
 spring-aspects = "6.2.9"
 spring-boot = "4.0.0"
 springdoc-openapi = "3.0.0"
+testcontainers = "2.0.2"
 
 # Plugins
 spotless-plugin = "8.1.0"
@@ -22,6 +25,7 @@ gradle-versions-plugin = "0.11.1"
 [libraries]
 # Database dependencies
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 
 # Development dependencies
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
@@ -41,6 +45,7 @@ springdoc-openapi-starter-webmvc-ui = { group = "org.springdoc", name = "springd
 
 # Test dependencies
 assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+assertj-db = { group = "org.assertj", name = "assertj-db", version.ref = "assertj-db" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
@@ -50,6 +55,8 @@ mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter",
 spring-boot-starter-data-jpa-test = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa-test", version.ref = "spring-boot" }
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot" }
 spring-boot-starter-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test", version.ref = "spring-boot" }
+testcontainers = {group = "org.testcontainers", name = "testcontainers", version.ref = "testcontainers" }
+testcontainers-postgresql = {group = "org.testcontainers", name = "testcontainers-postgresql", version.ref = "testcontainers" }
 
 [plugins]
 spotless-plugin = { id = "com.diffplug.spotless", version.ref = "spotless-plugin" }

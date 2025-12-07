@@ -26,15 +26,15 @@ class UserEntityTest {
         // Given
         UserEntity user = new UserEntity();
         UUID userId = UUID.randomUUID();
-        user.setUuid(userId);
+        user.setId(userId);
         user.setUsername("testuser");
 
         // When
         UserEntity savedUser = entityManager.persistAndFlush(user);
 
         // Then
-        assertThat(savedUser.getUuid()).isNotNull();
-        assertThat(savedUser.getUuid()).isEqualTo(userId);
+        assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getId()).isEqualTo(userId);
         assertThat(savedUser.getUsername()).isEqualTo("testuser");
     }
 
@@ -45,19 +45,18 @@ class UserEntityTest {
         // Missing required fields
 
         // When & Then
-        assertThatThrownBy(() -> entityManager.persistAndFlush(user))
-                .isInstanceOf(PersistenceException.class);
+        assertThatThrownBy(() -> entityManager.persistAndFlush(user)).isInstanceOf(PersistenceException.class);
     }
 
     @Test
     void shouldHandleUniqueConstraints() {
         // Given
         UserEntity user1 = new UserEntity();
-        user1.setUuid(UUID.randomUUID());
+        user1.setId(UUID.randomUUID());
         user1.setUsername("testuser");
 
         UserEntity user2 = new UserEntity();
-        user2.setUuid(UUID.randomUUID());
+        user2.setId(UUID.randomUUID());
         user2.setUsername("testuser"); // Same username
 
         // When & Then

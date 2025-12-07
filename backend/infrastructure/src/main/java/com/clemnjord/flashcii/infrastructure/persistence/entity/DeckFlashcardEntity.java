@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "deck_flashcard")
+@Table(name = "decks_flashcards")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,9 +38,9 @@ public class DeckFlashcardEntity {
 
     public DeckFlashcardEntity(DeckEntity deck, FlashcardEntity flashcard) {
         this.id = new DeckFlashcardEntityId(
-                deck.getUUID(),
-                flashcard.getID().getFlashcardId(),
-                flashcard.getID().getOwnerId());
+                deck.getId(),
+                flashcard.getId().getFlashcardId(),
+                flashcard.getId().getOwnerId());
         this.deck = deck;
         this.flashcard = flashcard;
     }

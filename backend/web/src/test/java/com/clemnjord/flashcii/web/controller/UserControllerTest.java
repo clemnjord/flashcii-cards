@@ -1,7 +1,5 @@
 package com.clemnjord.flashcii.web.controller;
 
-import static com.clemnjord.flashcii.web.dto.FlashcardDto.FlashcardCreateRequest;
-import static com.clemnjord.flashcii.web.dto.FlashcardDto.FlashcardResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -11,37 +9,49 @@ import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
+import com.clemnjord.flashcii.web.dto.FlashcardDto;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(UserController.class)
 class UserControllerTest {
 
-    @Mock
-    private CreateFlashcardUseCase createFlashcardUseCase;
+    @Autowired
+    MockMvcTester mockMvc;
 
-    @InjectMocks
-    private UserController userController;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private CreateFlashcardUseCase createFlashcardUseCase;
 
     @Test
     void shouldCreateFlashcard() {
         // --- Given
-        Flashcard flashcard = Flashcard.restore(FlashcardId.generate(), new Question("Question"), new Answer("Answer"));
-        when(createFlashcardUseCase.execute(any())).thenReturn(flashcard);
+        var request = new FlashcardDto.FlashcardCreateRequest("Question", "Answer");
+        Flashcard mockFlashcard = new Flashcard(FlashcardId.generate(), new Question("Question"), new Answer("Answer"));
 
-        // --- When
-        FlashcardCreateRequest request = new FlashcardCreateRequest("Question", "Answer");
+        when(createFlashcardUseCase.execute(any())).thenReturn(mockFlashcard);
 
-        FlashcardResponse response =
-                userController.createFlashcard(UUID.randomUUID().toString(), request);
-
-        // --- Then
-        assertThat(response.uuid()).isEqualTo(flashcard.flashcardId().uuid().toString());
-        assertThat(response.question()).isEqualTo(flashcard.question().value());
-        assertThat(response.answer()).isEqualTo(flashcard.answer().value());
+        // --- When & Then
+        mockMvc.post()
+                .uri("/users/" + UUID.randomUUID() + "/flashcards")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .assertThat()
+                .hasStatus(HttpStatus.CREATED)
+                .bodyJson()
+                .convertTo(FlashcardDto.FlashcardResponse.class)
+                .satisfies(response -> {
+                    assertThat(response.question()).isEqualTo("Question");
+                    assertThat(response.answer()).isEqualTo("Answer");
+                });
     }
 }

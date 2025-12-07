@@ -1,0 +1,15 @@
+== Testcontainers with Podman
+
+Enable the socket for our user:
+[source, shell]
+----
+systemctl --user enable --now podman.socket
+----
+
+Configure how testcontainers should connect to the Podman socket
+[source, shell]
+----
+export DOCKER_HOST=unix://${XDG_RUNTIME_DIR}/podman/podman.sock
+export TESTCONTAINERS_RYUK_DISABLED=true
+----
+

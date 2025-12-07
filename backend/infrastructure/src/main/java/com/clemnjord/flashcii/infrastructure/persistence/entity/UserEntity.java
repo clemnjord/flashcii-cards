@@ -9,19 +9,21 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`users`")
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
 
     @Id
-    private UUID uuid;
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String username;
