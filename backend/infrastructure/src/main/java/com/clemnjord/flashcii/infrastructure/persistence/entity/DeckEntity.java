@@ -12,19 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "deck")
+@Table(name = "decks")
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class DeckEntity {
 
     @Id
-    private UUID uuid;
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -39,15 +41,6 @@ public class DeckEntity {
     @Getter(AccessLevel.NONE) // Don't generate getter for this field
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();
-
-    // Getters and setters
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public void setId(UUID uuid) {
-        this.uuid = uuid;
-    }
 
     public List<FlashcardEntity> getFlashcards() {
         return deckFlashcards.stream().map(DeckFlashcardEntity::getFlashcard).toList();

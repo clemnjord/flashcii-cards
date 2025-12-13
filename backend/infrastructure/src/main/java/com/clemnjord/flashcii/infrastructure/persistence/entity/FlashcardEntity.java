@@ -8,13 +8,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "flashcard")
+@Table(name = "flashcards")
+@AllArgsConstructor
+@NoArgsConstructor
 public class FlashcardEntity {
 
     @EmbeddedId
@@ -28,15 +32,6 @@ public class FlashcardEntity {
 
     @OneToMany(mappedBy = "flashcard", cascade = CascadeType.ALL)
     private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();
-
-    // Getters and setters
-    public FlashcardEntityId getID() {
-        return id;
-    }
-
-    public void setID(FlashcardEntityId id) {
-        this.id = id;
-    }
 
     // Utility methods
     public List<DeckEntity> getDecks() {

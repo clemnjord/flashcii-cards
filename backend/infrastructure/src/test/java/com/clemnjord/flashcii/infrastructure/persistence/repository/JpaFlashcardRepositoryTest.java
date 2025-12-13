@@ -1,27 +1,34 @@
 package com.clemnjord.flashcii.infrastructure.persistence.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.clemnjord.flashcii.domain.exception.user.UserNotFoundException;
-import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
-import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
-import java.util.Optional;
+import com.clemnjord.flashcii.infrastructure.testcontainers.PostgresTestContainerExtension;
+import jakarta.persistence.EntityManager;
+import javax.sql.DataSource;
+import org.assertj.db.api.Assertions;
+import org.assertj.db.type.AssertDbConnectionFactory;
+import org.assertj.db.type.Table;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-@ContextConfiguration(classes = TestJpaConfiguration.class)
+@SpringBootTest
+@ExtendWith(PostgresTestContainerExtension.class)
 @ActiveProfiles("test")
+@Transactional
 class JpaFlashcardRepositoryTest {
 
     @Autowired
@@ -30,50 +37,60 @@ class JpaFlashcardRepositoryTest {
     @Autowired
     private JpaFlashcardRepository flashcardRepository;
 
-    @Autowired
-    private JpaDeckRepository deckRepository;
+    @Nested
+    @DisplayName("Save operations")
+    class SaveOperations {
+        private final User user = User.createNew(new Username("testUser"));
+        private final Flashcard flashcard =
+                Flashcard.createNew(new Question("What is a question"), new Answer("An answer."));
 
-    @Test
-    void saveFlashcard() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
+        @Test
+        @DisplayName("Should persist Flashcard when user exists")
+        void save_shouldPersistFlashcard(@Autowired EntityManager entityManager, @Autowired DataSource dataSource) {
+            // Given
+            userRepository.save(user);
 
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
+            // When
+            flashcardRepository.save(flashcard, user.userId());
+            entityManager.flush();
 
-        Flashcard flashcard = Flashcard.createNew(new Question("What is a question"), new Answer("An answer."));
+            // Then
+            var dsWrapper = new TransactionAwareDataSourceProxy(dataSource);
+            var assertDbConnection = AssertDbConnectionFactory.of(dsWrapper).create();
+            Table flashcardsTable = assertDbConnection.table("flashcards").build();
 
-        // When
-        flashcardRepository.save(flashcard, user.userId());
-        Optional<Flashcard> foundFlashcard =
-                flashcardRepository.findByFlashcardIdAndOwnerId(flashcard.flashcardId(), user.userId());
+            Assertions.assertThat(flashcardsTable)
+                    .row()
+                    .column("flashcard_id")
+                    .value()
+                    .isEqualTo(flashcard.flashcardId().uuid());
+            Assertions.assertThat(flashcardsTable)
+                    .row()
+                    .column("owner_id")
+                    .value()
+                    .isEqualTo(user.userId().uuid());
+            Assertions.assertThat(flashcardsTable)
+                    .row()
+                    .column("question")
+                    .value()
+                    .isEqualTo(flashcard.question().value());
+            Assertions.assertThat(flashcardsTable)
+                    .row()
+                    .column("answer")
+                    .value()
+                    .isEqualTo(flashcard.answer().value());
+        }
 
-        // Then
-        assertThat(foundFlashcard).isPresent();
-        assertThat(foundFlashcard.get().question().value())
-                .isEqualTo(flashcard.question().value());
-        assertThat(foundFlashcard.get().answer().value())
-                .isEqualTo(flashcard.answer().value());
-        assertThat(foundFlashcard.get().flashcardId()).isEqualTo(flashcard.flashcardId());
-    }
+        @Test
+        @DisplayName("Should throw when user does not exist")
+        void saveShouldThrowWhenUserDoesNotExist() {
+            // Given
+            UserId randomUserId = UserId.generate();
 
-    @Test
-    void saveShouldThrowWhenUserDoesNotExist() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
-
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
-
-        Flashcard flashcard = Flashcard.createNew(new Question("What is a question"), new Answer("An answer."));
-
-        UserId randomUserId = UserId.generate();
-
-        // When & Then
-        assertThatThrownBy(() -> flashcardRepository.save(flashcard, randomUserId))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("User not found when saving a Flashcard");
+            // When & Then
+            assertThatThrownBy(() -> flashcardRepository.save(flashcard, randomUserId))
+                    .isInstanceOf(UserNotFoundException.class)
+                    .hasMessageContaining("User not found when saving a Flashcard");
+        }
     }
 }

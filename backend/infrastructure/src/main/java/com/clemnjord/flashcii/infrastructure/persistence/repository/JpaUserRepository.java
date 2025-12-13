@@ -31,7 +31,7 @@ public class JpaUserRepository implements IUserRepository {
 
     @Override
     public Optional<User> findById(UserId user) {
-        return jpaUserDao.findByUuid(user.uuid()).map(userMapper::toDomain);
+        return jpaUserDao.findById(user.uuid()).map(userMapper::toDomain);
     }
 
     @Override

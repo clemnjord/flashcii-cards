@@ -11,6 +11,4 @@ public interface JpaUserDao extends JpaRepository<UserEntity, UUID> {
     boolean existsByUsername(String username);
 
     Optional<UserEntity> findByUsername(String username);
-
-    Optional<UserEntity> findByUuid(UUID uuid);
 }

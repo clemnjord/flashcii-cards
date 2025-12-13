@@ -6,6 +6,7 @@ import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
 import com.clemnjord.flashcii.infrastructure.persistence.repository.JpaDeckDao;
 import com.clemnjord.flashcii.infrastructure.persistence.repository.JpaFlashcardDao;
 import com.clemnjord.flashcii.infrastructure.persistence.repository.JpaUserDao;
+import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,37 +29,30 @@ class DeckEntityTest {
 
     @Test
     void testDeckEntity_addFlashcard_shouldCreateDeckFlashcardEntity() {
-        // Given
+        // --- Given
         // Create and save a test user
-        UserEntity testUser = new UserEntity();
-        testUser.setUuid(UUID.randomUUID());
-        testUser.setUsername("testuser");
+        UserEntity testUser = new UserEntity(UUID.randomUUID(), "testuser", new ArrayList<>());
         userRepository.save(testUser);
 
         // Create and save a test deck
-        DeckEntity testDeck = new DeckEntity();
-        testDeck.setId(UUID.randomUUID());
-        testDeck.setName("Test Deck");
-        testDeck.setDescription("A test deck");
-        testDeck.setOwner(testUser);
+        DeckEntity testDeck =
+                new DeckEntity(UUID.randomUUID(), "Test Deck", "A test deck", testUser, new ArrayList<>());
         deckRepository.save(testDeck);
 
         // Create and save a test flashcard
-        FlashcardEntityId flashcardId = new FlashcardEntityId(UUID.randomUUID(), testUser.getUuid());
-        FlashcardEntity testFlashcard = new FlashcardEntity();
-        testFlashcard.setID(flashcardId);
-        testFlashcard.setQuestion("What is JPA?");
-        testFlashcard.setAnswer("Java Persistence API");
+        FlashcardEntityId flashcardId = new FlashcardEntityId(UUID.randomUUID(), testUser.getId());
+        FlashcardEntity testFlashcard =
+                new FlashcardEntity(flashcardId, "What is JPA?", "Java Persistence API", new ArrayList<>());
         flashcardRepository.save(testFlashcard);
 
-        // When
+        // --- When
         testDeck.addFlashcard(testFlashcard);
         deckRepository.saveAndFlush(testDeck);
 
-        // Then
-        DeckEntity retrievedDeck = deckRepository.findById(testDeck.getUUID()).orElseThrow();
+        // --- Then
+        DeckEntity retrievedDeck = deckRepository.findById(testDeck.getId()).orElseThrow();
         assertThat(retrievedDeck.getFlashcards()).hasSize(1);
-        assertThat(retrievedDeck.getFlashcards().getFirst().getID().getFlashcardId())
-                .isEqualTo(testFlashcard.getID().getFlashcardId());
+        assertThat(retrievedDeck.getFlashcards().getFirst().getId().getFlashcardId())
+                .isEqualTo(testFlashcard.getId().getFlashcardId());
     }
 }

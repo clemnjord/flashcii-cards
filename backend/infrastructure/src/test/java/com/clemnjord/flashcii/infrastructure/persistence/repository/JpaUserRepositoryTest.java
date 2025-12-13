@@ -3,66 +3,88 @@ package com.clemnjord.flashcii.infrastructure.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.clemnjord.flashcii.domain.model.user.User;
+import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
-import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
-import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
+import com.clemnjord.flashcii.infrastructure.testcontainers.PostgresTestContainerExtension;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
-import java.util.UUID;
+import javax.sql.DataSource;
+import org.assertj.db.api.Assertions;
+import org.assertj.db.type.AssertDbConnectionFactory;
+import org.assertj.db.type.Table;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-@ContextConfiguration(classes = TestJpaConfiguration.class)
+@SpringBootTest
+@ExtendWith(PostgresTestContainerExtension.class)
 @ActiveProfiles("test")
+@Transactional
 class JpaUserRepositoryTest {
 
     @Autowired
     private JpaUserRepository userRepository;
 
-    @Autowired
-    private TestEntityManager entityManager;
+    private final User user = new User(UserId.generate(), new Username("testuser"));
 
-    @Test
-    void shouldFindUserByUsername() {
-        // Given
-        UserEntity user = new UserEntity();
-        user.setUuid(UUID.randomUUID());
-        user.setUsername("testuser");
-        entityManager.persistAndFlush(user);
+    @Nested
+    @DisplayName("Save operations")
+    class SaveOperations {
 
-        // When
-        Optional<User> foundUser = userRepository.findByUsername("testuser");
+        @Test
+        @DisplayName("Should persist user")
+        void shouldSaveUser(@Autowired EntityManager entityManager, @Autowired DataSource dataSource) {
+            // When
+            userRepository.save(user);
+            entityManager.flush();
 
-        // Then
-        assertThat(foundUser).isPresent();
-        assertThat(foundUser.get().username().value()).isEqualTo("testuser");
+            // Then
+            var dsWrapper = new TransactionAwareDataSourceProxy(dataSource);
+            var assertDbConnection = AssertDbConnectionFactory.of(dsWrapper).create();
+            Table usersTable = assertDbConnection.table("users").build();
+
+            Assertions.assertThat(usersTable)
+                    .row()
+                    .column("id")
+                    .value()
+                    .isEqualTo(user.userId().uuid());
+            Assertions.assertThat(usersTable).row().column("username").value().isEqualTo("testuser");
+        }
     }
 
-    @Test
-    void shouldReturnEmptyWhenUserNotFound() {
-        // When
-        Optional<User> foundUser = userRepository.findByUsername("nonexistent");
+    @Nested
+    @DisplayName("Find operations")
+    class FindOperations {
 
-        // Then
-        assertThat(foundUser).isEmpty();
-    }
+        @Test
+        @DisplayName("Should find user by username")
+        void shouldFindUserByUsername() {
+            // Given
+            userRepository.save(user);
 
-    @Test
-    void shouldSaveUser() {
-        // Given
-        User user = User.createNew(new Username("testuser"));
+            // When
+            Optional<User> foundUser = userRepository.findByUsername("testuser");
 
-        // When
-        userRepository.save(user);
-        Optional<User> foundUser = userRepository.findByUsername("testuser");
+            // Then
+            assertThat(foundUser).isPresent();
+            assertThat(foundUser.get().userId()).isEqualTo(user.userId());
+            assertThat(foundUser.get().username().value()).isEqualTo("testuser");
+        }
 
-        // Then
-        assertThat(foundUser).isNotEmpty();
-        assertThat(foundUser.get().username().value()).isEqualTo("testuser");
-        assertThat(foundUser.get().userId().uuid()).isEqualTo(user.userId().uuid());
+        @Test
+        @DisplayName("Should return empty when user not found")
+        void shouldReturnEmptyWhenUserNotFound() {
+            // When
+            Optional<User> foundUser = userRepository.findByUsername("nonexistent");
+
+            // Then
+            assertThat(foundUser).isEmpty();
+        }
     }
 }

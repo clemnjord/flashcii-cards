@@ -3,6 +3,7 @@ package com.clemnjord.flashcii.infrastructure.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.clemnjord.flashcii.domain.exception.user.UserNotFoundException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
@@ -11,19 +12,29 @@ import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
-import com.clemnjord.flashcii.infrastructure.persistence.TestJpaConfiguration;
+import com.clemnjord.flashcii.infrastructure.testcontainers.PostgresTestContainerExtension;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.assertj.db.api.Assertions;
+import org.assertj.db.type.AssertDbConnectionFactory;
+import org.assertj.db.type.Table;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-@ContextConfiguration(classes = TestJpaConfiguration.class)
+@SpringBootTest
 @ActiveProfiles("test")
+@ExtendWith(PostgresTestContainerExtension.class)
+@Transactional
 class JpaDeckRepositoryTest {
-
     @Autowired
     JpaUserRepository userRepository;
 
@@ -33,136 +44,160 @@ class JpaDeckRepositoryTest {
     @Autowired
     private JpaDeckRepository deckRepository;
 
-    @Test
-    void save_shouldPersistDeck() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
+    private final User testUser = User.createNew(new Username("testUser"));
+    private final Deck testDeck = Deck.createNew("DeckName", "description", testUser.userId());
 
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
+    @Nested
+    @DisplayName("Save operations")
+    class SaveOperations {
 
-        // When
-        deckRepository.save(deck);
-        Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(deck.deckId(), user.userId());
+        @Test
+        @DisplayName("Should persist Deck when user exists")
+        void save_shouldPersistDeck(@Autowired EntityManager entityManager, @Autowired DataSource dataSource) {
+            // Given
+            User user = User.createNew(new Username("testUser"));
+            userRepository.save(user);
 
-        // Then
-        assertThat(foundDeck).isPresent();
-        assertThat(foundDeck.get().deckId()).isEqualTo(deck.deckId());
-        assertThat(foundDeck.get().name()).isEqualTo(deck.name());
-        assertThat(foundDeck.get().description()).isEqualTo(deck.description());
+            Deck deck = Deck.createNew("DeckName", "description", user.userId());
+
+            // When
+            deckRepository.save(deck);
+            entityManager.flush();
+
+            // Then
+            var dsWrapper = new TransactionAwareDataSourceProxy(dataSource);
+            var assertDbConnection = AssertDbConnectionFactory.of(dsWrapper).create();
+            Table decksTable = assertDbConnection.table("decks").build();
+
+            Assertions.assertThat(decksTable)
+                    .row()
+                    .column("id")
+                    .value()
+                    .isEqualTo(deck.deckId().uuid());
+            Assertions.assertThat(decksTable)
+                    .row()
+                    .column("owner_id")
+                    .value()
+                    .isEqualTo(user.userId().uuid());
+            Assertions.assertThat(decksTable).row().column("name").value().isEqualTo("DeckName");
+            Assertions.assertThat(decksTable)
+                    .row()
+                    .column("description")
+                    .value()
+                    .isEqualTo("description");
+        }
+
+        @Test
+        @DisplayName("Should throw when user does not exist")
+        void save_shouldThrow_whenUserDoesNotExist() {
+            // Given
+            UserId randomUserId = UserId.generate();
+            Deck deck = Deck.createNew("DeckName", "description", randomUserId);
+
+            // When & Then
+            assertThatThrownBy(() -> deckRepository.save(deck))
+                    .isInstanceOf(UserNotFoundException.class)
+                    .hasMessageContaining("User not found: " + randomUserId);
+        }
     }
 
-    @Test
-    void save_shouldThrow_whenUserDoesNotExist() {
-        // Given
-        UserId randomUserId = UserId.generate();
-        Deck deck = Deck.createNew("DeckName", "description", randomUserId);
+    @Nested
+    @DisplayName("Find operations")
+    class FindOperations {
 
-        // When & Then
-        assertThatThrownBy(() -> deckRepository.save(deck))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("User not found: " + randomUserId);
+        @BeforeEach
+        void setUp() {
+            userRepository.save(testUser);
+            deckRepository.save(testDeck);
+        }
+
+        @Test
+        @DisplayName("existsByNameAndOwnerId Should return true when Deck and Owner exist")
+        void existsByNameAndOwnerId_shouldReturnTrue_whenExists() {
+            // When
+            boolean exists = deckRepository.existsByNameAndOwnerId(testDeck.name(), testUser.userId());
+
+            // Then
+            assertThat(exists).isTrue();
+        }
+
+        @Test
+        @DisplayName("existsByIdAndOwnerId should return true when Deck and Owner exist")
+        void existsByIdAndOwnerId_shouldReturnTrue_whenExists() {
+            // When
+            boolean exists = deckRepository.existsByIdAndOwnerId(testDeck.deckId(), testUser.userId());
+
+            // Then
+            assertThat(exists).isTrue();
+        }
+
+        @Test
+        @DisplayName("findByNameAndOwnerId should return Deck when Deck and User exist")
+        void findByNameAndOwnerId_shouldReturnDeck_whenExists() {
+            // When
+            Optional<Deck> foundDeck = deckRepository.findByNameAndOwnerId(testDeck.name(), testUser.userId());
+            assertThat(foundDeck).isPresent().get().satisfies(d -> {
+                assertThat(d.deckId()).isEqualTo(testDeck.deckId());
+                assertThat(d.name()).isEqualTo(testDeck.name());
+                assertThat(d.description()).isEqualTo(testDeck.description());
+            });
+        }
+
+        @Test
+        @DisplayName("findByNameAndOwnerId should return empty when Deck does not exist")
+        void findByNameAndOwnerId_shouldReturnEmptyDeck_whenDoesntExists() {
+            // When
+            Optional<Deck> foundDeck = deckRepository.findByNameAndOwnerId("doesNotExist", UserId.generate());
+            assertThat(foundDeck).isEmpty();
+        }
+
+        @Test
+        @DisplayName("findByIdAndOwnerId should return Deck when Deck and User exist")
+        void findByIdAndOwnerId_shouldReturnDeck_whenExists() {
+            // When
+            Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(testDeck.deckId(), testUser.userId());
+            assertThat(foundDeck).isPresent().get().satisfies(d -> {
+                assertThat(d.deckId()).isEqualTo(testDeck.deckId());
+                assertThat(d.name()).isEqualTo(testDeck.name());
+                assertThat(d.description()).isEqualTo(testDeck.description());
+            });
+        }
+
+        @Test
+        @DisplayName("findByIdAndOwnerId should return empty when Deck does not exist")
+        void findByIdAndOwnerId_shouldReturnEmptyDeck_whenDoesntExists() {
+            // When
+            Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(DeckId.generate(), UserId.generate());
+            assertThat(foundDeck).isEmpty();
+        }
     }
 
-    @Test
-    void existsByNameAndOwnerId_shouldReturnTrue_whenExists() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
+    @Nested
+    @DisplayName("Flashcard operations")
+    class FlashcardOperations {
 
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
+        @BeforeEach
+        void setUp() {
+            userRepository.save(testUser);
+            deckRepository.save(testDeck);
+        }
 
-        // When
-        boolean exists = deckRepository.existsByNameAndOwnerId(deck.name(), user.userId());
+        @Test
+        @DisplayName("addFlashcardToDeck should succeed when Deck and Flashcard exist")
+        void addFlashcardToDeck_shouldSucceed_whenDeckAndFlashcardExist() {
+            // Given
+            Flashcard flashcard = Flashcard.createNew(new Question("Question"), new Answer("Answer"));
+            flashcardRepository.save(flashcard, testUser.userId());
 
-        // Then
-        assertThat(exists).isTrue();
-    }
+            // When
+            deckRepository.addFlashcardToDeck(testDeck.deckId(), flashcard.flashcardId(), testUser.userId());
+            Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(testDeck.deckId(), testUser.userId());
 
-    @Test
-    void existsByIdAndOwnerId_shouldReturnTrue_whenExists() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
-
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
-
-        // When
-        boolean exists = deckRepository.existsByIdAndOwnerId(deck.deckId(), user.userId());
-
-        // Then
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    void findByNameAndOwnerId_shouldReturnDeck_whenExists() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
-
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
-
-        // When
-        Optional<Deck> foundDeck = deckRepository.findByNameAndOwnerId(deck.name(), user.userId());
-        assertThat(foundDeck).isPresent();
-        assertThat(foundDeck.get().deckId()).isEqualTo(deck.deckId());
-        assertThat(foundDeck.get().name()).isEqualTo(deck.name());
-        assertThat(foundDeck.get().description()).isEqualTo(deck.description());
-    }
-
-    @Test
-    void findByNameAndOwnerId_shouldReturnEmptyDeck_whenDoesntExists() {
-        // When
-        Optional<Deck> foundDeck = deckRepository.findByNameAndOwnerId("doesNotExist", UserId.generate());
-        assertThat(foundDeck).isEmpty();
-    }
-
-    @Test
-    void findByIdAndOwnerId_shouldReturnDeck_whenExists() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
-
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
-
-        // When
-        Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(deck.deckId(), user.userId());
-        assertThat(foundDeck).isPresent();
-        assertThat(foundDeck.get().deckId()).isEqualTo(deck.deckId());
-        assertThat(foundDeck.get().name()).isEqualTo(deck.name());
-        assertThat(foundDeck.get().description()).isEqualTo(deck.description());
-    }
-
-    @Test
-    void findByIdAndOwnerId_shouldReturnEmptyDeck_whenDoesntExists() {
-        // When
-        Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(DeckId.generate(), UserId.generate());
-        assertThat(foundDeck).isEmpty();
-    }
-
-    @Test
-    void addFlashcardToDeck_shouldSucceed_whenDeckAndFlashcardExist() {
-        // Given
-        User user = User.createNew(new Username("testUser"));
-        userRepository.save(user);
-
-        Deck deck = Deck.createNew("DeckName", "description", user.userId());
-        deckRepository.save(deck);
-
-        Flashcard flashcard = Flashcard.createNew(new Question("Question"), new Answer("Answer"));
-        flashcardRepository.save(flashcard, user.userId());
-
-        // When
-        deckRepository.addFlashcardToDeck(deck.deckId(), flashcard.flashcardId(), user.userId());
-        Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(deck.deckId(), user.userId());
-
-        // Then
-        assertThat(foundDeck).isPresent();
-        assertThat(foundDeck.get().flashcardIds()).contains(flashcard.flashcardId());
-        assertThat(foundDeck.get().flashcardIds()).hasSize(1);
+            // Then
+            assertThat(foundDeck).isPresent().get().satisfies(d -> {
+                assertThat(d.flashcardIds()).contains(flashcard.flashcardId());
+                assertThat(d.flashcardIds()).hasSize(1);
+            });
+        }
     }
 }

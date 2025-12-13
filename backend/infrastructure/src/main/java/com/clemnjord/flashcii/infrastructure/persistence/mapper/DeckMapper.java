@@ -15,23 +15,23 @@ public class DeckMapper {
 
     public Deck toDomainWithFlashcards(DeckEntity entity) {
         Set<FlashcardId> flashcardIds = entity.getFlashcards().stream()
-                .map(e -> new FlashcardId(e.getID().getFlashcardId()))
+                .map(e -> new FlashcardId(e.getId().getFlashcardId()))
                 .collect(Collectors.toSet());
 
         return Deck.restore(
-                new DeckId(entity.getUUID()),
+                new DeckId(entity.getId()),
                 entity.getName(),
                 entity.getDescription(),
-                new UserId(entity.getOwner().getUuid()),
+                new UserId(entity.getOwner().getId()),
                 flashcardIds);
     }
 
     public Deck toDomainWithoutFlashcards(DeckEntity entity) {
         return Deck.restore(
-                new DeckId(entity.getUUID()),
+                new DeckId(entity.getId()),
                 entity.getName(),
                 entity.getDescription(),
-                new UserId(entity.getOwner().getUuid()),
+                new UserId(entity.getOwner().getId()),
                 Set.of());
     }
 

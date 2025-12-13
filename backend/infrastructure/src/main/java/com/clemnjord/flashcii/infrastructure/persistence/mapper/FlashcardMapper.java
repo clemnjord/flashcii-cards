@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class FlashcardMapper {
     public Flashcard toDomain(FlashcardEntity entity) {
         return Flashcard.restore(
-                new FlashcardId(entity.getID().getFlashcardId()),
+                new FlashcardId(entity.getId().getFlashcardId()),
                 new Question(entity.getQuestion()),
                 new Answer(entity.getAnswer()));
     }
@@ -21,7 +21,7 @@ public class FlashcardMapper {
     public FlashcardEntity toEntity(Flashcard flashcard, UserEntity userEntity) {
         FlashcardEntity entity = new FlashcardEntity();
 
-        entity.setID(new FlashcardEntityId(flashcard.flashcardId().uuid(), userEntity.getUuid()));
+        entity.setId(new FlashcardEntityId(flashcard.flashcardId().uuid(), userEntity.getId()));
         entity.setQuestion(flashcard.question().value());
         entity.setAnswer(flashcard.answer().value());
         return entity;

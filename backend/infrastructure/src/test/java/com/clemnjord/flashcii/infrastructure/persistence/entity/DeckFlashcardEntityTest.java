@@ -39,7 +39,7 @@ class DeckFlashcardEntityTest {
     void setUp() {
         // Create and save a test user
         UserEntity testUser = new UserEntity();
-        testUser.setUuid(UUID.randomUUID());
+        testUser.setId(UUID.randomUUID());
         testUser.setUsername("testuser");
         userRepository.save(testUser);
 
@@ -52,9 +52,9 @@ class DeckFlashcardEntityTest {
         deckRepository.save(testDeck);
 
         // Create and save a test flashcard
-        FlashcardEntityId flashcardId = new FlashcardEntityId(UUID.randomUUID(), testUser.getUuid());
+        FlashcardEntityId flashcardId = new FlashcardEntityId(UUID.randomUUID(), testUser.getId());
         testFlashcard = new FlashcardEntity();
-        testFlashcard.setID(flashcardId);
+        testFlashcard.setId(flashcardId);
         testFlashcard.setQuestion("What is JPA?");
         testFlashcard.setAnswer("Java Persistence API");
         flashcardRepository.save(testFlashcard);
@@ -66,17 +66,16 @@ class DeckFlashcardEntityTest {
         DeckFlashcardEntity deckFlashcard = new DeckFlashcardEntity(testDeck, testFlashcard);
 
         // When
-        DeckFlashcardEntity savedEntity = deckFlashcardRepository.save(deckFlashcard);
-        deckFlashcardRepository.flush();
+        DeckFlashcardEntity savedEntity = deckFlashcardRepository.saveAndFlush(deckFlashcard);
 
         // Then
         assertThat(savedEntity).isNotNull();
         assertThat(savedEntity.getId()).isNotNull();
-        assertThat(savedEntity.getId().getDeckId()).isEqualTo(testDeck.getUUID());
+        assertThat(savedEntity.getId().getDeckId()).isEqualTo(testDeck.getId());
         assertThat(savedEntity.getId().getFlashcardId())
-                .isEqualTo(testFlashcard.getID().getFlashcardId());
+                .isEqualTo(testFlashcard.getId().getFlashcardId());
         assertThat(savedEntity.getId().getOwnerId())
-                .isEqualTo(testFlashcard.getID().getOwnerId());
+                .isEqualTo(testFlashcard.getId().getOwnerId());
     }
 
     @Test
@@ -87,37 +86,19 @@ class DeckFlashcardEntityTest {
         // When
         deckFlashcardRepository.saveAndFlush(deckFlashcard);
 
-        // Clear the persistence context to force a fresh load from DB
-        deckFlashcardRepository.flush();
-
         DeckFlashcardEntityId id = new DeckFlashcardEntityId(
-                testDeck.getUUID(),
-                testFlashcard.getID().getFlashcardId(),
-                testFlashcard.getID().getOwnerId());
+                testDeck.getId(),
+                testFlashcard.getId().getFlashcardId(),
+                testFlashcard.getId().getOwnerId());
 
         DeckFlashcardEntity retrievedEntity =
                 deckFlashcardRepository.findById(id).orElseThrow();
 
         // Then
         assertThat(retrievedEntity.getDeck()).isNotNull();
-        assertThat(retrievedEntity.getDeck().getUUID()).isEqualTo(testDeck.getUUID());
+        assertThat(retrievedEntity.getDeck().getId()).isEqualTo(testDeck.getId());
         assertThat(retrievedEntity.getFlashcard()).isNotNull();
-        assertThat(retrievedEntity.getFlashcard().getID().getFlashcardId())
-                .isEqualTo(testFlashcard.getID().getFlashcardId());
-    }
-
-    @Test
-    void testDeckEntity_addFlashcard_shouldCreateDeckFlashcardEntity() {
-        // Given - deck and flashcard already created in setUp
-
-        // When
-        testDeck.addFlashcard(testFlashcard);
-        deckRepository.saveAndFlush(testDeck);
-
-        // Then
-        DeckEntity retrievedDeck = deckRepository.findById(testDeck.getUUID()).orElseThrow();
-        assertThat(retrievedDeck.getFlashcards()).hasSize(1);
-        assertThat(retrievedDeck.getFlashcards().getFirst().getID().getFlashcardId())
-                .isEqualTo(testFlashcard.getID().getFlashcardId());
+        assertThat(retrievedEntity.getFlashcard().getId().getFlashcardId())
+                .isEqualTo(testFlashcard.getId().getFlashcardId());
     }
 }
