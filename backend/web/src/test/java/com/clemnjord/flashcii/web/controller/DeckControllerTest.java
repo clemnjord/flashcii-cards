@@ -91,7 +91,7 @@ class DeckControllerTest {
                 .assertThat()
                 .hasStatus(HttpStatus.OK)
                 .bodyJson()
-                .convertTo(InstanceOfAssertFactories.list(DeckDto.DeckResponse.class))
+                .convertTo(InstanceOfAssertFactories.list(DeckDto.SimpleDeckResponse.class))
                 .hasSize(1)
                 .satisfies(result -> assertThat(result.getFirst().name()).isEqualTo("Test Deck"));
     }
