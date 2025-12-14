@@ -3,17 +3,21 @@ package com.clemnjord.flashcii.infrastructure.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
+import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardNotFoundException;
 import com.clemnjord.flashcii.domain.exception.user.UserNotFoundException;
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
+import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
 import com.clemnjord.flashcii.infrastructure.testcontainers.PostgresTestContainerExtension;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.assertj.db.api.Assertions;
@@ -170,34 +174,81 @@ class JpaDeckRepositoryTest {
             Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(DeckId.generate(), UserId.generate());
             assertThat(foundDeck).isEmpty();
         }
+
+        @Test
+        @DisplayName("findAllByOwnerIdAndNameContainsIgnoreCase return Deck when Owner and Deck exist with filter")
+        void findAllByOwnerIdAndNameContainsIgnoreCase_shouldReturnDecks_whenDecksAndOwnerExist() {
+            // --- Given
+            User otherUser = User.createNew(new Username("otherUser"));
+            userRepository.save(otherUser);
+
+            Deck deck2 = Deck.createNew("ThEkEy_start", "description 2", testUser.userId());
+            Deck deck3 = Deck.createNew("end_thekey", "description 3", testUser.userId());
+            Deck deck4 = Deck.createNew("middle_THEKEY_middle", "description 4", testUser.userId());
+            Deck deck5 = Deck.createNew("Deck5", "description 5", otherUser.userId()); // Different owner
+
+            deckRepository.save(deck2);
+            deckRepository.save(deck3);
+            deckRepository.save(deck4);
+            deckRepository.save(deck5);
+
+            // When
+            List<Deck> foundDecks =
+                    deckRepository.findAllByOwnerIdAndNameContainsIgnoreCase(testUser.userId(), "tHeKeY");
+            assertThat(foundDecks).hasSize(3).containsExactlyInAnyOrder(deck2, deck3, deck4);
+        }
     }
 
     @Nested
     @DisplayName("Flashcard operations")
     class FlashcardOperations {
+        Flashcard testFlashcard = Flashcard.createNew(new Question("Question"), new Answer("Answer"));
 
         @BeforeEach
         void setUp() {
             userRepository.save(testUser);
             deckRepository.save(testDeck);
+            flashcardRepository.save(testFlashcard, testUser.userId());
         }
 
         @Test
         @DisplayName("addFlashcardToDeck should succeed when Deck and Flashcard exist")
         void addFlashcardToDeck_shouldSucceed_whenDeckAndFlashcardExist() {
-            // Given
-            Flashcard flashcard = Flashcard.createNew(new Question("Question"), new Answer("Answer"));
-            flashcardRepository.save(flashcard, testUser.userId());
-
-            // When
-            deckRepository.addFlashcardToDeck(testDeck.deckId(), flashcard.flashcardId(), testUser.userId());
+            // Given & When
+            deckRepository.addFlashcardToDeck(testDeck.deckId(), testFlashcard.flashcardId(), testUser.userId());
             Optional<Deck> foundDeck = deckRepository.findByIdAndOwnerId(testDeck.deckId(), testUser.userId());
 
             // Then
             assertThat(foundDeck).isPresent().get().satisfies(d -> {
-                assertThat(d.flashcardIds()).contains(flashcard.flashcardId());
+                assertThat(d.flashcardIds()).contains(testFlashcard.flashcardId());
                 assertThat(d.flashcardIds()).hasSize(1);
             });
+        }
+
+        @Test
+        @DisplayName("addFlashcardToDeck should throw when Deck doesn't exist")
+        void addFlashcardToDeck_shouldThrow_whenDeckDoesNotExist() {
+            // Given
+            DeckId randomDeckId = DeckId.generate();
+            FlashcardId flashcardId = testFlashcard.flashcardId();
+            UserId ownerId = testUser.userId();
+
+            // When & Then
+            assertThatThrownBy(() -> deckRepository.addFlashcardToDeck(randomDeckId, flashcardId, ownerId))
+                    .isInstanceOf(DeckNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("addFlashcardToDeck should throw when Deck doesn't exist")
+        void addFlashcardToDeck_shouldThrow_whenFlashcardDoesNotExist() {
+            // Given
+            DeckId deckId = testDeck.deckId();
+            FlashcardId randomFlashcardId = FlashcardId.generate();
+            UserId ownerId = testUser.userId();
+
+            // When & Then
+            assertThatThrownBy(() -> deckRepository.addFlashcardToDeck(deckId, randomFlashcardId, ownerId))
+                    .isInstanceOf(FlashcardNotFoundException.class);
         }
     }
 }

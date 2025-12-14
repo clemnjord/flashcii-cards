@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/decks", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Decks", description = "Deck management operations")
 public class DeckController {
@@ -38,17 +40,6 @@ public class DeckController {
     private final CreateDeckUseCase createDeckUseCase;
     private final GetDeckUseCase getDeckUseCase;
     private final ListDeckUseCase listDeckUseCase;
-
-    public DeckController(
-            AddCardToDeckUseCase addCardToDeckUseCase,
-            CreateDeckUseCase createDeckUseCase,
-            GetDeckUseCase getDeckUseCase,
-            ListDeckUseCase listDeckUseCase) {
-        this.addCardToDeckUseCase = addCardToDeckUseCase;
-        this.createDeckUseCase = createDeckUseCase;
-        this.getDeckUseCase = getDeckUseCase;
-        this.listDeckUseCase = listDeckUseCase;
-    }
 
     @GetMapping
     @Operation(summary = "List decks", description = "Retrieve all decks with optional name filtering")

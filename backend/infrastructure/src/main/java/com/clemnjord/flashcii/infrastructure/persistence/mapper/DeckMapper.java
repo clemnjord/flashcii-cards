@@ -18,7 +18,7 @@ public class DeckMapper {
                 .map(e -> new FlashcardId(e.getId().getFlashcardId()))
                 .collect(Collectors.toSet());
 
-        return Deck.restore(
+        return new Deck(
                 new DeckId(entity.getId()),
                 entity.getName(),
                 entity.getDescription(),
@@ -27,7 +27,7 @@ public class DeckMapper {
     }
 
     public Deck toDomainWithoutFlashcards(DeckEntity entity) {
-        return Deck.restore(
+        return new Deck(
                 new DeckId(entity.getId()),
                 entity.getName(),
                 entity.getDescription(),

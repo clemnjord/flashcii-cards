@@ -6,28 +6,34 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 class FlashcardIdTest {
+
+    @Test
+    void shouldThrow_whenUUIDIsNull() {
+        assertThatThrownBy(() -> new FlashcardId(null)).isInstanceOf(NullPointerException.class);
+    }
+
     @Test
     void generateNewFlashcardId() {
-        // --- Arrange & Act
+        // --- Given & When
         FlashcardId flashcardId = FlashcardId.generate();
 
-        // --- Assert
+        // --- Then
         assertThat(flashcardId).isNotNull();
     }
 
     @Test
     void createNewFlashcardIdWhenFromStringUuidIsValid() {
-        // --- Arrange & Act
+        // --- Given & When
         FlashcardId flashcardId = FlashcardId.from("12345678-1234-1234-1234-123456789abc");
 
-        // --- Assert
+        // --- Then
         assertThat(flashcardId).isNotNull();
         assertThat(flashcardId.uuid()).hasToString("12345678-1234-1234-1234-123456789abc");
     }
 
     @Test
     void throwExceptionWhenFromStringUuidIsInvalid() {
-        // --- Arrange & Act & Assert
+        // --- Given & When & Then
         assertThatThrownBy(() -> FlashcardId.from("invalid flashcard id"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Invalid flashcard ID format: invalid flashcard id");

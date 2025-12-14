@@ -9,6 +9,8 @@ import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import java.util.Set;
 import java.util.UUID;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
 class DeckTest {
@@ -76,7 +78,7 @@ class DeckTest {
         Set<FlashcardId> flashcardIds = Set.of();
 
         // --- Act & Assert
-        assertThatThrownBy(() -> Deck.restore(null, "Sample Deck", "A test deck", ownerId, flashcardIds))
+        assertThatThrownBy(() -> new Deck(null, "Sample Deck", "A test deck", ownerId, flashcardIds))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Deck ID is required");
     }
@@ -90,18 +92,8 @@ class DeckTest {
     }
 
     @Test
-    void restoredDeckEqualsOriginalDeck() {
-        // --- Arrange & Act
-        Deck originalDeck = Deck.createNew("Sample Deck", "A test deck", UserId.generate());
-        Deck restoredDeck = Deck.restore(
-                originalDeck.deckId(),
-                originalDeck.name(),
-                originalDeck.description(),
-                originalDeck.ownerId(),
-                originalDeck.flashcardIds());
-
-        // --- Assert
-        assertThat(restoredDeck).isEqualTo(originalDeck);
+    void deckEquality() {
+        EqualsVerifier.forClass(Deck.class).suppress(Warning.NULL_FIELDS).verify();
     }
 
     @Test

@@ -8,19 +8,17 @@ import com.clemnjord.flashcii.application.port.output.IUserRepository;
 import com.clemnjord.flashcii.domain.exception.user.UserAlreadyExistsException;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.Username;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationService
 @ApplicationTransactional
+@AllArgsConstructor
 public class CreateUserUseCaseImpl implements CreateUserUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateUserUseCaseImpl.class);
 
     private final IUserRepository userRepository;
-
-    public CreateUserUseCaseImpl(IUserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User execute(CreateUserCommand command) {

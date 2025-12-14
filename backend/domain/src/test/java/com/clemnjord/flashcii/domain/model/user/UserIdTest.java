@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 class UserIdTest {
 
     @Test
+    void shouldThrow_whenUUIDIsNull() {
+        assertThatThrownBy(() -> new UserId(null)).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void generateNewUserId() {
         // --- Arrange & Act
         UserId userId = UserId.generate();

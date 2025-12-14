@@ -9,6 +9,13 @@ dependencies {
     implementation(project(":infrastructure"))
     implementation(project(":spring-shared"))
 
+    implementation(libs.fsrs)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+
     implementation(libs.spring.boot.starter.web)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
     implementation(libs.spring.boot.starter.actuator)

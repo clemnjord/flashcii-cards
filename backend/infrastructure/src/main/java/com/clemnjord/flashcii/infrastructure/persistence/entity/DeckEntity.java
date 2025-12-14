@@ -38,6 +38,7 @@ public class DeckEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
+    // TODO : Rather use a ManyToMany relationship with a join table?
     @Getter(AccessLevel.NONE) // Don't generate getter for this field
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeckFlashcardEntity> deckFlashcards = new ArrayList<>();

@@ -2,6 +2,8 @@ package com.clemnjord.flashcii.domain.model.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -25,12 +27,7 @@ class UserTest {
     }
 
     @Test
-    void restoredUserEqualsOriginalUser() {
-        // --- Arrange & Act
-        User originalUser = User.createNew(new Username("testuser"));
-        User restoredUser = User.restore(originalUser.userId(), originalUser.username());
-
-        // --- Assert
-        assertThat(restoredUser).isEqualTo(originalUser);
+    void userEquality() {
+        EqualsVerifier.forClass(User.class).suppress(Warning.NULL_FIELDS).verify();
     }
 }

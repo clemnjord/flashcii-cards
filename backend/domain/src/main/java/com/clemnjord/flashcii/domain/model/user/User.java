@@ -13,8 +13,4 @@ public record User(UserId userId, Username username) {
     public static User createNew(Username username) {
         return new User(UserId.generate(), username);
     }
-
-    public static User restore(UserId userId, Username username) {
-        return new User(userId, username);
-    }
 }
