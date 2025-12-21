@@ -13,5 +13,5 @@ public class QuizDto {
     public record RateFlashcardRequest(
             @NotBlank(message = "Flashcard UUID can't be blank") String flashcardUuid,
 
-            @NotNull(message = "Rating can't be blank") String rating) {}
+            @NotBlank(message = "Rating can't be blank") String rating) {}
 }

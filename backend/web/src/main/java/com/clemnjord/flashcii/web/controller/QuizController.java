@@ -1,9 +1,9 @@
 package com.clemnjord.flashcii.web.controller;
 
 import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardCommand;
+import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardUseCase;
 import com.clemnjord.flashcii.application.port.input.quiz.CreateFixedSizedQuizCommand;
 import com.clemnjord.flashcii.application.port.input.quiz.CreateFixedSizedQuizUseCase;
-import com.clemnjord.flashcii.application.usecase.flashcard.RateFlashcardUseCaseImpl;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.quiz.FixedSizedQuiz;
@@ -32,7 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Tag(name = "Quizzes", description = "Quiz management operations")
 public class QuizController {
     private final CreateFixedSizedQuizUseCase createQuizUseCase;
-    private final RateFlashcardUseCaseImpl rateFlashcardUseCase;
+    private final RateFlashcardUseCase rateFlashcardUseCase;
 
     @PostMapping
     @Operation(summary = "Create quiz", description = "Create a new quiz")
