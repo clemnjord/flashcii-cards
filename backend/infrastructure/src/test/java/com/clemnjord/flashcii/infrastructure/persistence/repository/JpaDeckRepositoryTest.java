@@ -239,7 +239,7 @@ class JpaDeckRepositoryTest {
         }
 
         @Test
-        @DisplayName("addFlashcardToDeck should throw when Deck doesn't exist")
+        @DisplayName("addFlashcardToDeck should throw when Flashcard doesn't exist")
         void addFlashcardToDeck_shouldThrow_whenFlashcardDoesNotExist() {
             // Given
             DeckId deckId = testDeck.deckId();

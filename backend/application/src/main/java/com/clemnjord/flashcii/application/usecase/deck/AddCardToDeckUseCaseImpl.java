@@ -15,13 +15,14 @@ import com.clemnjord.flashcii.domain.model.user.User;
 import lombok.AllArgsConstructor;
 
 @ApplicationService
+@ApplicationTransactional
 @AllArgsConstructor
 public class AddCardToDeckUseCaseImpl implements AddCardToDeckUseCase {
     private final IDeckRepository deckRepository;
     private final IFlashcardRepository flashcardRepository;
     private final IUserContextService userContextService;
 
-    @ApplicationTransactional
+    @Override
     public void execute(AddCardToDeckCommand command) {
         User currentUser = userContextService.getCurrentUser();
 

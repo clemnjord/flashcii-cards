@@ -128,7 +128,6 @@ class JpaFlashcardStatisticRepositoryTest {
 
         // Then
         assertThat(retrievedCard).isPresent().get().satisfies(card -> {
-            ;
             assertThat(card.getState()).isEqualTo(statisticCard.getState());
             assertThat(card.getStep()).isEqualTo(statisticCard.getStep());
             assertThat(card.getStability()).isEqualTo(statisticCard.getStability());

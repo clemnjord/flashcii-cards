@@ -57,7 +57,7 @@ class RateFlashcardUseCaseImplTest {
     void setUp() {
         defaultUser = User.createNew(new Username("testUser"));
         flashcard = Flashcard.createNew(new Question("Question"), new Answer("Answer"));
-        quiz = FixedSizedQuiz.createNew(List.of(flashcard.flashcardId()));
+        quiz = FixedSizedQuiz.createNew(defaultUser.userId(), List.of(flashcard.flashcardId()));
         command = new RateFlashcardCommand(quiz.getId(), flashcard.flashcardId(), Rating.GOOD);
         existingCard = Card.builder().build();
 

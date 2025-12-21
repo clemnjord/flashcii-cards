@@ -10,6 +10,7 @@ import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntity;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.FlashcardEntityId;
 import com.clemnjord.flashcii.infrastructure.persistence.entity.QuizEntity;
+import com.clemnjord.flashcii.infrastructure.persistence.entity.UserEntity;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -24,21 +25,20 @@ public class JpaFixedQuizRepository implements IFixedSizedQuizRepository {
 
     @Override
     public void save(FixedSizedQuiz quiz, UserId ownerId) {
-        QuizEntity quizEntity = new QuizEntity();
-        quizEntity.setQuizId(quiz.getId().uuid());
-        quizEntity.setOwner(jpaUserDao
+        UserEntity owner = jpaUserDao
                 .findById(ownerId.uuid())
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + ownerId.uuid())));
-        quizEntity.setCurrentQuestionIndex(quiz.getCurrentQuestionIndex());
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + ownerId.uuid()));
 
-        // TODO: Modify jpaFlashcardDao to get all cards in a single query
-        List<FlashcardEntity> fEntities = quiz.getFlashcardIds().stream()
-                .map(flashcard -> jpaFlashcardDao
-                        .findById(new FlashcardEntityId(flashcard.uuid(), ownerId.uuid()))
-                        .orElseThrow(() -> new FlashcardNotFoundException("Flashcard not found: " + flashcard.uuid())))
+        List<FlashcardEntityId> flashcardEntityIds = quiz.getFlashcardIds().stream()
+                .map(f -> new FlashcardEntityId(f.uuid(), ownerId.uuid()))
                 .toList();
+        List<FlashcardEntity> fEntities = jpaFlashcardDao.findAllByIdIn(flashcardEntityIds);
+        if (fEntities.size() != flashcardEntityIds.size()) {
+            throw new FlashcardNotFoundException("Some flashcards not found for the quiz");
+        }
 
-        quizEntity.setFlashcards(fEntities);
+        QuizEntity quizEntity = new QuizEntity(quiz.getId().uuid(), owner, fEntities, quiz.getCurrentQuestionIndex());
+
         jpaQuizDao.save(quizEntity);
     }
 
@@ -49,7 +49,11 @@ public class JpaFixedQuizRepository implements IFixedSizedQuizRepository {
                     .map(flashcardEntity -> FlashcardId.from(
                             flashcardEntity.getId().getFlashcardId().toString()))
                     .toList();
-            return new FixedSizedQuiz(quizId, flashcardIds, quizEntity.getCurrentQuestionIndex());
+            return new FixedSizedQuiz(
+                    quizId,
+                    new UserId(quizEntity.getOwner().getId()),
+                    flashcardIds,
+                    quizEntity.getCurrentQuestionIndex());
         });
     }
 }

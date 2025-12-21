@@ -68,7 +68,8 @@ class JpaQuizRepositoryTest {
         @DisplayName("Should persist Quiz when user exists and flashcards exist")
         void save_shouldPersistQuiz(@Autowired EntityManager entityManager, @Autowired DataSource dataSource) {
             // Given
-            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(List.of(flashcard1.flashcardId(), flashcard2.flashcardId()));
+            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(
+                    testUser.userId(), List.of(flashcard1.flashcardId(), flashcard2.flashcardId()));
             quiz.answerCurrentQuestion(quiz.getCurrentFlashcardId().get());
 
             // When
@@ -121,19 +122,18 @@ class JpaQuizRepositoryTest {
         @DisplayName("Should throw when flashcard does not exist")
         void save_shouldThrow_whenFlashcardDoesNotExist() {
             // Given
-            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(List.of(FlashcardId.generate()));
+            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(testUser.userId(), List.of(FlashcardId.generate()));
             var ownerId = testUser.userId();
 
             // When
-            assertThatThrownBy(() -> quizRepository.save(quiz, ownerId))
-                    .isInstanceOf(FlashcardNotFoundException.class);
+            assertThatThrownBy(() -> quizRepository.save(quiz, ownerId)).isInstanceOf(FlashcardNotFoundException.class);
         }
 
         @Test
         @DisplayName("Should throw when owner does not exist")
         void save_shouldThrow_whenOwnerDoesNotExist() {
             // Given
-            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(List.of(FlashcardId.generate()));
+            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(testUser.userId(), List.of(FlashcardId.generate()));
             var randomOwnerId = UserId.generate();
 
             // When
@@ -149,7 +149,8 @@ class JpaQuizRepositoryTest {
         @DisplayName("findById should return quiz when it exists")
         void findById_shouldReturnQuiz_whenQuizAndOwnerExist() {
             // --- Given
-            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(List.of(flashcard1.flashcardId(), flashcard2.flashcardId()));
+            FixedSizedQuiz quiz = FixedSizedQuiz.createNew(
+                    testUser.userId(), List.of(flashcard1.flashcardId(), flashcard2.flashcardId()));
             quizRepository.save(quiz, testUser.userId());
 
             // --- When
@@ -173,8 +174,7 @@ class JpaQuizRepositoryTest {
             Optional<FixedSizedQuiz> retrievedQuiz = quizRepository.findById(randomQuizId);
 
             // Then
-            assertThat(retrievedQuiz)
-                    .isEmpty();
+            assertThat(retrievedQuiz).isEmpty();
         }
     }
 }

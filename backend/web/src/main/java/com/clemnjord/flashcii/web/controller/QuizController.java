@@ -13,7 +13,6 @@ import io.github.openspacedrepetition.Rating;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -25,11 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/quiz", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Decks", description = "Quiz management operations")
+@Tag(name = "Quizzes", description = "Quiz management operations")
 public class QuizController {
     private final CreateFixedSizedQuizUseCase createQuizUseCase;
     private final RateFlashcardUseCaseImpl rateFlashcardUseCase;
@@ -40,7 +40,7 @@ public class QuizController {
     @ResponseStatus(HttpStatus.CREATED)
     public QuizDto.QuizResponse createQuiz(@Valid @RequestBody QuizDto.CreateQuizRequest request) {
         var command = new CreateFixedSizedQuizCommand(
-                request.quizSize(), request.deckIds().stream().map(DeckId::from).collect(Collectors.toSet()));
+                request.deckIds().stream().map(DeckId::from).collect(Collectors.toSet()));
 
         FixedSizedQuiz quiz = createQuizUseCase.execute(command);
 
@@ -52,11 +52,18 @@ public class QuizController {
     @PostMapping("/{quizId}/rate")
     @Operation(summary = "Rate flashcard", description = "Rate a flashcard in a quiz")
     @ApiResponse(responseCode = "204", description = "Flashcard rated successfully")
-    public void rateFlashcard(@PathVariable String quizId, @Valid @RequestBody QuizDto.RateFlashcardRequest request, HttpServletResponse response) {
-        var command = new RateFlashcardCommand(
-                QuizId.from(quizId), FlashcardId.from(request.flashcardUuid()), Rating.valueOf(request.rating()));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void rateFlashcard(@PathVariable String quizId, @Valid @RequestBody QuizDto.RateFlashcardRequest request) {
+
+        final Rating rating;
+        try {
+            rating = Rating.valueOf(request.rating());
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid rating value: " + request.rating());
+        }
+
+        var command = new RateFlashcardCommand(QuizId.from(quizId), FlashcardId.from(request.flashcardUuid()), rating);
 
         rateFlashcardUseCase.execute(command);
-        response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 }

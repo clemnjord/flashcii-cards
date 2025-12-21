@@ -3,6 +3,7 @@ package com.clemnjord.flashcii.application.usecase.flashcard;
 import com.clemnjord.flashcii.application.annotation.ApplicationService;
 import com.clemnjord.flashcii.application.annotation.ApplicationTransactional;
 import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardCommand;
+import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardUseCase;
 import com.clemnjord.flashcii.application.port.output.IFixedSizedQuizRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardStatisticRepository;
@@ -17,7 +18,7 @@ import lombok.AllArgsConstructor;
 @ApplicationService
 @ApplicationTransactional
 @AllArgsConstructor
-public class RateFlashcardUseCaseImpl {
+public class RateFlashcardUseCaseImpl implements RateFlashcardUseCase {
     private static final Scheduler scheduler = Scheduler.builder().build();
     private final IUserContextService userContextService;
     private final IFlashcardStatisticRepository flashcardStatisticRepository;
@@ -31,6 +32,14 @@ public class RateFlashcardUseCaseImpl {
         var quiz = quizRepository
                 .findById(command.quizId())
                 .orElseThrow(() -> new QuizNotFoundException("Quiz not found"));
+
+        if (!quiz.getOwnerId().equals(currentUser.userId())) {
+            throw new QuizNotFoundException("Quiz not found");
+        }
+
+        if (!quiz.getFlashcardIds().contains(command.flashcardId())) {
+            throw new FlashcardNotFoundException("Flashcard not found in quiz");
+        }
 
         // Verify that the flashcard exists and is owned by the current user
         var flashcard = flashcardRepository

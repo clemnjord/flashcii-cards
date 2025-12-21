@@ -181,7 +181,7 @@ class JpaFlashcardRepositoryTest {
             flashcardRepository.save(flashcard2, user.userId());
             flashcardRepository.save(flashcard3, user.userId());
 
-            // Flashcards 1 and 3 due, flashcard 2 not due
+            // Flashcard 1 due, flashcard 2 not due, flashcard 3 no statistic (considered due)
             flashcardStatisticRepository.save(
                     flashcard.flashcardId(),
                     user.userId(),
@@ -190,10 +190,6 @@ class JpaFlashcardRepositoryTest {
                     flashcard2.flashcardId(),
                     user.userId(),
                     Card.builder().due(Instant.now().plusSeconds(3600)).build());
-            flashcardStatisticRepository.save(
-                    flashcard3.flashcardId(),
-                    user.userId(),
-                    Card.builder().due(Instant.now().minusSeconds(3600)).build());
             deckRepository.save(deck1);
             deckRepository.save(deck2);
             // Flashcard 1 in Deck 1 and Deck 2, Flashcard 2 and 3 in Deck 2

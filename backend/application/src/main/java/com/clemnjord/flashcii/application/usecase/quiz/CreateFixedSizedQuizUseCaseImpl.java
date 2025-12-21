@@ -49,8 +49,12 @@ public class CreateFixedSizedQuizUseCaseImpl implements CreateFixedSizedQuizUseC
                         .map(Flashcard::flashcardId)
                         .toList();
 
+        if (flashcardIds.isEmpty()) {
+            throw new IllegalStateException("Cannot create quiz: no due flashcards found for the selected decks.");
+        }
+
         // Create and persist quiz
-        FixedSizedQuiz quiz = new FixedSizedQuiz(QuizId.generate(), flashcardIds);
+        FixedSizedQuiz quiz = new FixedSizedQuiz(QuizId.generate(), currentUser.userId(), flashcardIds);
         quizRepository.save(quiz, currentUser.userId());
         return quiz;
     }

@@ -74,7 +74,7 @@ class CreateFixedSizedQuizUseCaseImplTest {
         when(flashcardRepository.findDueFlashcardsByDeckIdsAndOwnerId(Set.of(deckId1, deckId2), defaultUser.userId()))
                 .thenReturn(Set.of(flashcard1, flashcard2, flashcard3));
 
-        CreateFixedSizedQuizCommand command = new CreateFixedSizedQuizCommand(10, Set.of(deckId1, deckId2, deckId3));
+        CreateFixedSizedQuizCommand command = new CreateFixedSizedQuizCommand(Set.of(deckId1, deckId2, deckId3));
 
         // --- When
         FixedSizedQuiz quiz = createFixedSizeQuizUseCase.execute(command);
