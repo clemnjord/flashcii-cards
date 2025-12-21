@@ -8,9 +8,11 @@ spring:
     group:
       dev:
       - pgsql
+      - hibernate-dev
       - dev-log
       test:
       - pgsql
+      - hibernate-dev
       - test-log
 
 server:

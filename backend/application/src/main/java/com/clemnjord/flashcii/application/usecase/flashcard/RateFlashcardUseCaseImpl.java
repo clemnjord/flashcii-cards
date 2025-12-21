@@ -25,6 +25,7 @@ public class RateFlashcardUseCaseImpl implements RateFlashcardUseCase {
     private final IFlashcardRepository flashcardRepository;
     private final IFixedSizedQuizRepository quizRepository;
 
+    @Override
     public void execute(RateFlashcardCommand command) {
         User currentUser = userContextService.getCurrentUser();
 

@@ -27,6 +27,9 @@ public class FixedSizedQuiz {
             throw new IllegalArgumentException("Flashcard IDs cannot be empty");
         }
         this.flashcardIds = List.copyOf(flashcardIds);
+        if (currentQuestionIndex < 0 || currentQuestionIndex > this.flashcardIds.size()) {
+            throw new IllegalArgumentException("Invalid currentQuestionIndex");
+        }
         this.currentQuestionIndex = currentQuestionIndex;
     }
 

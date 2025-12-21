@@ -17,6 +17,7 @@ import com.clemnjord.flashcii.web.dto.QuizDto;
 import io.github.openspacedrepetition.Rating;
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -92,5 +93,25 @@ class QuizControllerTest {
                 .content(objectMapper.writeValueAsString(request))
                 .assertThat()
                 .hasStatus(204);
+    }
+
+    @Test
+    @DisplayName("RateFlashcard should return 400 when rating string does not match enum")
+    void shouldReturn400_whenRatingStringDoesNotMatchEnum() {
+        // --- Given
+        var expectedCommand = new RateFlashcardCommand(quizId, flashcardId1, Rating.GOOD);
+        QuizDto.RateFlashcardRequest request =
+                new QuizDto.RateFlashcardRequest(flashcardId1.uuid().toString(), "badRating");
+
+        doNothing().when(rateFlashcardUseCase).execute(expectedCommand);
+
+        // --- When & Then
+        mockMvcTester
+                .post()
+                .uri("/quiz/" + quizId.uuid().toString() + "/rate")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(request))
+                .assertThat()
+                .hasStatus(400);
     }
 }
