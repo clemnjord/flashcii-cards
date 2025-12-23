@@ -35,8 +35,8 @@ class AddCardToDeckUseCaseImplTest {
     private final DeckId testDeckId = DeckId.generate();
     private final FlashcardId testFlashcardId = FlashcardId.generate();
     AddCardToDeckCommand command = new AddCardToDeckCommand(testDeckId, testFlashcardId);
-    Flashcard flashcard = Flashcard.restore(testFlashcardId, new Question("Question"), new Answer("Answer"));
-    Deck deck = Deck.restore(testDeckId, "Test", "Desc", testUser.userId(), new HashSet<>());
+    Flashcard flashcard = new Flashcard(testFlashcardId, new Question("Question"), new Answer("Answer"));
+    Deck deck = new Deck(testDeckId, "Test", "Desc", testUser.userId(), new HashSet<>());
 
     @Mock
     private IDeckRepository deckRepository;

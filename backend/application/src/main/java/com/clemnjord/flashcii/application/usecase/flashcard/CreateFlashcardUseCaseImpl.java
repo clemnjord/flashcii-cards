@@ -10,26 +10,19 @@ import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.user.UnauthorizedException;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.user.User;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationService
 @ApplicationTransactional
+@AllArgsConstructor
 public class CreateFlashcardUseCaseImpl implements CreateFlashcardUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateFlashcardUseCaseImpl.class);
 
     private final IFlashcardRepository flashcardRepository;
     private final IUserContextService userContextService;
     private final IAuthorizationService authorizationService;
-
-    public CreateFlashcardUseCaseImpl(
-            IFlashcardRepository flashcardRepository,
-            IUserContextService userContextService,
-            IAuthorizationService authorizationService) {
-        this.flashcardRepository = flashcardRepository;
-        this.userContextService = userContextService;
-        this.authorizationService = authorizationService;
-    }
 
     @Override
     public Flashcard execute(CreateFlashcardCommand command) {

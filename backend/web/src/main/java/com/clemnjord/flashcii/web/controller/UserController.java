@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,15 +22,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "User", description = "User management operations")
 public class UserController {
 
     private final CreateFlashcardUseCase createFlashcardUseCase;
-
-    public UserController(CreateFlashcardUseCase createFlashcardUseCase) {
-        this.createFlashcardUseCase = createFlashcardUseCase;
-    }
 
     @PostMapping("/{userId}/flashcards")
     @Operation(summary = "Create flashcard", description = "Create a flashcard")

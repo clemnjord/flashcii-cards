@@ -1,0 +1,6 @@
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: DEBUG
+    org.springframework.jdbc.core: DEBUG
+    com.clemnjord.flashcii: DEBUG

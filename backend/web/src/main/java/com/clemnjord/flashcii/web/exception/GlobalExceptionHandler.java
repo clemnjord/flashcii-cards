@@ -1,7 +1,9 @@
 package com.clemnjord.flashcii.web.exception;
 
 import com.clemnjord.flashcii.domain.exception.deck.DeckAlreadyExistsException;
+import com.clemnjord.flashcii.domain.exception.deck.DeckNotFoundException;
 import com.clemnjord.flashcii.domain.exception.deck.InvalidDeckException;
+import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardNotFoundException;
 import com.clemnjord.flashcii.domain.exception.user.UserAlreadyExistsException;
 import java.time.Instant;
 import java.util.HashMap;
@@ -19,6 +21,19 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiErrorResponse handleDeckAlreadyExists(DeckAlreadyExistsException ex) {
         return new ApiErrorResponse("DECK_ALREADY_EXISTS", ex.getMessage(), HttpStatus.CONFLICT.value(), Instant.now());
+    }
+
+    @ExceptionHandler(DeckNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleDeckNotFound(DeckNotFoundException ex) {
+        return new ApiErrorResponse("DECK_NOT_FOUND", ex.getMessage(), HttpStatus.NOT_FOUND.value(), Instant.now());
+    }
+
+    @ExceptionHandler(FlashcardNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleFlashcardNotFound(FlashcardNotFoundException ex) {
+        return new ApiErrorResponse(
+                "FLASHCARD_NOT_FOUND", ex.getMessage(), HttpStatus.NOT_FOUND.value(), Instant.now());
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

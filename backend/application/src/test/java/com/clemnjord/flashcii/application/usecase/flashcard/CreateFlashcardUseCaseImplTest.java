@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.clemnjord.flashcii.application.port.input.flashcard.CreateFlashcardCommand;
 import com.clemnjord.flashcii.application.port.output.IAuthorizationService;
 import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
+import com.clemnjord.flashcii.application.port.output.IFlashcardStatisticRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.user.UnauthorizedException;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
@@ -30,17 +31,20 @@ class CreateFlashcardUseCaseImplTest {
     private static final String DEFAULT_ANSWER = "A flashcard app";
     private final User testUser = User.createNew(new Username("testUser"));
 
+    @InjectMocks
+    private CreateFlashcardUseCaseImpl createFlashcardUseCaseImpl;
+
     @Mock
     private IFlashcardRepository flashcardRepository;
+
+    @Mock
+    private IFlashcardStatisticRepository flashcardStatisticRepository;
 
     @Mock
     private IUserContextService userContextService;
 
     @Mock
     private IAuthorizationService authorizationService;
-
-    @InjectMocks
-    private CreateFlashcardUseCaseImpl createFlashcardUseCaseImpl;
 
     @BeforeEach
     void setUp() {

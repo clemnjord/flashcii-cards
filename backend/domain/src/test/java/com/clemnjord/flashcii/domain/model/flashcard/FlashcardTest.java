@@ -3,6 +3,8 @@ package com.clemnjord.flashcii.domain.model.flashcard;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
 class FlashcardTest {
@@ -46,13 +48,7 @@ class FlashcardTest {
     }
 
     @Test
-    void restoredFlashcardEqualsOriginalFlashcard() {
-        // --- Arrange & Act
-        Flashcard originalFlashcard = Flashcard.createNew(new Question("A question"), new Answer("An answer"));
-        Flashcard restoredFlashcard = Flashcard.restore(
-                originalFlashcard.flashcardId(), originalFlashcard.question(), originalFlashcard.answer());
-
-        // --- Assert
-        assertThat(restoredFlashcard).isEqualTo(originalFlashcard);
+    void flashcardEquality() {
+        EqualsVerifier.forClass(Flashcard.class).suppress(Warning.NULL_FIELDS).verify();
     }
 }

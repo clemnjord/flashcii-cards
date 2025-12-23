@@ -11,20 +11,17 @@ import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.user.User;
 import com.clemnjord.flashcii.domain.model.user.UserId;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationService
+@AllArgsConstructor
 public class CreateDeckUseCaseImpl implements CreateDeckUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateDeckUseCaseImpl.class);
 
     private final IDeckRepository deckRepository;
     private final IUserContextService userContextService;
-
-    public CreateDeckUseCaseImpl(IDeckRepository deckRepository, IUserContextService userContextService) {
-        this.deckRepository = deckRepository;
-        this.userContextService = userContextService;
-    }
 
     @Override
     @ApplicationTransactional

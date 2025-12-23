@@ -11,6 +11,8 @@ dependencies {
     implementation(libs.slf4j)
     implementation(project(":domain"))
 
+    implementation(libs.fsrs)
+
     testImplementation(libs.assertj)
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)

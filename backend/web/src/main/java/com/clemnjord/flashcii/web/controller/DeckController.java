@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/decks", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Decks", description = "Deck management operations")
 public class DeckController {
@@ -38,17 +40,6 @@ public class DeckController {
     private final CreateDeckUseCase createDeckUseCase;
     private final GetDeckUseCase getDeckUseCase;
     private final ListDeckUseCase listDeckUseCase;
-
-    public DeckController(
-            AddCardToDeckUseCase addCardToDeckUseCase,
-            CreateDeckUseCase createDeckUseCase,
-            GetDeckUseCase getDeckUseCase,
-            ListDeckUseCase listDeckUseCase) {
-        this.addCardToDeckUseCase = addCardToDeckUseCase;
-        this.createDeckUseCase = createDeckUseCase;
-        this.getDeckUseCase = getDeckUseCase;
-        this.listDeckUseCase = listDeckUseCase;
-    }
 
     @GetMapping
     @Operation(summary = "List decks", description = "Retrieve all decks with optional name filtering")
@@ -80,7 +71,6 @@ public class DeckController {
     @GetMapping("/{deckId}")
     @Operation(summary = "Get deck", description = "Retrieve a deck by its ID")
     @ApiResponse(responseCode = "200", description = "Deck retrieved successfully")
-    @ApiResponse(responseCode = "403", description = "Deck not owned")
     @ApiResponse(responseCode = "404", description = "Deck not found")
     public DeckDto.DeckResponse getDeck(
             @Parameter(description = "UUID of the deck to retrieve") @PathVariable String deckId) {
@@ -95,7 +85,6 @@ public class DeckController {
     @PostMapping("/{deckId}/flashcards")
     @Operation(summary = "Add flashcard to deck", description = "Add an existing flashcard to a deck")
     @ApiResponse(responseCode = "204", description = "Flashcard added successfully")
-    @ApiResponse(responseCode = "403", description = "User not authorized")
     @ApiResponse(responseCode = "404", description = "Deck or flashcard not found")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFlashcardToDeck(

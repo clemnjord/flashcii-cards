@@ -13,8 +13,4 @@ public record Flashcard(FlashcardId flashcardId, Question question, Answer answe
     public static Flashcard createNew(Question question, Answer answer) {
         return new Flashcard(FlashcardId.generate(), question, answer);
     }
-
-    public static Flashcard restore(FlashcardId flashcardId, Question question, Answer answer) {
-        return new Flashcard(flashcardId, question, answer);
-    }
 }

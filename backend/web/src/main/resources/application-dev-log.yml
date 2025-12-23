@@ -1,0 +1,8 @@
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.clemnjord.flashcii: ${LOG_LEVEL_APP:DEBUG} # Detailed logs for the application namespace
+    org:
+      hibernate:
+        SQL: ${LOG_LEVEL_SQL:DEBUG}
+        type.descriptor.sql.BasicBinder: ${LOG_LEVEL_SQL_TRACE:TRACE}

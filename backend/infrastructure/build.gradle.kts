@@ -11,6 +11,8 @@ dependencies {
     implementation(libs.slf4j)
     implementation(project(":domain"))
     implementation(project(":application"))
+    implementation(libs.fsrs)
+
 
     implementation(libs.spring.boot.starter.data.jpa)
     runtimeOnly(libs.postgresql)

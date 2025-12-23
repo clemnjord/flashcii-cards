@@ -57,7 +57,7 @@ public class JpaDeckRepository implements IDeckRepository {
     public Optional<Deck> findByNameAndOwnerId(String name, UserId ownerId) {
         return jpaDeckDao
                 .findByNameAndOwner_Id(name, ownerId.uuid())
-                .map(x -> Deck.restore(
+                .map(x -> new Deck(
                         new DeckId(x.getId()),
                         x.getName(),
                         x.getDescription(),
@@ -69,7 +69,8 @@ public class JpaDeckRepository implements IDeckRepository {
     public Optional<Deck> findByIdAndOwnerId(DeckId id, UserId ownerId) {
         Optional<DeckEntity> deckEntity = jpaDeckDao.findByIdAndOwner_Id(id.uuid(), ownerId.uuid());
 
-        return deckEntity.map(x -> Deck.restore(
+        // TODO: Can't it be replaced with deckMapper?
+        return deckEntity.map(x -> new Deck(
                 new DeckId(x.getId()),
                 x.getName(),
                 x.getDescription(),

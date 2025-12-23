@@ -29,11 +29,6 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
         return new Deck(DeckId.generate(), name, description, ownerId, Set.of());
     }
 
-    public static Deck restore(
-            DeckId deckId, String name, String description, UserId ownerId, Set<FlashcardId> flashcardIds) {
-        return new Deck(deckId, name, description, ownerId, flashcardIds);
-    }
-
     private static void validateName(String name) {
         if (name.length() < MIN_LENGTH) {
             throw new InvalidDeckException("Deck name too short (min " + MIN_LENGTH + " characters)");
@@ -51,6 +46,6 @@ public record Deck(DeckId deckId, String name, String description, UserId ownerI
         Set<FlashcardId> newFlashcards = new HashSet<>(flashcardIds);
         newFlashcards.add(flashcardId);
 
-        return Deck.restore(deckId, name, description, ownerId, newFlashcards);
+        return new Deck(deckId, name, description, ownerId, newFlashcards);
     }
 }

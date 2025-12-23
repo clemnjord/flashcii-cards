@@ -12,24 +12,17 @@ import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardNotFoundExcept
 import com.clemnjord.flashcii.domain.model.deck.Deck;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.user.User;
+import lombok.AllArgsConstructor;
 
 @ApplicationService
+@ApplicationTransactional
+@AllArgsConstructor
 public class AddCardToDeckUseCaseImpl implements AddCardToDeckUseCase {
     private final IDeckRepository deckRepository;
     private final IFlashcardRepository flashcardRepository;
     private final IUserContextService userContextService;
 
-    public AddCardToDeckUseCaseImpl(
-            IDeckRepository deckRepository,
-            IFlashcardRepository flashcardRepository,
-            IUserContextService userContextService) {
-        this.deckRepository = deckRepository;
-        this.flashcardRepository = flashcardRepository;
-        this.userContextService = userContextService;
-    }
-
     @Override
-    @ApplicationTransactional
     public void execute(AddCardToDeckCommand command) {
         User currentUser = userContextService.getCurrentUser();
 
