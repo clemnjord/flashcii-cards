@@ -1,6 +1,9 @@
 package com.clemnjord.flashcii.application.usecase.quiz;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.clemnjord.flashcii.application.port.input.quiz.CreateFixedSizedQuizCommand;
@@ -49,10 +52,11 @@ class CreateFixedSizedQuizUseCaseImplTest {
     private final DeckId deckId3 = DeckId.generate();
 
     @Test
-    @DisplayName("Test FixedSizedQuiz creation with nominal inputs")
-    void shouldCreateFixedSizedQuiz_whenValidInputs() {
+    @DisplayName("Creating FixedSizedQuiz with nominal inputs should succeed")
+    void creatingCreateFixedSizedQuiz_shouldSucceed_whenValidInputs() {
         // --- Given
         when(userContextService.getCurrentUser()).thenReturn(defaultUser);
+        doNothing().when(fixedSizeQuizRepository).save(any(), any());
 
         Flashcard flashcard1 = Flashcard.createNew(new Question("Question 1"), new Answer("Answer 1"));
         Flashcard flashcard2 = Flashcard.createNew(new Question("Question 2"), new Answer("Answer 2"));
@@ -83,5 +87,20 @@ class CreateFixedSizedQuizUseCaseImplTest {
         assertThat(quiz).isNotNull();
         assertThat(quiz.getId()).isNotNull();
         assertThat(quiz.isFinished()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Creating FixedSizedQuiz without nominal inputs should succeed")
+    void creatingCreateFixedSizedQuiz_shouldThrow_whenNoDueFlashcards() {
+        // --- Given
+        when(userContextService.getCurrentUser()).thenReturn(defaultUser);
+
+        when(flashcardRepository.findDueFlashcardsByDeckIdsAndOwnerId(Set.of(), defaultUser.userId()))
+                .thenReturn(Set.of());
+
+        CreateFixedSizedQuizCommand command = new CreateFixedSizedQuizCommand(Set.of());
+
+        // --- When & Then
+        assertThatThrownBy(() -> createFixedSizeQuizUseCase.execute(command)).isInstanceOf(IllegalStateException.class);
     }
 }

@@ -71,7 +71,6 @@ public class DeckController {
     @GetMapping("/{deckId}")
     @Operation(summary = "Get deck", description = "Retrieve a deck by its ID")
     @ApiResponse(responseCode = "200", description = "Deck retrieved successfully")
-    @ApiResponse(responseCode = "403", description = "Deck not owned")
     @ApiResponse(responseCode = "404", description = "Deck not found")
     public DeckDto.DeckResponse getDeck(
             @Parameter(description = "UUID of the deck to retrieve") @PathVariable String deckId) {
@@ -86,7 +85,6 @@ public class DeckController {
     @PostMapping("/{deckId}/flashcards")
     @Operation(summary = "Add flashcard to deck", description = "Add an existing flashcard to a deck")
     @ApiResponse(responseCode = "204", description = "Flashcard added successfully")
-    @ApiResponse(responseCode = "403", description = "User not authorized")
     @ApiResponse(responseCode = "404", description = "Deck or flashcard not found")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFlashcardToDeck(

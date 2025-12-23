@@ -13,17 +13,20 @@ import com.clemnjord.flashcii.application.port.output.IFlashcardRepository;
 import com.clemnjord.flashcii.application.port.output.IFlashcardStatisticRepository;
 import com.clemnjord.flashcii.application.port.output.IUserContextService;
 import com.clemnjord.flashcii.domain.exception.flashcard.FlashcardNotFoundException;
+import com.clemnjord.flashcii.domain.exception.quiz.QuizNotFoundException;
 import com.clemnjord.flashcii.domain.model.flashcard.Answer;
 import com.clemnjord.flashcii.domain.model.flashcard.Flashcard;
 import com.clemnjord.flashcii.domain.model.flashcard.Question;
 import com.clemnjord.flashcii.domain.model.quiz.FixedSizedQuiz;
 import com.clemnjord.flashcii.domain.model.user.User;
+import com.clemnjord.flashcii.domain.model.user.UserId;
 import com.clemnjord.flashcii.domain.model.user.Username;
 import io.github.openspacedrepetition.Card;
 import io.github.openspacedrepetition.Rating;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -97,6 +100,30 @@ class RateFlashcardUseCaseImplTest {
     }
 
     @Test
+    @DisplayName("Should throw QuizNotFoundException when current user does not own quiz")
+    void shouldThrow_whenQuizNotOwnedByCurrentUser() {
+        UserId anotherUserId = UserId.generate();
+        quiz = FixedSizedQuiz.createNew(anotherUserId, List.of(flashcard.flashcardId()));
+
+        when(quizRepository.findById(command.quizId())).thenReturn(Optional.of(quiz));
+
+        assertThatThrownBy(() -> rateFlashcardUseCase.execute(command)).isInstanceOf(QuizNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("Should throw FlashcardNotFoundException when flashcard being rated is not in quiz")
+    void shouldThrow_whenRatedFlashcardNotInQuiz() {
+        Flashcard anotherFlashcard =
+                Flashcard.createNew(new Question("Another Question"), new Answer("Another Answer"));
+
+        command = new RateFlashcardCommand(quiz.getId(), anotherFlashcard.flashcardId(), Rating.GOOD);
+
+        when(quizRepository.findById(command.quizId())).thenReturn(Optional.of(quiz));
+
+        assertThatThrownBy(() -> rateFlashcardUseCase.execute(command)).isInstanceOf(FlashcardNotFoundException.class);
+    }
+
+    @Test
     void shouldThrow_whenUserDoesntOwnFlashcard() {
         when(quizRepository.findById(command.quizId())).thenReturn(Optional.of(quiz));
         when(flashcardRepository.findByFlashcardIdAndOwnerId(command.flashcardId(), defaultUser.userId()))
@@ -104,6 +131,4 @@ class RateFlashcardUseCaseImplTest {
 
         assertThatThrownBy(() -> rateFlashcardUseCase.execute(command)).isInstanceOf(FlashcardNotFoundException.class);
     }
-
-    // TODO: Additional tests can be added here for other scenarios like QuizNotFoundException
 }

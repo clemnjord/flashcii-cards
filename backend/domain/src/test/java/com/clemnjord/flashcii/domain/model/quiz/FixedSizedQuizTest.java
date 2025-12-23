@@ -84,6 +84,20 @@ class FixedSizedQuizTest {
     }
 
     @Test
+    @DisplayName("Test that currentQuestionIndex can't be inferior to zero")
+    void shouldThrow_whenCurrentQuestionIndexIsNegative() {
+        assertThatThrownBy(() -> new FixedSizedQuiz(testQuizId, testOwnerId, testFlashcardIds, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("Test that currentQuestionIndex can't be superior to number of Flashcards")
+    void shouldThrow_whenCurrentQuestionIndexIsSuperiorToFlashcards() {
+        assertThatThrownBy(() -> new FixedSizedQuiz(testQuizId, testOwnerId, testFlashcardIds, 2))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("Test that FixedSizeQuiz is finished when there are no more cards")
     void isFinishedShouldReturnFalse_whenThereAreStillCards() {
         FixedSizedQuiz fixedSizedQuiz = new FixedSizedQuiz(testQuizId, testOwnerId, List.of(testFlashcardId));
@@ -106,7 +120,26 @@ class FixedSizedQuizTest {
         assertThat(fixedSizedQuiz.getCurrentFlashcardId()).isEmpty();
     }
 
-    // TODO: Add test for answerCurrentQuestion with mismatched FlashcardId
+    @Test
+    @DisplayName("Test answering question with mismatched FlashcardId")
+    void answerCurrentQuestionShouldThrow_whenFlashcardIdDoesNotMatch() {
+        FixedSizedQuiz fixedSizedQuiz = new FixedSizedQuiz(testQuizId, testOwnerId, List.of(testFlashcardId));
+        FlashcardId differentFlashcardId = FlashcardId.generate();
+
+        assertThatThrownBy(() -> fixedSizedQuiz.answerCurrentQuestion(differentFlashcardId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("Test answering question with finished quiz")
+    void answerCurrentQuestionShouldThrow_whenQuizIsFinished() {
+        FixedSizedQuiz fixedSizedQuiz = new FixedSizedQuiz(testQuizId, testOwnerId, List.of(testFlashcardId));
+        FlashcardId differentFlashcardId = FlashcardId.generate();
+        fixedSizedQuiz.answerCurrentQuestion(testFlashcardId);
+
+        assertThatThrownBy(() -> fixedSizedQuiz.answerCurrentQuestion(differentFlashcardId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
     @Test
     @DisplayName("Test getting current FlashcardId when quiz is not finished")

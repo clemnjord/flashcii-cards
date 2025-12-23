@@ -53,7 +53,7 @@ public class FixedSizedQuiz {
         });
 
         if (isFinished()) {
-            return;
+            throw new IllegalArgumentException("Answering flashcard but quiz is finished");
         }
         currentQuestionIndex++;
     }
