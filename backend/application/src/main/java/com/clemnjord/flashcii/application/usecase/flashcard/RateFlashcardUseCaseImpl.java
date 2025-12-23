@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 @ApplicationTransactional
 @AllArgsConstructor
 public class RateFlashcardUseCaseImpl implements RateFlashcardUseCase {
-    private static final Scheduler scheduler = Scheduler.builder().build();
+    private final Scheduler scheduler = Scheduler.builder().build();
     private final IUserContextService userContextService;
     private final IFlashcardStatisticRepository flashcardStatisticRepository;
     private final IFlashcardRepository flashcardRepository;

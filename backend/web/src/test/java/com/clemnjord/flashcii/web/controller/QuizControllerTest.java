@@ -5,9 +5,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardCommand;
+import com.clemnjord.flashcii.application.port.input.flashcard.RateFlashcardUseCase;
 import com.clemnjord.flashcii.application.port.input.quiz.CreateFixedSizedQuizCommand;
 import com.clemnjord.flashcii.application.port.input.quiz.CreateFixedSizedQuizUseCase;
-import com.clemnjord.flashcii.application.usecase.flashcard.RateFlashcardUseCaseImpl;
 import com.clemnjord.flashcii.domain.model.deck.DeckId;
 import com.clemnjord.flashcii.domain.model.flashcard.FlashcardId;
 import com.clemnjord.flashcii.domain.model.quiz.FixedSizedQuiz;
@@ -38,7 +38,7 @@ class QuizControllerTest {
     private CreateFixedSizedQuizUseCase createQuizUseCase;
 
     @MockitoBean
-    private RateFlashcardUseCaseImpl rateFlashcardUseCase;
+    private RateFlashcardUseCase rateFlashcardUseCase;
 
     UserId ownerId = UserId.generate();
     QuizId quizId = QuizId.generate();
@@ -99,11 +99,8 @@ class QuizControllerTest {
     @DisplayName("RateFlashcard should return 400 when rating string does not match enum")
     void shouldReturn400_whenRatingStringDoesNotMatchEnum() {
         // --- Given
-        var expectedCommand = new RateFlashcardCommand(quizId, flashcardId1, Rating.GOOD);
         QuizDto.RateFlashcardRequest request =
                 new QuizDto.RateFlashcardRequest(flashcardId1.uuid().toString(), "badRating");
-
-        doNothing().when(rateFlashcardUseCase).execute(expectedCommand);
 
         // --- When & Then
         mockMvcTester
